@@ -3,7 +3,7 @@ integrates a betabrite (alphasign) with home assistant
 
 ## Install
 
-The install procedure assumes you have a working version of the Rasperry Pi OS already installed on an Rpi or Rpi Zero. 
+The install procedure assumes you have a working version of the Rasperry Pi OS already installed on an Rpi or Rpi Zero. If you notice that the time is incorrect use `raspi-config` to set the correct localization information.
 
 1. Install OS dependencies
 ```
