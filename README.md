@@ -17,3 +17,9 @@ git clone https://github.com/robweber/ha-betabrite-sign.git
 ```
 
 3. Install python requirements
+
+```
+
+sudo pip3 install -r install/requirements.txt
+
+```
