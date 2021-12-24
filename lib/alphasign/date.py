@@ -1,6 +1,6 @@
-import constants
+from . import constants
 import datetime
-from packet import Packet
+from .packet import Packet
 
 
 class Date(object):

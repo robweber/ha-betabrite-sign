@@ -1,10 +1,9 @@
 import time
 
-from alphasign import constants
-from alphasign import packet
-
-import alphasign.string
-import alphasign.text
+from .. import constants
+from .. import packet
+from .. import string
+from .. import text
 
 
 class BaseInterface(object):
@@ -77,7 +76,7 @@ class BaseInterface(object):
       size_hex = "%04X" % obj.size
       # format: FTPSIZEQQQQ
 
-      if type(obj) == alphasign.string.String:
+      if type(obj) == string.String:
         file_type = "B"
         qqqq = "0000"  # unused for strings
         lock = constants.LOCKED

@@ -1,5 +1,5 @@
-import constants
-from packet import Packet
+from . import constants
+from .packet import Packet
 
 
 class String(object):

@@ -1,7 +1,7 @@
-import constants
-import modes
-import positions
-from packet import Packet
+from . import constants
+from . import modes
+from . import positions
+from .packet import Packet
 
 
 class Text(object):
