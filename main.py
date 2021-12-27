@@ -4,9 +4,12 @@ import sys
 import time
 import lib.alphasign as alphasign
 from lib.manager import MessageManager
+from lib.home_assistant import HomeAssistant
+from lib.variable_type import POLLING_CATEGORY
 
 # create global vars
 betabrite = alphasign.interfaces.local.Serial(device='/dev/ttyUSB0')
+homeA = None
 labels = None
 
 def setupSign():
@@ -33,11 +36,16 @@ def setupSign():
     betabrite.disconnect()
 
 def loadData():
-    aVar = labels.getVariable('current_weather')
+    # get all polling type variables
+    pollingVars = labels.getVariables(POLLING_CATEGORY)
 
-    haState = {"state":"53 and cloudy"}
+    for v in pollingVars:
+        if(v.getType() == 'home_assistant'):
+            # load the status of this entity
+            state = homeA.getState(v.getEntity())
 
-    updateString('current_weather', aVar.getText().format(**haState))
+            # update the string
+            updateString(v.getName(), state['state'])
 
 def updateString(name, msg):
     #replace some chars
@@ -60,12 +68,17 @@ parser.add_argument('-c', '--config', is_config_file=True,
                     help='Path to custom config file')
 parser.add_argument('-l', '--layout', default="data/layout.yaml",
                     help="Path to yaml file containing sign text layout, default is %(default)s")
+parser.add_argument('-u', '--url', required=True,
+                    help="Home Assistant full base url")
+parser.add_argument('-t', '--token', required=True,
+                    help="Home Assistant Access Token")
 
 args = parser.parse_args()
 
 print("Setting up sign")
 print("Loading layout: " + args.layout)
 labels = MessageManager(args.layout)
+homeA = HomeAssistant(args.url, args.token)
 
 setupSign()
 

@@ -2,3 +2,4 @@ configargparse
 pyserial
 pyusb
 pyyaml
+requests

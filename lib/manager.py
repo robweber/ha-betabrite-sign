@@ -109,3 +109,7 @@ class MessageManager:
 
     def getVariable(self, name):
         return self.varObjs[name]
+
+    def getVariables(self, category):
+        # get variables that are part of a particular category
+        return list(filter(lambda v: v.getCategory() == category, self.varObjs.values()))

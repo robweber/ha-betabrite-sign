@@ -1,3 +1,5 @@
+ALPHASIGN_CATEGORY = 'alphasign'
+POLLING_CATEGORY = 'polling'
 
 # default variable type object
 class VariableType:
