@@ -3,6 +3,7 @@ import datetime
 import sys
 import time
 import lib.alphasign as alphasign
+from jinja2 import Template
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant
 from lib.variable_type import POLLING_CATEGORY
@@ -40,12 +41,16 @@ def loadData():
     pollingVars = labels.getVariables(POLLING_CATEGORY)
 
     for v in pollingVars:
+        entities = {}
         if(v.getType() == 'home_assistant'):
-            # load the status of this entity
-            state = homeA.getState(v.getEntity())
+            # load the status of any entities needed
+            for e in v.getEntities():
+                entities[e] = homeA.getState(e)
 
+            print("found %d entities" % len(entities))
             # update the string
-            updateString(v.getName(), state['state'])
+            template = Template(v.getText())
+            updateString(v.getName(), template.render(vars=entities))
 
 def updateString(name, msg):
     #replace some chars
