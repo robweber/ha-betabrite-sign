@@ -89,7 +89,6 @@ class MessageManager:
                     stringText = f"{stringText} {stringObj.call()}"
 
             alphaObj = alphasign.Text("%s%s" % (ALPHA_COLORS[aMessage['color']], stringText), mode=ALPHA_MODES[aMessage['mode']], label=self.__allocateText(f"{self.MESSAGE_TEXT}_{i}"))
-            print("%s %s" % (ALPHA_COLORS[aMessage['color']], ALPHA_MODES[aMessage['mode']]))
 
             allocateText.append(alphaObj)
 

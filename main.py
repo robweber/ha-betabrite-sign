@@ -1,3 +1,4 @@
+import configargparse
 import datetime
 import sys
 import time
@@ -6,7 +7,7 @@ from lib.manager import MessageManager
 
 # create global vars
 betabrite = alphasign.interfaces.local.Serial(device='/dev/ttyUSB0')
-labels = MessageManager('/home/pi/ha-betabrite-sign/data/layout.yaml')
+labels = None
 
 def setupSign():
     runList = []
@@ -53,7 +54,19 @@ def updateString(name, msg):
 
     betabrite.disconnect()
 
+# parse the arguments
+parser = configargparse.ArgumentParser(description='Home Assistant Betabrite Sign')
+parser.add_argument('-c', '--config', is_config_file=True,
+                    help='Path to custom config file')
+parser.add_argument('-l', '--layout', default="data/layout.yaml",
+                    help="Path to yaml file containing sign text layout, default is %(default)s")
+
+args = parser.parse_args()
+
 print("Setting up sign")
+print("Loading layout: " + args.layout)
+labels = MessageManager(args.layout)
+
 setupSign()
 
 time.sleep(10)
