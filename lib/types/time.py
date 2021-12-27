@@ -3,14 +3,19 @@ from .. variable_type import AlphaSignVariable, PollingVariable
 from .. import alphasign
 
 class DateVariable(PollingVariable):
+    dateSep = '/'
 
     def __init__(self, name, config):
         super().__init__('date', name, config)
 
+        # allow for custom seperator between date values
+        if('seperator' in self.config):
+            self.dateSep = self.config['seperator']
+
     def getText(self):
         dateObj = datetime.datetime.today()
 
-        return f"{dateObj.month}-{dateObj.day}-{dateObj.year}"
+        return f"{dateObj.month}{self.dateSep}{dateObj.day}{self.dateSep}{dateObj.year}"
 
     def getStartup(self):
         return self.getText()
