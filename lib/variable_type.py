@@ -1,3 +1,5 @@
+
+# default variable type object
 class VariableType:
     type = None
     name = None
@@ -29,6 +31,7 @@ class VariableType:
     def getCategory(self):
         raise NotImplementedError
 
+# variables that are updated via polling
 class PollingVariable(VariableType):
 
     def __init__(self, type, name, config):
@@ -40,6 +43,7 @@ class PollingVariable(VariableType):
     def getCategory(self):
         return 'polling'
 
+# variables that are part of alphasign protocol
 class AlphaSignVariable(VariableType):
 
     def __init__(self, type, name, config):

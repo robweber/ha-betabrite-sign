@@ -3,17 +3,20 @@ from .types.home_assistant import HomeAssistantVariable
 from .types.time import DateVariable, TimeVariable
 import yaml
 
+# dicts to transfrom yaml to alphasign variables
 ALPHA_MODES = {"rotate":alphasign.modes.ROTATE, "hold":alphasign.modes.HOLD}
 ALPHA_COLORS = {"green": alphasign.colors.GREEN, "orange": alphasign.colors.ORANGE, "rainbow1": alphasign.colors.RAINBOW_1, "rainbow2": alphasign.colors.RAINBOW_2}
 
+
+# manages loading of messages and variables from yaml file to create alphasign objects
 class MessageManager:
     MESSAGE_STRING = "MESSAGESTRING"
     MESSAGE_TEXT = "MESSAGE"
 
-    config = None
-    stringObjs = {}
-    textObjs = {}
-    varObjs = {}
+    config = None  # yaml file
+    stringObjs = {}  # alphasign string object Ids
+    textObjs = {}  # alphasign text object ids
+    varObjs = {}  # variables, extending VariableType
 
     def __init__(self, configFile):
         with open(configFile, 'r') as file:
@@ -53,30 +56,32 @@ class MessageManager:
     def __getText(self, name):
         return self.textObjs[name]
 
+    # initializes alphasign objects to load into sign memory
     def startup(self, betabrite):
         runList = []
         allocateStrings = []
         allocateText = []
 
+        # load messages from "messages" key in yaml file
         for i in range(0, len(self.config['messages'])):
-            skipAllocate = False
-
             # get the message
             aMessage = self.config['messages'][i]
 
             stringText = None
+            # if "text" exists create a string object from static text
             if('text' in aMessage):
                 stringObj = alphasign.String(data=aMessage['text'], label=self.__allocateString(f"{self.MESSAGE_STRING}_{i}"), size=125)
                 allocateStrings.append(stringObj)
                 stringText = stringObj.call()
             else:
-
+                # message is data loaded from variables
                 messageVars = aMessage['data']
                 if(not isinstance(aMessage['data'], list)):
                     messageVars = [aMessage['data']]
 
                 stringText = ""
                 for v in messageVars:
+                    # load each variable and extract it's startup text
                     aVar = self.varObjs[v]
                     print("%s:%s" % (aVar.getName(), aVar.getType()))
                     if(aVar.getType() == 'time'):
@@ -88,12 +93,14 @@ class MessageManager:
 
                     stringText = f"{stringText} {stringObj.call()}"
 
+            # create text object, setting the string text
             alphaObj = alphasign.Text("%s%s" % (ALPHA_COLORS[aMessage['color']], stringText), mode=ALPHA_MODES[aMessage['mode']], label=self.__allocateText(f"{self.MESSAGE_TEXT}_{i}"))
 
             allocateText.append(alphaObj)
 
             runList.append(alphaObj)
 
+        # return objects that should be loaded into sign memory
         return {"run": runList, "allocate": allocateText + allocateStrings}
 
     def updateString(self, name, message):
