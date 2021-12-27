@@ -1,0 +1,14 @@
+variables:
+  current_time:
+    type: time
+  current_date:
+    type: date
+messages:
+  - data:
+      - current_time
+      - current_date
+    mode: hold
+    color: "green"
+  - text: "Betabrite Sign Test"
+    mode: "rotate"
+    color: "rainbow1"

@@ -1,0 +1,105 @@
+from . import alphasign
+from .types.home_assistant import HomeAssistantVariable
+from .types.time import DateVariable, TimeVariable
+import yaml
+
+ALPHA_MODES = {"rotate":alphasign.modes.ROTATE, "hold":alphasign.modes.HOLD}
+ALPHA_COLORS = {"green": alphasign.colors.GREEN, "orange": alphasign.colors.ORANGE, "rainbow1": alphasign.colors.RAINBOW_1, "rainbow2": alphasign.colors.RAINBOW_2}
+
+class MessageManager:
+    MESSAGE_STRING = "MESSAGESTRING"
+    MESSAGE_TEXT = "MESSAGE"
+
+    config = None
+    stringObjs = {}
+    textObjs = {}
+    varObjs = {}
+
+    def __init__(self, configFile):
+        with open(configFile, 'r') as file:
+            self.config = yaml.safe_load(file)
+
+        self.__loadVariables()
+
+    def __loadVariables(self):
+        # load variables and store for later use
+        for v in self.config['variables'].keys():
+            aVar = self.config['variables'][v]
+
+            if(aVar['type'] == 'date'):
+                self.varObjs[v] = DateVariable(v, aVar)
+            if(aVar['type'] == 'home_assistant'):
+                self.varObjs[v] = HomeAssistantVariable(v, aVar)
+            elif(aVar['type'] == 'time'):
+                self.varObjs[v] = TimeVariable(v, aVar)
+
+    def __allocateString(self, name):
+        # strings use numbers for allocation
+        nextInt = str(len(self.stringObjs) + 1)
+        self.stringObjs[name] = nextInt
+
+        return nextInt
+
+    def __allocateText(self, name):
+        # text objects use letters, convert from ASCII int value
+        nextLetter = chr(len(self.textObjs) + 65)
+        self.textObjs[name] = nextLetter
+
+        return nextLetter
+
+    def __getString(self, name):
+        return self.stringObjs[name]
+
+    def __getText(self, name):
+        return self.textObjs[name]
+
+    def startup(self, betabrite):
+        runList = []
+        allocateStrings = []
+        allocateText = []
+
+        for i in range(0, len(self.config['messages'])):
+            skipAllocate = False
+
+            # get the message
+            aMessage = self.config['messages'][i]
+
+            stringText = None
+            if('text' in aMessage):
+                stringObj = alphasign.String(data=aMessage['text'], label=self.__allocateString(f"{self.MESSAGE_STRING}_{i}"), size=125)
+                allocateStrings.append(stringObj)
+                stringText = stringObj.call()
+            else:
+
+                messageVars = aMessage['data']
+                if(not isinstance(aMessage['data'], list)):
+                    messageVars = [aMessage['data']]
+
+                stringText = ""
+                for v in messageVars:
+                    aVar = self.varObjs[v]
+                    print("%s:%s" % (aVar.getName(), aVar.getType()))
+                    if(aVar.getType() == 'time'):
+                        stringObj = aVar.getStartup()
+                        betabrite.write(stringObj)
+                    else:
+                        stringObj = alphasign.String(data=aVar.getStartup(), label=self.__allocateString(aVar.getName()), size=125)
+                        allocateStrings.append(stringObj)
+
+                    stringText = f"{stringText} {stringObj.call()}"
+
+            alphaObj = alphasign.Text("%s%s" % (ALPHA_COLORS[aMessage['color']], stringText), mode=ALPHA_MODES[aMessage['mode']], label=self.__allocateText(f"{self.MESSAGE_TEXT}_{i}"))
+            print("%s %s" % (ALPHA_COLORS[aMessage['color']], ALPHA_MODES[aMessage['mode']]))
+
+            allocateText.append(alphaObj)
+
+            runList.append(alphaObj)
+
+        return {"run": runList, "allocate": allocateText + allocateStrings}
+
+    def updateString(self, name, message):
+        # create the string object
+        return alphasign.String(data=message, label=self.__getString(name), size=125)
+
+    def getVariable(self, name):
+        return self.varObjs[name]
