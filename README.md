@@ -1,4 +1,5 @@
 # Home Assistant Betabrite Sign
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
 Integrate an LED sign that uses the [Alphasign protocol](https://www.adaptivedisplays.com/resources/documentation-and-manuals/support-documents/bid/264113/Alpha-Sign-Communications-Protocol-pn-97088061) with your [Home Assistant](https://www.home-assistant.io/) installation. This project seeks to provide a headless Python program that will communicate with the sign and allow for updates by either querying a Home Assistant instance or getting status updates via MQTT from Home Assistant.
 
@@ -14,7 +15,7 @@ What I wanted was a system that I could define with a `.yaml` file and have it d
 
 ## Install
 
-The install procedure assumes you have a working version of the Rasperry Pi OS already installed on an Rpi or Rpi Zero. If you notice that the time is incorrect on the sign use `raspi-config` to set the correct localization information.
+The install procedure assumes you have a working version of the Rasperry Pi OS already installed on an Rpi or Rpi Zero. Obviously you also need an LED sign that utilizes the Alphasign Protocol and a way for the RPI to talk to it. If you notice that the time is incorrect on the sign use `raspi-config` to set the correct localization information.
 
 ```
 # install os deps
@@ -49,7 +50,7 @@ The `layout.yaml` file controls most aspects of displaying messages on the sign.
 The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for variables can be evaluated by using Jina templates, of which there are a few examples below. For more information on templating, see the [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
 
 
-### Time
+__Time__
 
 The time variable utilizes the built-in functionality of the Alphasign protocol to display the current time on the sign.
 
@@ -61,7 +62,7 @@ variables:
     type: time
 ```
 
-### Date
+__Date__
 
 Similar to the time variable, this displays the current date. Due to limitations with the display this has to be set manually once a day to be correct. This is done by polling in the background once per day.
 
@@ -73,7 +74,7 @@ variables:
     separator: '-'
 ```
 
-### Home Assistant
+__Home Assistant__
 
 The Home Assistant type is a polling variable that updates on a given interval. Data will be updated each time the polling interval is hit and the resulting string sent to the sign, wherever it is used in a message. Jinja templating can be used within the `data` field to process Home Assistant entities. Examples of this are shown below.
 
@@ -100,7 +101,7 @@ variables:
     entities:
       - person.person_a
       - person.person_b
-    # outputs "Everyon is home" or "Everyone is not home"
+    # outputs "Everyone is home" or "Everyone is not home"
     text: >-
       Everyone is
       {% if vars['person.person_a']['state'] == 'home' and vars['person.person_b']['home'] %}
@@ -171,7 +172,7 @@ messages:
 
 ## Contributing
 
-This is mostly a project I made for fun so not looking to really modify it too much. If you have troubles or find a bug, post it an issue. I'll review PRs as well if it fixes functionality or adds something really cool. 
+This is mostly a project I made for fun so not looking to really modify it too much. If you have troubles or find a bug, post it an issue. I'll review PRs as well if it fixes functionality or adds something really cool.
 
 ## License
 
