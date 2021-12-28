@@ -7,6 +7,8 @@ import yaml
 ALPHA_MODES = {"rotate":alphasign.modes.ROTATE, "hold":alphasign.modes.HOLD}
 ALPHA_COLORS = {"green": alphasign.colors.GREEN, "orange": alphasign.colors.ORANGE, "rainbow1": alphasign.colors.RAINBOW_1,
                 "rainbow2": alphasign.colors.RAINBOW_2, "red": alphasign.colors.RED, "yellow": alphasign.colors.YELLOW}
+ALPHA_SPEEDS = {1: alphasign.speeds.SPEED_1, 2: alphasign.speeds.SPEED_2, 3: alphasign.speeds.SPEED_3,
+                4: alphasign.speeds.SPEED_4, 5: alphasign.speeds.SPEED_5}
 
 
 # manages loading of messages and variables from yaml file to create alphasign objects
@@ -50,6 +52,15 @@ class MessageManager:
         self.textObjs[name] = nextLetter
 
         return nextLetter
+
+    def __generateTextParams(self, m):
+        # color is required
+        result = ALPHA_COLORS[m['color']]
+
+        if('speed' in m):
+            result = f"{result}{ALPHA_SPEEDS[m['speed']]}"
+
+        return result
 
     def __getString(self, name):
         return self.stringObjs[name]
@@ -95,7 +106,8 @@ class MessageManager:
                     stringText = f"{stringText} {stringObj.call()}"
 
             # create text object, setting the string text
-            alphaObj = alphasign.Text("%s%s" % (ALPHA_COLORS[aMessage['color']], stringText), mode=ALPHA_MODES[aMessage['mode']], label=self.__allocateText(f"{self.MESSAGE_TEXT}_{i}"))
+            textParams = self.__generateTextParams(aMessage)
+            alphaObj = alphasign.Text("%s%s" % (textParams, stringText), mode=ALPHA_MODES[aMessage['mode']], label=self.__allocateText(f"{self.MESSAGE_TEXT}_{i}"))
 
             allocateText.append(alphaObj)
 
