@@ -8,9 +8,9 @@ class DateVariable(PollingVariable):
     def __init__(self, name, config):
         super().__init__('date', name, config)
 
-        # allow for custom seperator between date values
+        # allow for custom separator between date values
         if('seperator' in self.config):
-            self.dateSep = self.config['seperator']
+            self.dateSep = self.config['separator']
 
     def getText(self):
         dateObj = datetime.datetime.today()
