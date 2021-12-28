@@ -1,8 +1,13 @@
 ALPHASIGN_CATEGORY = 'alphasign'
 POLLING_CATEGORY = 'polling'
 
-# default variable type object
+
 class VariableType:
+    """
+    Defines the default VariableType class
+    this is mean to be subclassed by different implementing
+    variable categories
+    """
     type = None
     name = None
     config = None
@@ -33,8 +38,14 @@ class VariableType:
     def getCategory(self):
         raise NotImplementedError
 
-# variables that are updated via polling
+
 class PollingVariable(VariableType):
+    """
+    Represents a VariableType class that updates its
+    data through polling, variables of this type
+    need to specify a polling interval through the
+    "poll_time" parameter in the YAML config
+    """
 
     def __init__(self, type, name, config):
         super().__init__(type, name, config)
@@ -45,8 +56,12 @@ class PollingVariable(VariableType):
     def getCategory(self):
         return 'polling'
 
-# variables that are part of alphasign protocol
+
 class AlphaSignVariable(VariableType):
+    """
+    Special variable category that uses built-in
+    Alphasign protocol objects to display data
+    """
 
     def __init__(self, type, name, config):
         super().__init__(type, name, config)
