@@ -5,7 +5,8 @@ import yaml
 
 # dicts to transfrom yaml to alphasign variables
 ALPHA_MODES = {"rotate":alphasign.modes.ROTATE, "hold":alphasign.modes.HOLD}
-ALPHA_COLORS = {"green": alphasign.colors.GREEN, "orange": alphasign.colors.ORANGE, "rainbow1": alphasign.colors.RAINBOW_1, "rainbow2": alphasign.colors.RAINBOW_2}
+ALPHA_COLORS = {"green": alphasign.colors.GREEN, "orange": alphasign.colors.ORANGE, "rainbow1": alphasign.colors.RAINBOW_1,
+                "rainbow2": alphasign.colors.RAINBOW_2, "red": alphasign.colors.RED, "yellow": alphasign.colors.YELLOW}
 
 
 # manages loading of messages and variables from yaml file to create alphasign objects

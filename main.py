@@ -50,12 +50,11 @@ def loadData():
             print("found %d entities" % len(entities))
             # update the string
             template = Template(v.getText())
-            updateString(v.getName(), template.render(vars=entities))
+            updateString(v.getName(), template.render(vars=entities).strip())
 
 def updateString(name, msg):
     #replace some chars
     msg = msg.replace('.','')
-    msg = msg.replace(':','')
     msg = msg.replace('_',' ')
 
     print("%s: %s" % (name, msg))
