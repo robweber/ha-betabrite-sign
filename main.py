@@ -98,6 +98,7 @@ logging.basicConfig(datefmt='%m/%d %H:%M',
                     format="%(levelname)s %(asctime)s: %(message)s",
                     level=getattr(logging, logLevel),
                     handlers=logHandlers)
+
 logging.debug('Debug Mode On')
 
 logging.info("Setting up sign")

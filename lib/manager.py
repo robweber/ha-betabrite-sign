@@ -2,6 +2,7 @@ import logging
 import yaml
 from . import alphasign
 from .types.home_assistant import HomeAssistantVariable
+from .types.static import StaticVariable
 from .types.time import DateVariable, TimeVariable
 
 # dicts to transfrom yaml to alphasign variables
@@ -35,8 +36,10 @@ class MessageManager:
 
             if(aVar['type'] == 'date'):
                 self.varObjs[v] = DateVariable(v, aVar)
-            if(aVar['type'] == 'home_assistant'):
+            elif(aVar['type'] == 'home_assistant'):
                 self.varObjs[v] = HomeAssistantVariable(v, aVar)
+            elif(aVar['type'] == 'static'):
+                self.varObjs[v] = StaticVariable(v, aVar)
             elif(aVar['type'] == 'time'):
                 self.varObjs[v] = TimeVariable(v, aVar)
 
@@ -80,31 +83,24 @@ class MessageManager:
             # get the message
             aMessage = self.config['messages'][i]
 
-            stringText = None
-            # if "text" exists create a string object from static text
-            if('text' in aMessage):
-                stringObj = alphasign.String(data=aMessage['text'], label=self.__allocateString(f"{self.MESSAGE_STRING}_{i}"), size=125)
-                allocateStrings.append(stringObj)
-                stringText = stringObj.call()
-            else:
-                # message is data loaded from variables
-                messageVars = aMessage['data']
-                if(not isinstance(aMessage['data'], list)):
-                    messageVars = [aMessage['data']]
+            # load message data from variables
+            messageVars = aMessage['data']
+            if(not isinstance(aMessage['data'], list)):
+                messageVars = [aMessage['data']]
 
-                stringText = ""
-                for v in messageVars:
-                    # load each variable and extract it's startup text
-                    aVar = self.varObjs[v]
-                    logging.info("Loading variable %s:%s for message" % (aVar.getName(), aVar.getType()))
-                    if(aVar.getType() == 'time'):
-                        stringObj = aVar.getStartup()
-                        betabrite.write(stringObj)
-                    else:
-                        stringObj = alphasign.String(data=aVar.getStartup(), label=self.__allocateString(aVar.getName()), size=125)
-                        allocateStrings.append(stringObj)
+            stringText = ""
+            for v in messageVars:
+                # load each variable and extract it's startup text
+                aVar = self.varObjs[v]
+                logging.info("Loading variable %s:%s for message" % (aVar.getName(), aVar.getType()))
+                if(aVar.getType() == 'time'):
+                    stringObj = aVar.getStartup()
+                    betabrite.write(stringObj)
+                else:
+                    stringObj = alphasign.String(data=aVar.getStartup(), label=self.__allocateString(aVar.getName()), size=125)
+                    allocateStrings.append(stringObj)
 
-                    stringText = f"{stringText} {stringObj.call()}"
+                stringText = f"{stringText} {stringObj.call()}"
 
             # create text object, setting the string text
             textParams = self.__generateTextParams(aMessage)
