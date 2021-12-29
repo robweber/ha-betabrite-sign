@@ -79,7 +79,7 @@ The `layout.yaml` file controls most aspects of displaying messages on the sign.
 
 ### Variables
 
-The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for variables can be evaluated by using Jina templates, of which there are a few examples below. For more information on templating, see the [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
+The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for dynamic variables can be evaluated by using Jina templates, of which there are a few examples below. For more information on templating, see the [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
 
 
 __Time__
@@ -104,6 +104,17 @@ variables:
     type: date
     # optional parameter to set the separation character between the month, day, and year. Default is a '/'
     separator: '-'
+```
+
+__Static__
+
+The static type allows for displaying static text that is loaded once when the sign initalizes and then is never changed.
+
+```
+variables:
+  static_text:
+    type: static
+    text: "Static Text Example"
 ```
 
 __Home Assistant__
@@ -175,16 +186,17 @@ The speed that the message will go across the screen. This is a number 1-5 with 
 
 ### Examples
 
-The simplest message contains no variable, and hence won't be updated after the sign is loaded.
+The simplest message contains a static variable, and hence won't be updated after the sign is loaded. Variables are set with the `data` tag.
 
 ```
 messages:
-  - text: "Home Assistant Sign"
+  - data:
+      - static_text
     mode: "rotate"
     color: "rainbow1"
 ```
 
-Using the variable examples above, variables can be defined by using the `data` tag.
+Below is an example with dynamic variables and multiple variables combined. 
 
 ```
 messages:
