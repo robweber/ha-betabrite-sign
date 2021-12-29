@@ -78,7 +78,7 @@ class PollingVariable(VariableType):
 
     def getPollTime(self):
         """:returns: the poll time, in seconds"""
-        return self.config['poll_time']
+        return 300 if 'poll_time' not in self.config else self.config['poll_time']
 
     def getCategory(self):
         return constants.POLLING_CATEGORY
