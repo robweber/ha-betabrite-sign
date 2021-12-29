@@ -9,7 +9,7 @@ from lib.home_assistant import HomeAssistant
 from lib.variable_type import POLLING_CATEGORY
 
 # create global vars
-betabrite = alphasign.interfaces.local.Serial(device='/dev/ttyUSB0')
+betabrite = None
 homeA = None
 labels = None
 
@@ -72,6 +72,8 @@ parser.add_argument('-c', '--config', is_config_file=True,
                     help='Path to custom config file')
 parser.add_argument('-l', '--layout', default="data/layout.yaml",
                     help="Path to yaml file containing sign text layout, default is %(default)s")
+parser.add_argument('-d', '--device', default="/dev/ttyUSB0",
+                    help="Path to device where Alphasign is connected, default is %(default)s, can also use 'cli' to output to screen only")
 parser.add_argument('-u', '--url', required=True,
                     help="Home Assistant full base url")
 parser.add_argument('-t', '--token', required=True,
@@ -80,6 +82,13 @@ parser.add_argument('-t', '--token', required=True,
 args = parser.parse_args()
 
 print("Setting up sign")
+
+if(args.device == 'cli'):
+    print('Outputting sign info to CLI')
+    betabrite = alphasign.interfaces.local.DebugInterface()
+else:
+    betabrite = alphasign.interface.local.Serial(device=args.device)
+
 print("Loading layout: " + args.layout)
 labels = MessageManager(args.layout)
 homeA = HomeAssistant(args.url, args.token)
