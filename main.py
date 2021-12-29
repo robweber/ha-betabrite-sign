@@ -1,5 +1,4 @@
 import configargparse
-import datetime
 import logging
 import sys
 import time
@@ -14,10 +13,11 @@ betabrite = None
 homeA = None
 manager = None
 
-def setupSign():
-    runList = []
-    allocateList = []
 
+def setupSign():
+    """Setup the sign by allocated memory for variables and messages
+    """
+    # connect to the sign and clear any data
     betabrite.connect()
     betabrite.clear_memory()
 
@@ -37,7 +37,10 @@ def setupSign():
 
     betabrite.disconnect()
 
-def loadData():
+
+def poll():
+    """Gets all polling type variables and checks if they need updating
+    """
     # get all polling type variables
     pollingVars = manager.getVariables(POLLING_CATEGORY)
 
@@ -59,10 +62,13 @@ def loadData():
             else:
                 logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
 
+
 def updateString(name, msg):
-    #replace some chars
-    msg = msg.replace('.','')
-    msg = msg.replace('_',' ')
+    """Update a string object on the sign
+    """
+    # replace some chars
+    msg = msg.replace('.', '')
+    msg = msg.replace('_', ' ')
 
     strObj = manager.updateString(name, msg)
 
@@ -71,6 +77,7 @@ def updateString(name, msg):
     betabrite.write(strObj)
 
     betabrite.disconnect()
+
 
 # parse the arguments
 parser = configargparse.ArgumentParser(description='Home Assistant Betabrite Sign')
@@ -122,4 +129,4 @@ setupSign()
 
 time.sleep(10)
 
-loadData()
+poll()

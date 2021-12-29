@@ -1,9 +1,9 @@
 from termcolor import colored
 from . import constants
 
+
 class VariableType:
-    """
-    Defines the default VariableType class
+    """Defines the default VariableType class
     this is mean to be subclassed by different implementing
     variable categories
     """
@@ -17,16 +17,28 @@ class VariableType:
         self.config = config
 
     def render(self, text=''):
+        """render the given text to be displayed on the command line
+        :param text: the text to render
+
+        :returns: the text with any termcolor markup applied
+        """
         color = 'green' if 'color' not in self.config else self.config['color']
         return colored(text, color)
 
     def getName(self):
+        """:returns: the name of this variable"""
         return self.name
 
     def getType(self):
+        """:returns: the type of this variable """
         return self.type
 
     def getDisplayParams(self):
+        """formats any display parameters for this variable
+        so it can be sent to the alphasign as part of a String object
+
+        :returns: properly formatted string with alphasign characters
+        """
         result = ""
 
         if('color' in self.config):
@@ -35,9 +47,11 @@ class VariableType:
         return result
 
     def getText(self):
+        """:returns: the text for this variable as defined in yaml file"""
         return self.config['text']
 
     def getStartup(self):
+        """:returns: the startup text for this variable as defined in the yaml file"""
         result = ""
 
         if('startup' in self.config):
@@ -47,6 +61,7 @@ class VariableType:
 
     @staticmethod
     def getCategory(self):
+        """the category of this variable, implemented by subclasses"""
         raise NotImplementedError
 
 
@@ -62,6 +77,7 @@ class PollingVariable(VariableType):
         super().__init__(type, name, config)
 
     def getPollTime(self):
+        """:returns: the poll time, in seconds"""
         return self.config['poll_time']
 
     def getCategory(self):

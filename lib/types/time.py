@@ -2,7 +2,16 @@ import datetime
 from .. variable_type import AlphaSignVariable, PollingVariable
 from .. import alphasign
 
+
 class DateVariable(PollingVariable):
+    """A date variable type to display the current date on
+    the sign.
+    This is a polling type variable since it needs to be updated
+    on the sign each day.
+
+    Special configuration options in yaml are:
+     * separator: the separator character between the date fields
+    """
     dateSep = '/'
 
     def __init__(self, name, config):
@@ -23,8 +32,12 @@ class DateVariable(PollingVariable):
     def getPollTime(self):
         return 300
 
-class TimeVariable(AlphaSignVariable):
 
+class TimeVariable(AlphaSignVariable):
+    """Represents the time object on the alphasign
+    This is a special object in the alphasign protocol
+    once it is set the sign will keep the time up to date
+    """
     def __init__(self, name, config):
         super().__init__('time', name, config)
 
@@ -32,6 +45,7 @@ class TimeVariable(AlphaSignVariable):
         return super().render('TIME')
 
     def getText(self):
+        # create the alphasign Time object
         timeObj = alphasign.time.Time()
 
         return timeObj
