@@ -92,6 +92,8 @@ variables:
   current_time:
     # type of variable
     type: time
+    # color of message, optional
+    color: green
 ```
 
 __Date__
@@ -154,6 +156,7 @@ variables:
       {% endif %}
     startup: "Loading data"
     poll_time: 60
+    color: yellow
 ```
 
 ## Messages
@@ -169,9 +172,9 @@ The mode is how the sign will be written across the screen. Valid modes are:
 * hold - display all at once and hold
 * rotate - scroll right to left
 
-__Color__
+__Color__ (optional)
 
-The color of the message. Valid colors are:
+The color of the message. This can also be specified per variable to have mixed colors within a single message. Valid colors are:
 
 * green
 * red
@@ -180,7 +183,7 @@ The color of the message. Valid colors are:
 * rainbow1
 * rainbow2
 
-__Speed__
+__Speed__ (optional)
 
 The speed that the message will go across the screen. This is a number 1-5 with 1 being slow and 5 being fast.
 
@@ -196,7 +199,7 @@ messages:
     color: "rainbow1"
 ```
 
-Below is an example with dynamic variables and multiple variables combined. 
+Below is an example with dynamic variables and multiple variables combined.
 
 ```
 messages:
@@ -210,7 +213,6 @@ messages:
       - current_time
       - current_date
     mode: hold
-    color: "green"
     speed: 2
 ```
 

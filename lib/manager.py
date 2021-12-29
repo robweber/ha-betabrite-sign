@@ -85,6 +85,7 @@ class MessageManager:
                 messageVars = [aMessage['data']]
 
             stringText = ""
+            cliText = ""
             for v in messageVars:
                 # load each variable and extract it's startup text
                 aVar = self.varObjs[v]
@@ -92,13 +93,16 @@ class MessageManager:
                 if(aVar.getType() == 'time'):
                     stringObj = aVar.getStartup()
                     betabrite.write(stringObj)
+                    cliText = f"{cliText} {aVar.render()}"
                 else:
                     stringObj = alphasign.String(data="%s%s" % (aVar.getDisplayParams(), aVar.getStartup()), label=self.__allocateString(aVar.getName()), size=125)
                     allocateStrings.append(stringObj)
+                    cliText = f"{cliText} {aVar.render(aVar.getStartup())}"
 
                 stringText = f"{stringText} {stringObj.call()}"
 
             # create text object, setting the string text
+            logging.debug(f"{cliText} - MODE: {aMessage['mode']}")
             messageParams = self.__generateTextParams(aMessage)
             alphaObj = alphasign.Text("%s%s" % (messageParams, stringText), mode=constants.ALPHA_MODES[aMessage['mode']], label=self.__allocateText(f"{self.MESSAGE_TEXT}_{i}"))
 

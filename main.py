@@ -49,10 +49,12 @@ def loadData():
                 for e in v.getEntities():
                     entities[e] = homeA.getState(e)
 
-                logging.info("found %d entities" % len(entities))
                 # update the string
                 template = Template(v.getText())
-                updateString(v.getName(), template.render(vars=entities).strip())
+                renderedString = template.render(vars=entities).strip()
+
+                logging.debug(f"updated {v.getName()}:{v.render(renderedString)}")
+                updateString(v.getName(), renderedString)
             else:
                 logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
 
@@ -61,7 +63,6 @@ def updateString(name, msg):
     msg = msg.replace('.','')
     msg = msg.replace('_',' ')
 
-    logging.debug("%s: %s" % (name, msg))
     strObj = labels.updateString(name, msg)
 
     betabrite.connect()

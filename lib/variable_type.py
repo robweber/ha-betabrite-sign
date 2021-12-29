@@ -1,3 +1,4 @@
+from termcolor import colored
 from . import constants
 
 class VariableType:
@@ -14,6 +15,10 @@ class VariableType:
         self.type = type
         self.name = name
         self.config = config
+
+    def render(self, text=''):
+        color = 'green' if 'color' not in self.config else self.config['color']
+        return colored(text, color)
 
     def getName(self):
         return self.name
