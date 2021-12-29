@@ -1,6 +1,4 @@
-ALPHASIGN_CATEGORY = 'alphasign'
-POLLING_CATEGORY = 'polling'
-
+from . import constants
 
 class VariableType:
     """
@@ -22,6 +20,14 @@ class VariableType:
 
     def getType(self):
         return self.type
+
+    def getDisplayParams(self):
+        result = ""
+
+        if('color' in self.config):
+            result = f"{constants.ALPHA_COLORS[self.config['color']]}"
+
+        return result
 
     def getText(self):
         return self.config['text']
@@ -54,7 +60,7 @@ class PollingVariable(VariableType):
         return self.config['poll_time']
 
     def getCategory(self):
-        return 'polling'
+        return constants.POLLING_CATEGORY
 
 
 class AlphaSignVariable(VariableType):
@@ -67,4 +73,4 @@ class AlphaSignVariable(VariableType):
         super().__init__(type, name, config)
 
     def getCategory(self):
-        return 'alphasign'
+        return constants.ALPHASIGN_CATEGORY

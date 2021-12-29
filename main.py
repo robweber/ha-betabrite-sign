@@ -7,7 +7,7 @@ import lib.alphasign as alphasign
 from jinja2 import Template
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant
-from lib.variable_type import POLLING_CATEGORY
+from lib.constants import POLLING_CATEGORY
 
 # create global vars
 betabrite = None

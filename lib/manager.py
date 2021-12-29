@@ -1,16 +1,10 @@
 import logging
 import yaml
 from . import alphasign
+from . import constants
 from .types.home_assistant import HomeAssistantVariable
 from .types.static import StaticVariable
 from .types.time import DateVariable, TimeVariable
-
-# dicts to transfrom yaml to alphasign variables
-ALPHA_MODES = {"rotate":alphasign.modes.ROTATE, "hold":alphasign.modes.HOLD}
-ALPHA_COLORS = {"green": alphasign.colors.GREEN, "orange": alphasign.colors.ORANGE, "rainbow1": alphasign.colors.RAINBOW_1,
-                "rainbow2": alphasign.colors.RAINBOW_2, "red": alphasign.colors.RED, "yellow": alphasign.colors.YELLOW}
-ALPHA_SPEEDS = {1: alphasign.speeds.SPEED_1, 2: alphasign.speeds.SPEED_2, 3: alphasign.speeds.SPEED_3,
-                4: alphasign.speeds.SPEED_4, 5: alphasign.speeds.SPEED_5}
 
 
 # manages loading of messages and variables from yaml file to create alphasign objects
@@ -58,11 +52,13 @@ class MessageManager:
         return nextLetter
 
     def __generateTextParams(self, m):
-        # color is required
-        result = ALPHA_COLORS[m['color']]
+        result = ""
+
+        if('color' in m):
+            result = f"{constants.ALPHA_COLORS[m['color']]}"
 
         if('speed' in m):
-            result = f"{result}{ALPHA_SPEEDS[m['speed']]}"
+            result = f"{result}{constants.ALPHA_SPEEDS[m['speed']]}"
 
         return result
 
@@ -97,14 +93,14 @@ class MessageManager:
                     stringObj = aVar.getStartup()
                     betabrite.write(stringObj)
                 else:
-                    stringObj = alphasign.String(data=aVar.getStartup(), label=self.__allocateString(aVar.getName()), size=125)
+                    stringObj = alphasign.String(data="%s%s" % (aVar.getDisplayParams(), aVar.getStartup()), label=self.__allocateString(aVar.getName()), size=125)
                     allocateStrings.append(stringObj)
 
                 stringText = f"{stringText} {stringObj.call()}"
 
             # create text object, setting the string text
-            textParams = self.__generateTextParams(aMessage)
-            alphaObj = alphasign.Text("%s%s" % (textParams, stringText), mode=ALPHA_MODES[aMessage['mode']], label=self.__allocateText(f"{self.MESSAGE_TEXT}_{i}"))
+            messageParams = self.__generateTextParams(aMessage)
+            alphaObj = alphasign.Text("%s%s" % (messageParams, stringText), mode=constants.ALPHA_MODES[aMessage['mode']], label=self.__allocateText(f"{self.MESSAGE_TEXT}_{i}"))
 
             allocateText.append(alphaObj)
 
