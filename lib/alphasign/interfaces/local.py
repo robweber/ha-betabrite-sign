@@ -1,3 +1,4 @@
+import logging
 import serial
 import time
 import usb
@@ -16,7 +17,7 @@ class Serial(base.BaseInterface):
     :type device: string
     """
     self.device = device
-    self.debug = True
+    self.debug = False
     self._conn = None
 
   def connect(self):
@@ -48,7 +49,7 @@ class Serial(base.BaseInterface):
     if not self._conn or not self._conn.isOpen():
       self.connect()
     if self.debug:
-      print("Writing packet: %s" % repr(packet))
+      logging.debug("Writing packet: %s" % repr(packet))
     try:
       self._conn.write(str(packet).encode())
     except OSError:
@@ -110,10 +111,10 @@ class USB(base.BaseInterface):
     if not self._conn:
       self.connect()
     if self.debug:
-      print("Writing packet: %s" % repr(packet))
+      logging.debug("Writing packet: %s" % repr(packet))
     written = self._conn.bulkWrite(self._write_endpoint.address, str(packet))
     if self.debug:
-      print("%d bytes written" % written)
+      logging.debug("%d bytes written" % written)
     self._conn.bulkWrite(self._write_endpoint.address, '')
 
 
@@ -136,5 +137,5 @@ class DebugInterface(base.BaseInterface):
   def write(self, packet):
     """ """
     if self.debug:
-      print("Writing packet: %s" % repr(packet))
+      logging.debug("Writing packet: %s" % repr(packet))
     return True

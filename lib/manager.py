@@ -1,7 +1,8 @@
+import logging
+import yaml
 from . import alphasign
 from .types.home_assistant import HomeAssistantVariable
 from .types.time import DateVariable, TimeVariable
-import yaml
 
 # dicts to transfrom yaml to alphasign variables
 ALPHA_MODES = {"rotate":alphasign.modes.ROTATE, "hold":alphasign.modes.HOLD}
@@ -95,7 +96,7 @@ class MessageManager:
                 for v in messageVars:
                     # load each variable and extract it's startup text
                     aVar = self.varObjs[v]
-                    print("%s:%s" % (aVar.getName(), aVar.getType()))
+                    logging.info("Loading variable %s:%s for message" % (aVar.getName(), aVar.getType()))
                     if(aVar.getType() == 'time'):
                         stringObj = aVar.getStartup()
                         betabrite.write(stringObj)

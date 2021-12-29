@@ -31,15 +31,47 @@ sudo pip3 install -r install/requirements.txt
 
 ## Usage
 
-Once installed copy the existing `data/layout.yaml.example` file to `data/layout.yaml`. This file is read on startup to configure the messages sent to the display. There are two main sections to the file __variables__ and __messages__. The variables section defines strings that will be updated dynamically on the sign. The messages area defines the format of how the text will be displayed on the sign, this includes things like the display mode and color. Additionally you'll need the url to your Home Assistant instance, and a [long lived access token](https://www.home-assistant.io/docs/authentication/).
+Once installed copy the existing `data/layout.yaml.example` file to `data/layout.yaml`. This file is read on startup to configure the messages sent to the display. There are two main sections to the file __variables__ and __messages__. The variables section defines strings that will be updated dynamically on the sign. The messages area defines the format of how the text will be displayed on the sign, this includes things like the display mode and color. Additionally you'll need the url to your Home Assistant instance, and a [long lived access token](https://www.home-assistant.io/docs/authentication/). For a more complete breakdown of the options available in the layout file, see the Variables and Messages sections below.
 
 You can run the program with the following command:
 
 ```
-python3 main.py -l data/layout.yaml -u https://ha.url -t access_token
+python3 main.py
 ```
 
-For a more complete breakdown of the options available in the layout file, see the Variables and Messages sections below.
+You can also specify a config file location instead of passing in all arguments on the command line. This is done with the `-c` flag:
+
+```
+python3 main.py -c /path/to/config.conf
+```
+
+A full list of arguments can be found by using the `-h` flag.
+
+```
+python3 main.py -h
+
+usage: main.py [-h] [-c CONFIG] [-l LAYOUT] [-d DEVICE] [-u URL] [-t TOKEN]
+               [-D]
+
+Home Assistant Betabrite Sign
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG, --config CONFIG
+                        Path to custom config file
+  -l LAYOUT, --layout LAYOUT
+                        Path to yaml file containing sign text layout, default
+                        is data/layout.yaml
+  -d DEVICE, --device DEVICE
+                        Path to device where Alphasign is connected, default
+                        is /dev/ttyUSB0, can also use 'cli' to output to
+                        screen only
+  -u URL, --url URL     Home Assistant full base url
+  -t TOKEN, --token TOKEN
+                        Home Assistant Access Token
+  -D, --debug           Enables logging debug mode
+
+```
 
 ## Layout File
 
