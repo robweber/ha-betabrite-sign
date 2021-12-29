@@ -50,6 +50,7 @@ def loadData():
                     entities[e] = homeA.getState(e)
 
                 # update the string
+                logging.info(f"Updating {v.getName()}")
                 template = Template(v.getText())
                 renderedString = template.render(vars=entities).strip()
 
