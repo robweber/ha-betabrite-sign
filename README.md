@@ -3,7 +3,7 @@
 
 Integrate an LED sign that uses the [Alphasign protocol](https://www.adaptivedisplays.com/resources/documentation-and-manuals/support-documents/bid/264113/Alpha-Sign-Communications-Protocol-pn-97088061) with your [Home Assistant](https://www.home-assistant.io/) installation. This project seeks to provide a headless Python program that will communicate with the sign and allow for updates by either querying a Home Assistant instance or getting status updates via MQTT from Home Assistant.
 
-Messages are configured for the display using a simple `.yaml` configuration file. These can be customized by using [Jinja templating](https://palletsprojects.com/p/jinja/) to provide more advanced "on the fly" formatting. Furthermore, variables can be defined that pull information from Home Assistant. These will dynamically update the sign on either a polling timer or via MQTT topics.
+Messages are configured for the display using a simple `.yaml` configuration file. Variables can be defined that pull information from Home Assistant via the [templating engine](https://www.home-assistant.io/docs/configuration/templating/). These will dynamically update the sign on either a polling timer or via MQTT topics.
 
 ## Background
 
@@ -79,7 +79,7 @@ The `layout.yaml` file controls most aspects of displaying messages on the sign.
 
 ### Variables
 
-The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for dynamic variables can be evaluated by using Jina templates, of which there are a few examples below. For more information on templating, see the [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
+The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for dynamic variables can be evaluated by using Jina templates, of which there are a few examples below. For more information on templating, see the [Home Assistant](https://www.home-assistant.io/docs/configuration/templating/) and [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
 
 
 __Time__
@@ -121,20 +121,17 @@ variables:
 
 __Home Assistant__
 
-The Home Assistant type is a polling variable that updates on a given interval. Data will be updated each time the polling interval is hit and the resulting string sent to the sign, wherever it is used in a message. Jinja templating can be used within the `data` field to process Home Assistant entities. Examples of this are shown below.
+The Home Assistant type is a polling variable that updates on a given interval. Data will be updated each time the polling interval is hit and the resulting string sent to the sign, wherever it is used in a message. Home Assistant templates are used to format the results directly in Home Assistant. Examples of this are shown below.
 
-When using templating all entities are sent to the templating engine wrapped in a special `vars` variable. Entities are accessed by their name such as `vars['sensor.name']['state']`. For attributes you can use `vars['sensor.name']['attributes']['attribute_name']`. Using the [Developer Tools](https://www.home-assistant.io/docs/tools/dev-tools/) area of Home Assistant you can quickly see what information is available for a particular entity.
+The Home Assistant [Developer Tools](https://www.home-assistant.io/docs/tools/dev-tools/) area should be used to create the template string you need so it can be cut/pasted into the yaml configuration. This should get you the exact syntax you need to render your variable in Home Assistant and have the results displayed on the sign.
 
 ```
 variables:
   # a simple example that just shows the state of an entity
   show_state:
     type: home_assistant
-    # list of entities that this variable needs to load, use the HA entity name
-    entities:
-      - sensor.name
     # the text to be sent to the display
-    text: "This entity is: {{ vars['sensor.name']['state'] }}"  # show the state of this entity
+    template: "This entity is: {{ states('sensor.name' }}"  # show the state of this entity
     # this is the text shown when the program first loads, before the entity is polled
     startup: "No data yet"
     # how often, in seconds, to update this variable
@@ -143,16 +140,12 @@ variables:
   # a more complicated example, multiple entities and conditions
   show_presence:
     type: home_assistant
-    entities:
-      - person.person_a
-      - person.person_b
     # outputs "Everyone is home" or "Everyone is not home"
     text: >-
-      Everyone is
-      {% if vars['person.person_a']['state'] == 'home' and vars['person.person_b']['home'] %}
-        home
+      {% if states('person.person_a') == 'home' and states('person.person_b']) %}
+      Everyone is home
       {% else %}
-        not home
+      Everyone is gone
       {% endif %}
     startup: "Loading data"
     poll_time: 60
