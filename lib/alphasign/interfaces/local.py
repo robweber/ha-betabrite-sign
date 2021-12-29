@@ -124,7 +124,7 @@ class DebugInterface(base.BaseInterface):
   This does nothing except print the contents of written packets.
   """
   def __init__(self):
-    self.debug = True
+    self.debug = False
 
   def connect(self):
     """ """
