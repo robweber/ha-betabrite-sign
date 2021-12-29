@@ -12,7 +12,7 @@ from lib.constants import POLLING_CATEGORY
 # create global vars
 betabrite = None
 homeA = None
-labels = None
+manager = None
 
 def setupSign():
     runList = []
@@ -24,14 +24,14 @@ def setupSign():
     # wait for sign to clear memory
     time.sleep(2)
 
-    messages = labels.startup(betabrite)
+    messages = manager.startup(betabrite)
 
     logging.info('allocating and sending run sequence')
+
     betabrite.allocate(tuple(messages['allocate']))
-    #set the run sequence
     betabrite.set_run_sequence(tuple(messages['run']))
 
-    logging.info('writing objects list')
+    # write each object to the sign
     for obj in messages['allocate']:
         betabrite.write(obj)
 
@@ -39,7 +39,7 @@ def setupSign():
 
 def loadData():
     # get all polling type variables
-    pollingVars = labels.getVariables(POLLING_CATEGORY)
+    pollingVars = manager.getVariables(POLLING_CATEGORY)
 
     for v in pollingVars:
         entities = {}
@@ -64,7 +64,7 @@ def updateString(name, msg):
     msg = msg.replace('.','')
     msg = msg.replace('_',' ')
 
-    strObj = labels.updateString(name, msg)
+    strObj = manager.updateString(name, msg)
 
     betabrite.connect()
 
@@ -112,7 +112,7 @@ else:
     betabrite = alphasign.interface.local.Serial(device=args.device)
 
 logging.info("Loading layout: " + args.layout)
-labels = MessageManager(args.layout)
+manager = MessageManager(args.layout)
 
 # load the HA interface, if needed
 if(args.url and args.token):
