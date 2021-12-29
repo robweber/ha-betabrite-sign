@@ -21,6 +21,9 @@ class DateVariable(PollingVariable):
         if('seperator' in self.config):
             self.dateSep = self.config['separator']
 
+        # set the cron time to be at midnight each day
+        self.config['cron'] = '0 0 * * *'
+
     def getText(self):
         dateObj = datetime.datetime.today()
 
@@ -28,9 +31,6 @@ class DateVariable(PollingVariable):
 
     def getStartup(self):
         return self.getText()
-
-    def getPollTime(self):
-        return 300
 
 
 class TimeVariable(AlphaSignVariable):

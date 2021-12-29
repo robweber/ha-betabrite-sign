@@ -1,3 +1,5 @@
+from croniter import croniter
+from datetime import datetime, timedelta
 from termcolor import colored
 from . import constants
 
@@ -76,9 +78,26 @@ class PollingVariable(VariableType):
     def __init__(self, type, name, config):
         super().__init__(type, name, config)
 
-    def getPollTime(self):
-        """:returns: the poll time, in seconds"""
-        return 300 if 'poll_time' not in self.config else self.config['poll_time']
+        # default poll time is every 5 min
+        if 'cron' not in self.config:
+            self.config['cron'] = "*/5 * * * *"
+
+    def __findNext(self):
+        cron = croniter(self.config['cron'])
+
+        self.next_update = cron.get_next(datetime)
+
+    def shouldPoll(self, current_time):
+        result = False
+
+        # base the next update on the time 1 min ago
+        cron = croniter(self.config['cron'], current_time - timedelta(minutes=1))
+        nextUpdate = cron.get_next(datetime)
+
+        if(nextUpdate <= current_time):
+            result = True
+
+        return result
 
     def getCategory(self):
         return constants.POLLING_CATEGORY

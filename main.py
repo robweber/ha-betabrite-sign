@@ -4,6 +4,7 @@ import sys
 import time
 import lib.alphasign as alphasign
 from jinja2 import Template
+from datetime import datetime
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant
 from lib.constants import POLLING_CATEGORY
@@ -44,18 +45,24 @@ def poll():
     # get all polling type variables
     pollingVars = manager.getVariables(POLLING_CATEGORY)
 
+    now = datetime.now()
     for v in pollingVars:
-        entities = {}
-        if(v.getType() == 'home_assistant'):
-            if(homeA is not None):
-                # render the template in home assistant
-                logging.info(f"Updating {v.getName()}")
-                template = homeA.renderTemplate(v.getText()).strip()
+        # check if the variable should be updated
+        if(v.shouldPoll(now)):
+            # update based on the type
+            if(v.getType() == 'date'):
+                logging.debug(f"updated {v.getName()}:{v.getText()}")
+                updateString(v.getName(), v.getText())
+            elif(v.getType() == 'home_assistant'):
+                if(homeA is not None):
+                    # render the template in home assistant
+                    logging.info(f"Updating {v.getName()}")
+                    template = homeA.renderTemplate(v.getText()).strip()
 
-                logging.debug(f"updated {v.getName()}:{v.render(template)}")
-                updateString(v.getName(), template)
-            else:
-                logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
+                    logging.debug(f"updated {v.getName()}:{v.render(template)}")
+                    updateString(v.getName(), template)
+                else:
+                    logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
 
 
 def updateString(name, msg):
@@ -124,4 +131,9 @@ setupSign()
 
 time.sleep(10)
 
-poll()
+while 1:
+    poll()
+
+    # sleep for 1 min
+    logging.debug('sleeping')
+    time.sleep(60 - datetime.now().second)
