@@ -3,12 +3,16 @@ variables:
     type: time
   current_date:
     type: date
+  static_text:
+    type: static
+    text: "Betabrite Sign Test"
 messages:
   - data:
       - current_time
       - current_date
     mode: hold
     color: "green"
-  - text: "Betabrite Sign Test"
+  - data:
+      - static_text
     mode: "rotate"
     color: "rainbow1"
