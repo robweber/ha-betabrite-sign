@@ -43,14 +43,17 @@ def loadData():
     for v in pollingVars:
         entities = {}
         if(v.getType() == 'home_assistant'):
-            # load the status of any entities needed
-            for e in v.getEntities():
-                entities[e] = homeA.getState(e)
+            if(homeA is not None):
+                # load the status of any entities needed
+                for e in v.getEntities():
+                    entities[e] = homeA.getState(e)
 
-            print("found %d entities" % len(entities))
-            # update the string
-            template = Template(v.getText())
-            updateString(v.getName(), template.render(vars=entities).strip())
+                print("found %d entities" % len(entities))
+                # update the string
+                template = Template(v.getText())
+                updateString(v.getName(), template.render(vars=entities).strip())
+            else:
+                print("Home Assistant interface is not loaded, specify HA url and token to load")
 
 def updateString(name, msg):
     #replace some chars
@@ -74,10 +77,12 @@ parser.add_argument('-l', '--layout', default="data/layout.yaml",
                     help="Path to yaml file containing sign text layout, default is %(default)s")
 parser.add_argument('-d', '--device', default="/dev/ttyUSB0",
                     help="Path to device where Alphasign is connected, default is %(default)s, can also use 'cli' to output to screen only")
-parser.add_argument('-u', '--url', required=True,
+parser.add_argument('-u', '--url', required=False,
                     help="Home Assistant full base url")
-parser.add_argument('-t', '--token', required=True,
+parser.add_argument('-t', '--token', required=False,
                     help="Home Assistant Access Token")
+parser.add_argument('-D', '--debug', action='store_true',
+                    help='Enables logging debug mode')
 
 args = parser.parse_args()
 
@@ -91,7 +96,10 @@ else:
 
 print("Loading layout: " + args.layout)
 labels = MessageManager(args.layout)
-homeA = HomeAssistant(args.url, args.token)
+
+# load the HA interface, if needed
+if(args.url and args.token):
+    homeA = HomeAssistant(args.url, args.token)
 
 setupSign()
 
