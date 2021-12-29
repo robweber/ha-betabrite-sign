@@ -7,11 +7,10 @@ class HomeAssistantVariable(PollingVariable):
     HA entities as defined the yaml file
 
     Special configuration options are:
-      * entities: list of entities to poll for this variable
+      * template: the home assistant template to render
     """
     def __init__(self, name, config):
         super().__init__('home_assistant', name, config)
 
-    def getEntities(self):
-        """:returns: list of HA entities within scope of this variable"""
-        return self.config['entities']
+    def getText(self):
+        return self.config['template']

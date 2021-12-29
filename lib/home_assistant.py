@@ -18,19 +18,23 @@ class HomeAssistant:
         self.url = url
         self.token = token
 
-    def _makeRequest(self, endpoint):
+    def _makeRequest(self, endpoint, data=None):
         """makes the request to the given HA endpoint
 
-        :returns: dict containing the response from Home Assistant
+        :returns: string containing the response from Home Assistant
         """
         headers = {
             'Authorization': 'Bearer %s' % self.token,
             'content-type': 'application/json',
         }
 
-        response = requests.get('%s%s' % (self.url, endpoint), headers=headers)
+        # if no POST data given, do a GET request
+        if(data is None):
+            response = requests.get('%s%s' % (self.url, endpoint), headers=headers)
+        else:
+            response = requests.post('%s%s' % (self.url, endpoint), data=json.dumps(data), headers=headers)
 
-        return json.loads(response.text)
+        return response.text
 
     def getState(self, entity=''):
         """
@@ -38,4 +42,13 @@ class HomeAssistant:
 
         :returns: a dict containing the state of this entity
         """
-        return self._makeRequest('/api/states/%s' % entity)
+        return json.loads(self._makeRequest('/api/states/%s' % entity))
+
+    def renderTemplate(self, template):
+        """sends a template string to Home Assistant to have it rendered
+
+        :param template: the string as a valid HA template
+
+        :returns: the response from Home Assistant as a string
+        """
+        return self._makeRequest('/api/template', {'template': template})

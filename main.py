@@ -48,17 +48,12 @@ def poll():
         entities = {}
         if(v.getType() == 'home_assistant'):
             if(homeA is not None):
-                # load the status of any entities needed
-                for e in v.getEntities():
-                    entities[e] = homeA.getState(e)
-
-                # update the string
+                # render the template in home assistant
                 logging.info(f"Updating {v.getName()}")
-                template = Template(v.getText())
-                renderedString = template.render(vars=entities).strip()
+                template = homeA.renderTemplate(v.getText()).strip()
 
-                logging.debug(f"updated {v.getName()}:{v.render(renderedString)}")
-                updateString(v.getName(), renderedString)
+                logging.debug(f"updated {v.getName()}:{v.render(template)}")
+                updateString(v.getName(), template)
             else:
                 logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
 
