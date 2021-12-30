@@ -1,8 +1,10 @@
 variables:
   current_time:
     type: time
+    color: red
   current_date:
     type: date
+    color: yellow
   static_text:
     type: static
     text: "Betabrite Sign Test"
@@ -11,7 +13,6 @@ messages:
       - current_time
       - current_date
     mode: hold
-    color: "green"
   - data:
       - static_text
     mode: "rotate"
