@@ -4,7 +4,7 @@ import sys
 import time
 import lib.alphasign as alphasign
 from jinja2 import Template
-from datetime import datetime
+from datetime import datetime, timedelta
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant
 from lib.constants import POLLING_CATEGORY
@@ -39,7 +39,7 @@ def setupSign():
     betabrite.disconnect()
 
 
-def poll():
+def poll(offset=timedelta(minutes=1)):
     """Gets all polling type variables and checks if they need updating
     """
     # get all polling type variables
@@ -48,7 +48,7 @@ def poll():
     now = datetime.now()
     for v in pollingVars:
         # check if the variable should be updated
-        if(v.shouldPoll(now)):
+        if(v.shouldPoll(now, offset)):
             # update based on the type
             if(v.getType() == 'date'):
                 logging.debug(f"updated {v.getName()}:{v.getText()}")
@@ -118,7 +118,7 @@ if(args.device == 'cli'):
     logging.info('Outputting sign info to CLI')
     betabrite = alphasign.interfaces.local.DebugInterface()
 else:
-    betabrite = alphasign.interface.local.Serial(device=args.device)
+    betabrite = alphasign.interfaces.local.Serial(device=args.device)
 
 logging.info("Loading layout: " + args.layout)
 manager = MessageManager(args.layout)
@@ -129,11 +129,15 @@ if(args.url and args.token):
 
 setupSign()
 
+# sleep for a few seconds
 time.sleep(10)
 
-while 1:
-    poll()
+# go one day backward on first load (ie, force polling)
+poll(timedelta(days=1))
 
+while 1:
     # sleep for 1 min
     logging.debug('sleeping')
     time.sleep(60 - datetime.now().second)
+
+    poll()

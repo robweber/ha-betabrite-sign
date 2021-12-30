@@ -25,6 +25,10 @@ class VariableType:
         :returns: the text with any termcolor markup applied
         """
         color = 'green' if 'color' not in self.config else self.config['color']
+
+        # filter out colors that won't display in the terminal
+        color = 'green' if color in ['orange', 'rainbow1', 'rainbow2'] else color
+
         return colored(text, color)
 
     def getName(self):
@@ -45,7 +49,7 @@ class VariableType:
 
         if('color' in self.config):
             result = f"{constants.ALPHA_COLORS[self.config['color']]}"
-
+        print(result)
         return result
 
     def getText(self):
@@ -87,11 +91,11 @@ class PollingVariable(VariableType):
 
         self.next_update = cron.get_next(datetime)
 
-    def shouldPoll(self, current_time):
+    def shouldPoll(self, current_time, offset):
         result = False
 
         # base the next update on the time 1 min ago
-        cron = croniter(self.config['cron'], current_time - timedelta(minutes=1))
+        cron = croniter(self.config['cron'], current_time - offset)
         nextUpdate = cron.get_next(datetime)
 
         if(nextUpdate <= current_time):
