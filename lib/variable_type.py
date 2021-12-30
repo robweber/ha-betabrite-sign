@@ -75,8 +75,9 @@ class PollingVariable(VariableType):
     """
     Represents a VariableType class that updates its
     data through polling, variables of this type
-    need to specify a polling interval through the
-    "poll_time" parameter in the YAML config
+    need to specify a polling interval as a cron expression
+    using the "cron" parameter in the YAML config, if missing
+    it will default to every 5 minutes
     """
 
     def __init__(self, type, name, config):
@@ -92,9 +93,25 @@ class PollingVariable(VariableType):
         self.next_update = cron.get_next(datetime)
 
     def shouldPoll(self, current_time, offset):
+        """decides if this variable should be updated based on
+        the configured cron expression. This is done using the current
+        time and an offset to decide. Doing it this way ensures a valid "next update"
+        time can be calculated.
+
+        For example, if the next update time is calculated from the current time
+        (datetime.now()) the cron expression will always happen in the future. By
+        subtracting a slight offset (usually 1 min) we can determine if the current
+        time has passed, or is equal to, when this variable should next be polled. This
+        allows for arbitrary time comparisons as well as avoids storing the last updated time
+
+        :param current_time: a datetime object that represents the time to
+        compare against, usually the current time (datetime.now())
+        :param offset: timedelta representing the offset to subtract from current time
+        :returns: True/False if the variable should be updated
+        """
         result = False
 
-        # base the next update on the time 1 min ago
+        # base the next update on the offset as the start time
         cron = croniter(self.config['cron'], current_time - offset)
         nextUpdate = cron.get_next(datetime)
 

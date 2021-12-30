@@ -134,8 +134,8 @@ variables:
     template: "This entity is: {{ states('sensor.name' }}"  # show the state of this entity
     # this is the text shown when the program first loads, before the entity is polled
     startup: "No data yet"
-    # how often, in seconds, to update this variable
-    poll_time: 300
+    # how often, to update as a cron expression, if missing defaults to every 5 min
+    cron: "*/30 * * * *"
 
   # a more complicated example, multiple entities and conditions
   show_presence:
@@ -148,7 +148,6 @@ variables:
       Everyone is gone
       {% endif %}
     startup: "Loading data"
-    poll_time: 60
     color: yellow
 ```
 

@@ -41,6 +41,8 @@ def setupSign():
 
 def poll(offset=timedelta(minutes=1)):
     """Gets all polling type variables and checks if they need updating
+
+    :param offset: the offset to use when calculating the next update time, 1 min is the default otherwise the next time will never happen
     """
     # get all polling type variables
     pollingVars = manager.getVariables(POLLING_CATEGORY)
@@ -69,6 +71,9 @@ def poll(offset=timedelta(minutes=1)):
 
 def updateString(name, msg):
     """Update a string object on the sign
+
+    :param name: the name of the string to update, as defined in the yaml config
+    :param msg: the message to send to the sign
     """
     # replace some chars
     msg = msg.replace('.', '')
