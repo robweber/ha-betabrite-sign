@@ -88,6 +88,9 @@ class MessageManager:
 
         :returns: the allocation number identified by this string ID
         """
+        if(not name in self.stringObjs.keys()):
+            raise UndefinedVariableError(name)
+
         return self.stringObjs[name]
 
     def __getText(self, name):
@@ -186,4 +189,4 @@ class UndefinedVariableError(Exception):
     """
 
     def __init__(self, varName):
-        super().__init__(f"The variable '{varName}' does not exist")
+        super().__init__(f"The variable '{varName}' does not exist or is not allocated")
