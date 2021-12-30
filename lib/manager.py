@@ -128,12 +128,12 @@ class MessageManager:
                     betabrite.write(stringObj)
                     cliText = f"{cliText} {aVar.render()}"
                 else:
-                    stringObj = alphasign.String(data="%s%s" % (aVar.getDisplayParams(), aVar.getStartup()),
+                    stringObj = alphasign.String(data=aVar.getStartup(),
                                                  label=self.__allocateString(aVar.getName()), size=125)
                     allocateStrings.append(stringObj)
                     cliText = f"{cliText} {aVar.render(aVar.getStartup())}"
 
-                stringText = f"{stringText} {stringObj.call()}"
+                stringText = f"{stringText} {aVar.getDisplayParams()}{stringObj.call()}"
 
             # create text object, setting the string text
             logging.debug(f"{cliText} - MODE: {aMessage['mode']}")

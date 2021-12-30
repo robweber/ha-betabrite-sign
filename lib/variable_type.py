@@ -49,7 +49,7 @@ class VariableType:
 
         if('color' in self.config):
             result = f"{constants.ALPHA_COLORS[self.config['color']]}"
-        print(result)
+
         return result
 
     def getText(self):
