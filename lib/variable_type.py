@@ -1,5 +1,5 @@
 from croniter import croniter
-from datetime import datetime, timedelta
+from datetime import datetime
 from termcolor import colored
 from . import constants
 
