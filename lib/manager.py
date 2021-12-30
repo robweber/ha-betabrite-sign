@@ -11,7 +11,6 @@ class MessageManager:
     """Manages the creation of messages and variables from
     the yaml config file to create alphasign objects
     """
-    MESSAGE_STRING = "MESSAGESTRING"
     MESSAGE_TEXT = "MESSAGE"
 
     config = None  # yaml file
@@ -107,8 +106,8 @@ class MessageManager:
         :returns: a dict containing objects to allocate and write to the sign
         """
         runList = []
-        allocateStrings = []
-        allocateText = []
+        allocateStrings = {}  # name: stringObj value
+        allocateText = []  # textObjs
 
         # load messages from "messages" key in yaml file
         for i in range(0, len(self.config['messages'])):
@@ -126,16 +125,24 @@ class MessageManager:
                 # load each variable and extract it's startup text
                 if(v in self.varObjs.keys()):
                     aVar = self.varObjs[v]
-                    logging.info("Loading variable %s:%s for message" % (aVar.getName(), aVar.getType()))
-                    if(aVar.getType() == 'time'):
-                        stringObj = aVar.getStartup()
-                        betabrite.write(stringObj)
-                        cliText = f"{cliText} {aVar.render()}"
+
+                    stringObj = None
+                    if(v in allocateStrings.keys()):
+                        # use pre-allocated string object if already loaded once
+                        logging.info(f"{aVar.getName()} alreadying loaded, adding to message")
+                        stringObj = allocateStrings[v]
+                        cliText = f"{cliText} {aVar.render(v)}"
                     else:
-                        stringObj = alphasign.String(data=aVar.getStartup(),
-                                                     label=self.__allocateString(aVar.getName()), size=125)
-                        allocateStrings.append(stringObj)
-                        cliText = f"{cliText} {aVar.render(aVar.getStartup())}"
+                        logging.info(f"Loading variable {aVar.getName()}:{aVar.getType()} for message")
+                        if(aVar.getType() == 'time'):
+                            stringObj = aVar.getStartup()
+                            betabrite.write(stringObj)
+                            cliText = f"{cliText} {aVar.render()}"
+                        else:
+                            stringObj = alphasign.String(data=aVar.getStartup(),
+                                                         label=self.__allocateString(aVar.getName()), size=125)
+                            allocateStrings[v] = stringObj
+                            cliText = f"{cliText} {aVar.render(aVar.getStartup())}"
 
                     stringText = f"{stringText} {aVar.getDisplayParams()}{stringObj.call()}"
                 else:
@@ -153,7 +160,7 @@ class MessageManager:
             runList.append(alphaObj)
 
         # return objects that should be loaded into sign memory
-        return {"run": runList, "allocate": allocateText + allocateStrings}
+        return {"run": runList, "allocate": allocateText + list(allocateStrings.values())}
 
     def updateString(self, name, message):
         """Updates a string object on the sign with a new message
