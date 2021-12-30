@@ -121,7 +121,7 @@ variables:
 
 __Home Assistant__
 
-The Home Assistant type is a polling variable that updates on a given interval. Data will be updated each time the polling interval is hit and the resulting string sent to the sign, wherever it is used in a message. Home Assistant templates are used to format the results directly in Home Assistant. Examples of this are shown below.
+The Home Assistant type is a polling variable that updates on a given interval. Data will be updated each time the polling interval is hit and the resulting string sent to the sign, wherever it is used in a message. Polling intervals are specified using [cron syntax](https://en.wikipedia.org/wiki/Cron), with a default of every 5 minutes. Home Assistant templates are used to format the results directly in Home Assistant. Examples of this are shown below.
 
 The Home Assistant [Developer Tools](https://www.home-assistant.io/docs/tools/dev-tools/) area should be used to create the template string you need so it can be cut/pasted into the yaml configuration. This should get you the exact syntax you need to render your variable in Home Assistant and have the results displayed on the sign.
 
