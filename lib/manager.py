@@ -121,19 +121,23 @@ class MessageManager:
             cliText = ""
             for v in messageVars:
                 # load each variable and extract it's startup text
-                aVar = self.varObjs[v]
-                logging.info("Loading variable %s:%s for message" % (aVar.getName(), aVar.getType()))
-                if(aVar.getType() == 'time'):
-                    stringObj = aVar.getStartup()
-                    betabrite.write(stringObj)
-                    cliText = f"{cliText} {aVar.render()}"
-                else:
-                    stringObj = alphasign.String(data=aVar.getStartup(),
-                                                 label=self.__allocateString(aVar.getName()), size=125)
-                    allocateStrings.append(stringObj)
-                    cliText = f"{cliText} {aVar.render(aVar.getStartup())}"
+                if(v in self.varObjs.keys()):
+                    aVar = self.varObjs[v]
+                    logging.info("Loading variable %s:%s for message" % (aVar.getName(), aVar.getType()))
+                    if(aVar.getType() == 'time'):
+                        stringObj = aVar.getStartup()
+                        betabrite.write(stringObj)
+                        cliText = f"{cliText} {aVar.render()}"
+                    else:
+                        stringObj = alphasign.String(data=aVar.getStartup(),
+                                                     label=self.__allocateString(aVar.getName()), size=125)
+                        allocateStrings.append(stringObj)
+                        cliText = f"{cliText} {aVar.render(aVar.getStartup())}"
 
-                stringText = f"{stringText} {aVar.getDisplayParams()}{stringObj.call()}"
+                    stringText = f"{stringText} {aVar.getDisplayParams()}{stringObj.call()}"
+                else:
+                    # kill the process here, can't recover from this
+                    raise UndefinedVariableError(v)
 
             # create text object, setting the string text
             logging.debug(f"{cliText} - MODE: {aMessage['mode']}")
@@ -174,3 +178,12 @@ class MessageManager:
         """
         # get variables that are part of a particular category
         return list(filter(lambda v: v.getCategory() == category, self.varObjs.values()))
+
+
+class UndefinedVariableError(Exception):
+    """This error is thrown when the key passed to lookup a variable
+    cannot be found. It most likely does not exist in the config file
+    """
+
+    def __init__(self, varName):
+        super().__init__(f"The variable '{varName}' does not exist")
