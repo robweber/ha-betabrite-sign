@@ -73,6 +73,20 @@ optional arguments:
 
 ```
 
+You can also install the program as a service with the following commands. The service assumes the configuration file is located in `/home/pi/ha-betabrite-sign/config.conf`, change this if you need to. 
+
+```
+sudo cp install/ha-sign.service /etc/systemd/system/ha-sign.service
+sudo chown root:root /etc/systemd/system/ha-sign.service
+sudo systemctl enable ha-sign
+
+# start the service
+sudo systemctl start ha-sign
+
+# stop the Service
+sudo systemctl stop ha-sign
+```
+
 ## Layout File
 
 The `layout.yaml` file controls most aspects of displaying messages on the sign. This is where variables are defined and various modes and colors for display are setup.

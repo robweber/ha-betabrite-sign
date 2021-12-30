@@ -1,5 +1,6 @@
 import configargparse
 import logging
+import signal
 import sys
 import time
 import lib.alphasign as alphasign
@@ -14,6 +15,10 @@ betabrite = None
 homeA = None
 manager = None
 
+# function to handle when the is killed and exit gracefully
+def signal_handler(signum, frame):
+    logging.debug('Exiting Program')
+    sys.exit(0)
 
 def setupSign():
     """Setup the sign by allocated memory for variables and messages
@@ -104,6 +109,10 @@ parser.add_argument('-D', '--debug', action='store_true',
                     help='Enables logging debug mode')
 
 args = parser.parse_args()
+
+# add hooks for interrupt signal
+signal.signal(signal.SIGTERM, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
 
 # setup the logger, log to sign.log
 logLevel = 'INFO' if not args.debug else 'DEBUG'
