@@ -1,6 +1,6 @@
 import requests
 import json
-
+from json.decoder import JSONDecodeError
 
 class HomeAssistant:
     """The HomeAssistant class is a simple class for the purposes
@@ -51,4 +51,21 @@ class HomeAssistant:
 
         :returns: the response from Home Assistant as a string
         """
-        return self._makeRequest('/api/template', {'template': template})
+        result = self._makeRequest('/api/template', {'template': template})
+
+        try:
+            # if this works we likely have an error
+            errorJson = json.loads(result)
+
+            raise TemplateSyntaxError(errorJson['message'])
+        except JSONDecodeError:
+            # do nothing here, this should fail if working
+            pass
+
+        return result
+
+
+class TemplateSyntaxError(Exception):
+
+    def __init__(self, message):
+        super().__init__(f"Template cannot be rendered: {message}")

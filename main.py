@@ -7,7 +7,7 @@ import lib.alphasign as alphasign
 from jinja2 import Template
 from datetime import datetime, timedelta
 from lib.manager import MessageManager
-from lib.home_assistant import HomeAssistant
+from lib.home_assistant import HomeAssistant, TemplateSyntaxError
 from lib.constants import POLLING_CATEGORY
 
 # create global vars
@@ -64,8 +64,11 @@ def poll(offset=timedelta(minutes=1)):
                 newString = v.getText()
             elif(v.getType() == 'home_assistant'):
                 if(homeA is not None):
-                    # render the template in home assistant
-                    newString = homeA.renderTemplate(v.getText()).strip()
+                    try:
+                        # render the template in home assistant
+                        newString = homeA.renderTemplate(v.getText()).strip()
+                    except TemplateSyntaxError as te:
+                        logging.error(te)
                 else:
                     logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
 
