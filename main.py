@@ -4,21 +4,34 @@ import signal
 import sys
 import time
 import lib.alphasign as alphasign
+import paho.mqtt.client as mqtt
 from jinja2 import Template
 from datetime import datetime, timedelta
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant, TemplateSyntaxError
-from lib.constants import POLLING_CATEGORY
+from lib.constants import POLLING_CATEGORY, MQTT_STATUS, MQTT_COMMAND
 
 # create global vars
 betabrite = None
 homeA = None
 manager = None
+mqttClient = None
 
 # function to handle when the is killed and exit gracefully
 def signal_handler(signum, frame):
     logging.debug('Exiting Program')
+    mqttClient.loop_stop()
+    mqttClient.disconnect()
     sys.exit(0)
+
+def mqtt_connect(client, userdata, flags, rc):
+    logging.info("Connected to MQTT Server")
+
+def mqtt_on_message(client, userdata, message):
+    logging.debug(message.topic + " " + str(message.payload))
+
+    if(message.topic == MQTT_COMMAND):
+        mqttClient.publish(MQTT_STATUS, message.payload, retain=True)
 
 def setupSign():
     """Setup the sign by allocated memory for variables and messages
@@ -108,6 +121,12 @@ parser.add_argument('-u', '--url', required=False,
                     help="Home Assistant full base url")
 parser.add_argument('-t', '--token', required=False,
                     help="Home Assistant Access Token")
+parser.add_argument('-m', '--mqtt', required=False,
+                    help="MQTT Server IP")
+parser.add_argument('-U', '--mqtt_username', required=False,
+                    help="MQTT Server username")
+parser.add_argument('-P', '--mqtt_password', required=False,
+                    help="MQTT Server password")
 parser.add_argument('-D', '--debug', action='store_true',
                     help='Enables logging debug mode')
 
@@ -150,6 +169,20 @@ setupSign()
 
 # sleep for a few seconds
 time.sleep(10)
+
+# setup the MQTT connection
+mqttClient = mqtt.Client()
+
+mqttClient.username_pw_set(args.mqtt_username, args.mqtt_password)
+mqttClient.on_connect = mqtt_connect
+mqttClient.on_message = mqtt_on_message
+
+mqttClient.connect(args.mqtt)
+
+mqttClient.subscribe(MQTT_STATUS)
+mqttClient.subscribe(MQTT_COMMAND)
+
+mqttClient.loop_start()
 
 # go one day backward on first load (ie, force polling)
 poll(timedelta(days=1))

@@ -4,6 +4,10 @@ from . import alphasign
 ALPHASIGN_CATEGORY = 'alphasign'
 POLLING_CATEGORY = 'polling'
 
+# MQTT topics for state and commands
+MQTT_STATUS = "betabrite/sign/status"
+MQTT_COMMAND = "betabrite/sign/switch"
+
 # dicts to transfrom yaml to alphasign variables
 ALPHA_MODES = {"rotate": alphasign.modes.ROTATE, "hold": alphasign.modes.HOLD, "roll_up": alphasign.modes.ROLL_UP,
                "roll_down": alphasign.modes.ROLL_DOWN, "roll_left": alphasign.modes.ROLL_LEFT, "roll_right": alphasign.modes.ROLL_RIGHT,

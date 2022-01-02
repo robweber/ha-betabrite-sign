@@ -15,7 +15,7 @@ What I wanted was a system that I could define with a `.yaml` file and have it d
 
 ## Install
 
-The install procedure assumes you have a working version of the Rasperry Pi OS already installed on an Rpi or Rpi Zero. Obviously you also need an LED sign that utilizes the Alphasign Protocol and a way for the RPI to talk to it. If you notice that the time is incorrect on the sign use `raspi-config` to set the correct localization information.
+The install procedure assumes you have a working version of the Raspberry Pi OS already installed on an Rpi or Rpi Zero. Obviously you also need an LED sign that utilizes the Alphasign Protocol and a way for the RPI to talk to it. If you notice that the time is incorrect on the sign use `raspi-config` to set the correct localization information.
 
 ```
 # install os deps
@@ -28,6 +28,15 @@ git clone https://github.com/robweber/ha-betabrite-sign.git
 sudo pip3 install -r install/requirements.txt
 
 ```
+
+### Home Assistant Setup
+
+Pushing from HA with MQTT
+
+Topics:
+
+* betabrite/sign/status
+* betabrite/sign/switch
 
 ## Usage
 

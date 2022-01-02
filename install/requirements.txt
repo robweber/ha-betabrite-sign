@@ -1,6 +1,7 @@
 configargparse
 croniter
 Jinja2
+paho-mqtt
 pyserial
 pyusb
 pyyaml
