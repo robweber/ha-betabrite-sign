@@ -8,7 +8,10 @@ POLLING_CATEGORY = 'polling'
 ALPHA_MODES = {"rotate": alphasign.modes.ROTATE, "hold": alphasign.modes.HOLD, "roll_up": alphasign.modes.ROLL_UP,
                "roll_down": alphasign.modes.ROLL_DOWN, "roll_left": alphasign.modes.ROLL_LEFT, "roll_right": alphasign.modes.ROLL_RIGHT,
                "wipe_up": alphasign.modes.WIPE_UP, "wipe_down": alphasign.modes.WIPE_DOWN, "wipe_left": alphasign.modes.WIPE_LEFT,
-               "wipe_right": alphasign.modes.WIPE_RIGHT, "scroll": alphasign.modes.SCROLL}
+               "wipe_right": alphasign.modes.WIPE_RIGHT, "scroll": alphasign.modes.SCROLL, "twinkle": alphasign.modes.TWINKLE,
+               "sparkle": alphasign.modes.SPARKLE, "snow": alphasign.modes.SNOW, "interlock": alphasign.modes.INTERLOCK,
+               "switch": alphasign.modes.SWITCH, "spray": alphasign.modes.SPRAY, "starburst": alphasign.modes.STARBURST,
+               "welcome": alphasign.modes.WELCOME, "slot_machine": alphasign.modes.SLOT_MACHINE}
 ALPHA_COLORS = {"green": alphasign.colors.GREEN, "orange": alphasign.colors.ORANGE, "rainbow1": alphasign.colors.RAINBOW_1,
                 "rainbow2": alphasign.colors.RAINBOW_2, "red": alphasign.colors.RED, "yellow": alphasign.colors.YELLOW,
                 "amber": alphasign.colors.AMBER, "brown": alphasign.colors.BROWN,  "color_mix": alphasign.colors.COLOR_MIX}

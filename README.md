@@ -180,6 +180,15 @@ The mode is how the sign will be written across the screen. Valid modes are:
 * roll_up, roll_down, roll_left, roll_right - rolls text in the direction indicated
 * wipe_up, wipe_down, wipe_left, wipe_right - wipe text in a block in the direction indicated
 * scroll - similar to roll_up
+* twinkle - message has a twinkling effect
+* sparkle - message is drawn with a sparkle effect
+* snow
+* interlock
+* spray
+* switch
+* starburst
+* welcome - puts the word welcome ahead of the text
+* slot_machine - plays a slot machine animation
 
 __Color__ (optional)
 
