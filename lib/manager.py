@@ -77,6 +77,9 @@ class MessageManager:
         if('color' in m):
             result = f"{constants.ALPHA_COLORS[m['color']]}"
 
+        if('font' in m):
+            result = f"{result}{constants.ALPHA_FONTS[m['font']]}"
+
         if('speed' in m):
             result = f"{result}{constants.ALPHA_SPEEDS[m['speed']]}"
 

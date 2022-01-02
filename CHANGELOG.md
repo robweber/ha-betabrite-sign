@@ -13,3 +13,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - additional CLI argument can load actual sign communications or output to CLI for testing
 - ability to render Home Assistant templates directly in HA, throws Template error if incorrect
 - keep track of already allocated messages instead of re-sending them
+- added fonts for variables and messages 

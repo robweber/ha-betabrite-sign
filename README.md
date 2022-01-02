@@ -204,6 +204,25 @@ The color of the message. This can also be specified per variable to have mixed 
 * brown
 * color_mix - this is similar to rainbow but each letter is 1 color only
 
+__Font__ (optional)
+
+Different character sets (fonts) can be specified from the default. These allow some customization over the size and shape of the displayed text.
+
+* five_high_std
+* five_stroke
+* seven_high_std
+* seven_stroke
+* seven_high_fancy
+* ten_high_std
+* seven_shadow
+* full_height_fancy
+* full_height_std
+* seven_shadow_fancy
+* five_wide
+* seven_wide
+* seven_fancy_wide
+* wide_stroke_five
+
 __Speed__ (optional)
 
 The speed that the message will go across the screen. This is a number 1-5 with 1 being slow and 5 being fast.
