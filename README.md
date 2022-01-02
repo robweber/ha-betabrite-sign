@@ -73,7 +73,7 @@ optional arguments:
 
 ```
 
-You can also install the program as a service with the following commands. The service assumes the configuration file is located in `/home/pi/ha-betabrite-sign/config.conf`, change this if you need to. 
+You can also install the program as a service with the following commands. The service assumes the configuration file is located in `/home/pi/ha-betabrite-sign/config.conf`, change this if you need to.
 
 ```
 sudo cp install/ha-sign.service /etc/systemd/system/ha-sign.service
@@ -177,6 +177,9 @@ The mode is how the sign will be written across the screen. Valid modes are:
 
 * hold - display all at once and hold
 * rotate - scroll right to left
+* roll_up, roll_down, roll_left, roll_right - rolls text in the direction indicated
+* wipe_up, wipe_down, wipe_left, wipe_right - wipe text in a block in the direction indicated
+* scroll - similar to roll_up
 
 __Color__ (optional)
 
@@ -188,6 +191,9 @@ The color of the message. This can also be specified per variable to have mixed 
 * yellow
 * rainbow1
 * rainbow2
+* amber
+* brown
+* color_mix - this is similar to rainbow but each letter is 1 color only
 
 __Speed__ (optional)
 
