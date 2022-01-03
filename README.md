@@ -1,7 +1,7 @@
 # Home Assistant Betabrite Sign
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
-Integrate an LED sign that uses the [Alphasign protocol](https://www.adaptivedisplays.com/resources/documentation-and-manuals/support-documents/bid/264113/Alpha-Sign-Communications-Protocol-pn-97088061) with your [Home Assistant](https://www.home-assistant.io/) installation. This project seeks to provide a headless Python program that will communicate with the sign and allow for updates by either querying a Home Assistant instance or getting status updates via MQTT from Home Assistant.
+Integrate an LED sign that uses the [Alphasign protocol](https://www.adaptivedisplays.com/resources/documentation-and-manuals/support-documents/bid/264113/Alpha-Sign-Communications-Protocol-pn-97088061) with your [Home Assistant](https://www.home-assistant.io/) installation. This project seeks to provide a headless Python program that will communicate with the sign and allow for updates by either querying a Home Assistant instance or getting status updates via MQTT. It can also integrate with Home Assistant as a light entity to expose information directly to your smart home.
 
 Messages are configured for the display using a simple `.yaml` configuration file. Variables can be defined that pull information from Home Assistant via the [templating engine](https://www.home-assistant.io/docs/configuration/templating/). These will dynamically update the sign on either a polling timer or via MQTT topics.
 
@@ -15,7 +15,7 @@ What I wanted was a system that I could define with a `.yaml` file and have it d
 
 ## Install
 
-The install procedure assumes you have a working version of the Raspberry Pi OS already installed on an Rpi or Rpi Zero. Obviously you also need an LED sign that utilizes the Alphasign Protocol and a way for the RPI to talk to it. If you notice that the time is incorrect on the sign use `raspi-config` to set the correct localization information.
+The install procedure assumes you have a working version of the Raspberry Pi OS already installed on an Rpi or Rpi Zero. Obviously you also need an LED sign that utilizes the Alphasign Protocol and a way for the Rpi to talk to it. If you notice that the time is incorrect on the sign use `raspi-config` to set the correct localization information.
 
 ```
 # install os deps
@@ -31,18 +31,19 @@ sudo pip3 install -r install/requirements.txt
 
 ### Home Assistant Setup
 
-This code can run standalone, or be further integrated with Home Assistant to show up as a light device through the use of a [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/). This allows Home Assistant to get some run-time data and control the sign as though it was a light. For this to work MQTT must be setup via the arguments below. A sample YAML file for creating the Home Assistant device is located in the `install` directory.
+This code can run standalone, or be further integrated with Home Assistant to show up as a light entity through the use of a [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/). This allows Home Assistant to get some run-time data and control the sign as though it was a light. For this to work MQTT must be setup via the arguments below. A sample YAML file for creating the Home Assistant device is located in the `install` directory.
 
 When MQTT is configured the program will watch for commands and publish to the following topics.
 
 * betabrite/sign/status
+* betabrite/sign/attributes
 * betabrite/sign/switch
 
-Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then removed to return the display to normal messaging (on).
+Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then remove it to return the display to normal messaging (on).
 
 ## Usage
 
-Once installed copy the existing `data/layout.yaml.example` file to `data/layout.yaml`. This file is read on startup to configure the messages sent to the display. There are two main sections to the file __variables__ and __messages__. The variables section defines strings that will be updated dynamically on the sign. The messages area defines the format of how the text will be displayed on the sign, this includes things like the display mode and color. Additionally you'll need the url to your Home Assistant instance, and a [long lived access token](https://www.home-assistant.io/docs/authentication/). For a more complete breakdown of the options available in the layout file, see the Variables and Messages sections below.
+Once installed copy the existing `data/layout.yaml.example` file to `data/layout.yaml`. This file is read on startup to configure the messages sent to the display. There are two main sections to the file __variables__ and __messages__. The variables section defines strings that will be updated dynamically on the sign. The messages area defines the format of how the text will be displayed on the sign, this includes things like the display mode and color. For dynamic updates to work you'll need to poll Home Assistant or utilize MQTT. For a more complete breakdown of the options available in the layout file, see the Variables and Messages sections below.
 
 You can run the program with the following command:
 
@@ -159,7 +160,7 @@ variables:
 
 __Home Assistant__
 
-The Home Assistant type is a polling variable that updates on a given interval. Data will be updated each time the polling interval is hit and the resulting string sent to the sign, wherever it is used in a message. Polling intervals are specified using [cron syntax](https://en.wikipedia.org/wiki/Cron), with a default of every 5 minutes. Home Assistant templates are used to format the results directly in Home Assistant. Examples of this are shown below.
+The Home Assistant type is a polling variable that updates on a given interval. Data will be updated each time the polling interval is hit and the resulting string sent to the sign, wherever it is used in a message. Polling intervals are specified using [cron syntax](https://en.wikipedia.org/wiki/Cron), with a default of every 5 minutes. Home Assistant templates are used to format the results directly in Home Assistant. Examples of this are shown below. Additionally you'll need to specify the url to your Home Assistant instance, and a [long lived access token](https://www.home-assistant.io/docs/authentication/).
 
 The Home Assistant [Developer Tools](https://www.home-assistant.io/docs/tools/dev-tools/) area should be used to create the template string you need so it can be cut/pasted into the yaml configuration. This should get you the exact syntax you need to render your variable in Home Assistant and have the results displayed on the sign.
 
@@ -278,6 +279,7 @@ messages:
       - current_date
     mode: hold
     speed: 2
+    font: seven_high_std
 ```
 
 ## Contributing

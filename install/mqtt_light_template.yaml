@@ -3,6 +3,7 @@
     name: "Betabrite Sign"
     state_topic: "betabrite/sign/status"
     command_topic: "betabrite/sign/switch"
+    json_attributes_topic: "betabrite/sign/attributes"
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"

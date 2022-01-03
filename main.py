@@ -1,4 +1,5 @@
 import configargparse
+import json
 import logging
 import signal
 import sys
@@ -11,7 +12,7 @@ from datetime import datetime, timedelta
 from termcolor import colored
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant, TemplateSyntaxError
-from lib.constants import POLLING_CATEGORY, MQTT_STATUS, MQTT_COMMAND, SIGN_OFF
+from lib.constants import POLLING_CATEGORY, MQTT_STATUS, MQTT_ATTRIBUTES, MQTT_COMMAND, SIGN_OFF
 
 # create global vars
 betabrite = None
@@ -106,6 +107,9 @@ def poll(offset=timedelta(minutes=1)):
                 logging.debug(f"updated {v.getName()}:{colored(newString, 'green')}")
                 updateString(v.getName(), newString)
 
+    if(mqttClient is not None):
+        # publish to the attributes topic
+        mqttClient.publish(MQTT_ATTRIBUTES, json.dumps({"last_poll": str(now.isoformat(timespec='seconds'))}), retain=True)
 
 def changeState(newState):
     betabrite.connect()

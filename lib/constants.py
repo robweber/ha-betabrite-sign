@@ -6,6 +6,7 @@ POLLING_CATEGORY = 'polling'
 
 # MQTT topics for state and commands
 MQTT_STATUS = "betabrite/sign/status"
+MQTT_ATTRIBUTES = "betabrite/sign/attributes"
 MQTT_COMMAND = "betabrite/sign/switch"
 
 # variable for when the sign is in off mode
