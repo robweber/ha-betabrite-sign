@@ -7,12 +7,20 @@ class MQTTVariable(VariableType):
 
     Special configuration options are:
       * topic: the MQTT topic to monitor for updates
+      * parse_json: True/False value on if the payload contains JSON
     """
+
     def __init__(self, name, config):
         super().__init__('mqtt', name, config)
 
+        if('parse_json' not in self.config):
+            self.config['parse_json'] = False
+
     def getTopic(self):
         return self.config['topic']
+
+    def parseJson(self):
+        return self.config['parse_json']
 
     def getText(self):
         return self.config['text']

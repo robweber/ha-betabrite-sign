@@ -54,9 +54,14 @@ def mqtt_on_message(client, userdata, message):
         aVar = manager.getVariables(MQTT_CATEGORY, lambda v: v.getTopic() == message.topic)
 
         if(aVar is not None and len(aVar) > 0):
+            payload = str(message.payload.decode('utf-8'))
+
+            if(aVar[0].parseJson()):
+                payload = json.loads(payload)
+
             # render the template
             temp = Template(aVar[0].getText())
-            newString = temp.render(value=str(message.payload.decode('utf-8')))
+            newString = temp.render(value=payload)
 
             # update the data on the sign
             logging.debug(f"updated {aVar[0].getName()}:{colored(newString, 'green')}")

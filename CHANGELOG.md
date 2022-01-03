@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## Beta
 
+### Added
+
+- added ability to parse MQTT payload values as JSON via `parse_json` directive
+
 ### Changed
 
 - Home Assistant variable moved from global to within function where needed
@@ -13,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 
 - fixed issue with multiple threads accessing serial port via `connect()`
+- `getVariables` filter function didn't pass argument, always returned True. Fixed now.
 
 ## Alpha
 
