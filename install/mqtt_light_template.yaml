@@ -1,0 +1,9 @@
+# this configuration assumes HA is connected to an MQTT instance already via the MQTT Integration
+- platform: mqtt
+    name: "Betabrite Sign"
+    state_topic: "betabrite/sign/status"
+    command_topic: "betabrite/sign/switch"
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
