@@ -54,13 +54,14 @@ def mqtt_on_message(client, userdata, message):
         aVar = manager.getVariables(MQTT_CATEGORY, lambda v: v.getTopic() == message.topic)
 
         if(aVar is not None and len(aVar) > 0):
-            #render the template
+            # render the template
             temp = Template(aVar[0].getText())
             newString = temp.render(value=str(message.payload.decode('utf-8')))
 
             # update the data on the sign
             logging.debug(f"updated {aVar[0].getName()}:{colored(newString, 'green')}")
             updateString(aVar[0].getName(), newString)
+
 
 def setupSign():
     """Setup the sign by allocating memory for variables and messages
@@ -122,6 +123,7 @@ def poll(offset=timedelta(minutes=1)):
         # publish to the attributes topic
         mqttClient.publish(MQTT_ATTRIBUTES, json.dumps({"last_poll": str(now.isoformat(timespec='seconds'))}), retain=True)
 
+
 def changeState(newState):
     betabrite.connect()
 
@@ -168,18 +170,18 @@ parser.add_argument('-D', '--debug', action='store_true',
 # ha polling args
 haGroup = parser.add_argument_group("Home Assistant", "Settings required for Home Assistant polling")
 haGroup.add_argument('--ha_url', required=False,
-                    help="Home Assistant full base url")
+                     help="Home Assistant full base url")
 haGroup.add_argument('--ha_token', required=False,
-                    help="Home Assistant Access Token")
+                     help="Home Assistant Access Token")
 
 # MQTT args
 mqttGroup = parser.add_argument_group("MQTT", "Settings required for MQTT integrations")
 mqttGroup.add_argument('-m', '--mqtt', required=False,
-                    help="MQTT Server IP")
+                       help="MQTT Server IP")
 mqttGroup.add_argument('--mqtt_username', required=False,
-                    help="MQTT Server username")
+                       help="MQTT Server username")
 mqttGroup.add_argument('--mqtt_password', default=None, required=False,
-                    help="MQTT Server password")
+                       help="MQTT Server password")
 
 args = parser.parse_args()
 

@@ -204,7 +204,7 @@ class MessageManager:
         """
         return self.varObjs[name]
 
-    def getVariables(self, category, func = True):
+    def getVariables(self, category, func=True):
         """find all variables of a given category
         :param category: the category (polling, etc) to filter
         :param func: an optional function to further filter the list by,
