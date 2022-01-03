@@ -9,7 +9,7 @@ from jinja2 import Template
 from datetime import datetime, timedelta
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant, TemplateSyntaxError
-from lib.constants import POLLING_CATEGORY, MQTT_STATUS, MQTT_COMMAND
+from lib.constants import POLLING_CATEGORY, MQTT_STATUS, MQTT_COMMAND, SIGN_OFF
 
 # create global vars
 betabrite = None
@@ -30,7 +30,18 @@ def mqtt_connect(client, userdata, flags, rc):
 def mqtt_on_message(client, userdata, message):
     logging.debug(message.topic + " " + str(message.payload))
 
-    if(message.topic == MQTT_COMMAND):
+    if(message.topic == MQTT_COMMAND or message.topic == MQTT_STATUS):
+        betabrite.connect()
+
+        if(str(message.payload.decode("utf-8")) == 'OFF'):
+            # turn off the sign
+            offMessage = manager.updateText(SIGN_OFF, ' ', True)
+        else:
+            offMessage = manager.updateText(SIGN_OFF, '', True)
+
+        betabrite.write(offMessage)
+        betabrite.disconnect()
+
         mqttClient.publish(MQTT_STATUS, message.payload, retain=True)
 
 def setupSign():
@@ -183,6 +194,11 @@ mqttClient.subscribe(MQTT_STATUS)
 mqttClient.subscribe(MQTT_COMMAND)
 
 mqttClient.loop_start()
+
+# give status time to update
+time.sleep(2)
+
+mqttClient.unsubscribe(MQTT_STATUS)
 
 # go one day backward on first load (ie, force polling)
 poll(timedelta(days=1))

@@ -112,6 +112,10 @@ class MessageManager:
         allocateStrings = {}  # name: stringObj value
         allocateText = []  # textObjs
 
+        # create a special message for when the sign is off
+        offMessage = alphasign.Text(data="", label=self.__allocateText(constants.SIGN_OFF), mode=constants.ALPHA_MODES['hold'])
+        allocateText.append(offMessage)
+
         # load messages from "messages" key in yaml file
         for i in range(0, len(self.config['messages'])):
             # get the message
@@ -174,6 +178,9 @@ class MessageManager:
         """
         # create the string object
         return alphasign.String(data=message, label=self.__getString(name), size=125)
+
+    def updateText(self, name, message, priority=False):
+        return alphasign.Text(data=message, label=self.__getText(name), priority=priority)
 
     def getVariable(self, name):
         """finds the VariableType object associated with the given name
