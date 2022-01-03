@@ -1,6 +1,5 @@
 from croniter import croniter
 from datetime import datetime
-from termcolor import colored
 from . import constants
 
 
@@ -17,19 +16,6 @@ class VariableType:
         self.type = type
         self.name = name
         self.config = config
-
-    def render(self, text=''):
-        """render the given text to be displayed on the command line
-        :param text: the text to render
-
-        :returns: the text with any termcolor markup applied
-        """
-        color = 'green' if 'color' not in self.config else self.config['color']
-
-        # filter out colors that won't display in the terminal
-        color = 'green' if color in ['orange', 'rainbow1', 'rainbow2'] else color
-
-        return colored(text, color)
 
     def getName(self):
         """:returns: the name of this variable"""

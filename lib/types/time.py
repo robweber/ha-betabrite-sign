@@ -41,9 +41,6 @@ class TimeVariable(AlphaSignVariable):
     def __init__(self, name, config):
         super().__init__('time', name, config)
 
-    def render(self, text=''):
-        return super().render('TIME')
-
     def getText(self):
         # create the alphasign Time object
         timeObj = alphasign.time.Time()

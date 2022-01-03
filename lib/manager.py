@@ -1,5 +1,6 @@
 import logging
 import yaml
+from termcolor import colored
 from . import alphasign
 from . import constants
 from .types.home_assistant import HomeAssistantVariable
@@ -138,18 +139,18 @@ class MessageManager:
                         # use pre-allocated string object if already loaded once
                         logging.info(f"{aVar.getName()} alreadying loaded, adding to message")
                         stringObj = allocateStrings[v]
-                        cliText = f"{cliText} {aVar.render(v)}"
+                        cliText = f"{cliText} {colored(v, 'green')}"
                     else:
                         logging.info(f"Loading variable {aVar.getName()}:{aVar.getType()} for message")
                         if(aVar.getType() == 'time'):
                             stringObj = aVar.getStartup()
                             betabrite.write(stringObj)
-                            cliText = f"{cliText} {aVar.render()}"
+                            cliText = f"{cliText} {colored(v, 'green')}"
                         else:
                             stringObj = alphasign.String(data=aVar.getStartup(),
                                                          label=self.__allocateString(aVar.getName()), size=125)
                             allocateStrings[v] = stringObj
-                            cliText = f"{cliText} {aVar.render(aVar.getStartup())}"
+                            cliText = f"{cliText} {colored(aVar.getStartup(), 'green')}"
 
                     stringText = f"{stringText} {aVar.getDisplayParams()}{stringObj.call()}"
                 else:

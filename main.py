@@ -8,6 +8,7 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as mqtt_subscribe
 from jinja2 import Template
 from datetime import datetime, timedelta
+from termcolor import colored
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant, TemplateSyntaxError
 from lib.constants import POLLING_CATEGORY, MQTT_STATUS, MQTT_COMMAND, SIGN_OFF
@@ -102,7 +103,7 @@ def poll(offset=timedelta(minutes=1)):
                     logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
 
             if(newString is not None):
-                logging.debug(f"updated {v.getName()}:{v.render(newString)}")
+                logging.debug(f"updated {v.getName()}:{colored(newString, 'green')}")
                 updateString(v.getName(), newString)
 
 
@@ -208,7 +209,7 @@ time.sleep(10)
 if(args.mqtt and args.mqtt_username):
     # get the last known status from MQTT
     statusMsg = mqtt_subscribe.simple(MQTT_STATUS, hostname=args.mqtt, auth={"username": args.mqtt_username, "password": args.mqtt_password})
-    logging.info(f"Startup state is: {str(statusMsg.payload.decode('utf-8'))}")
+    logging.info(f"Startup state is: {colored(str(statusMsg.payload.decode('utf-8')), 'yellow')}")
     changeState(str(statusMsg.payload.decode('utf-8')))
 
     # setup the MQTT connection
