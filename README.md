@@ -38,7 +38,7 @@ When MQTT is configured the program will watch for commands and publish to the f
 * betabrite/sign/status
 * betabrite/sign/switch
 
-Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then removed to return the display to normal messaging (on). 
+Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then removed to return the display to normal messaging (on).
 
 ## Usage
 
@@ -61,8 +61,9 @@ A full list of arguments can be found by using the `-h` flag.
 ```
 python3 main.py -h
 
-usage: main.py [-h] [-c CONFIG] [-l LAYOUT] [-d DEVICE] [-u URL] [-t TOKEN]
-               [-D]
+usage: main.py [-h] [-c CONFIG] [-l LAYOUT] [-d DEVICE] [-D] [--ha_url HA_URL]
+               [--ha_token HA_TOKEN] [-m MQTT] [--mqtt_username MQTT_USERNAME]
+               [--mqtt_password MQTT_PASSWORD]
 
 Home Assistant Betabrite Sign
 
@@ -77,10 +78,22 @@ optional arguments:
                         Path to device where Alphasign is connected, default
                         is /dev/ttyUSB0, can also use 'cli' to output to
                         screen only
-  -u URL, --url URL     Home Assistant full base url
-  -t TOKEN, --token TOKEN
-                        Home Assistant Access Token
   -D, --debug           Enables logging debug mode
+
+Home Assistant:
+  Settings required for Home Assistant polling
+
+  --ha_url HA_URL       Home Assistant full base url
+  --ha_token HA_TOKEN   Home Assistant Access Token
+
+MQTT:
+  Settings required for MQTT integrations
+
+  -m MQTT, --mqtt MQTT  MQTT Server IP
+  --mqtt_username MQTT_USERNAME
+                        MQTT Server username
+  --mqtt_password MQTT_PASSWORD
+                        MQTT Server password
 
 ```
 

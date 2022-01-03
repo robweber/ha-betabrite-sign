@@ -146,18 +146,24 @@ parser.add_argument('-l', '--layout', default="data/layout.yaml",
                     help="Path to yaml file containing sign text layout, default is %(default)s")
 parser.add_argument('-d', '--device', default="/dev/ttyUSB0",
                     help="Path to device where Alphasign is connected, default is %(default)s, can also use 'cli' to output to screen only")
-parser.add_argument('-u', '--url', required=False,
-                    help="Home Assistant full base url")
-parser.add_argument('-t', '--token', required=False,
-                    help="Home Assistant Access Token")
-parser.add_argument('-m', '--mqtt', required=False,
-                    help="MQTT Server IP")
-parser.add_argument('-U', '--mqtt_username', required=False,
-                    help="MQTT Server username")
-parser.add_argument('-P', '--mqtt_password', required=False,
-                    help="MQTT Server password")
 parser.add_argument('-D', '--debug', action='store_true',
                     help='Enables logging debug mode')
+
+# ha polling args
+haGroup = parser.add_argument_group("Home Assistant", "Settings required for Home Assistant polling")
+haGroup.add_argument('--ha_url', required=False,
+                    help="Home Assistant full base url")
+haGroup.add_argument('--ha_token', required=False,
+                    help="Home Assistant Access Token")
+
+# MQTT args
+mqttGroup = parser.add_argument_group("MQTT", "Settings required for MQTT integrations")
+mqttGroup.add_argument('-m', '--mqtt', required=False,
+                    help="MQTT Server IP")
+mqttGroup.add_argument('--mqtt_username', required=False,
+                    help="MQTT Server username")
+mqttGroup.add_argument('--mqtt_password', default=None, required=False,
+                    help="MQTT Server password")
 
 args = parser.parse_args()
 
@@ -191,26 +197,23 @@ logging.info("Loading layout: " + args.layout)
 manager = MessageManager(args.layout)
 
 # load the HA interface, if needed
-if(args.url and args.token):
-    homeA = HomeAssistant(args.url, args.token)
+if(args.ha_url and args.ha_token):
+    homeA = HomeAssistant(args.ha_url, args.ha_token)
 
 setupSign()
 
 # sleep for a few seconds
 time.sleep(10)
 
-if(args.mqtt):
+if(args.mqtt and args.mqtt_username):
     # get the last known status from MQTT
     statusMsg = mqtt_subscribe.simple(MQTT_STATUS, hostname=args.mqtt, auth={"username": args.mqtt_username, "password": args.mqtt_password})
-    logging.info(f"Startup state is: {str(statusMsg.payload)}")
+    logging.info(f"Startup state is: {str(statusMsg.payload.decode('utf-8'))}")
     changeState(str(statusMsg.payload.decode('utf-8')))
 
     # setup the MQTT connection
     mqttClient = mqtt.Client()
-
-    # there may or may not be authentication
-    if(args.mqtt_username and args.mqtt_password):
-        mqttClient.username_pw_set(args.mqtt_username, args.mqtt_password)
+    mqttClient.username_pw_set(args.mqtt_username, args.mqtt_password)
 
     # set the callback methods
     mqttClient.on_connect = mqtt_connect
@@ -223,6 +226,8 @@ if(args.mqtt):
 
     # starts the network loop in the background
     mqttClient.loop_start()
+else:
+    logging.info("No MQTT server or username, skipping MQTT setup")
 
 # go one day backward on first load (ie, force polling)
 poll(timedelta(days=1))
