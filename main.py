@@ -17,17 +17,25 @@ homeA = None
 manager = None
 mqttClient = None
 
-# function to handle when the is killed and exit gracefully
+
 def signal_handler(signum, frame):
+    """function to handle when the is killed and exit gracefully
+    """
     logging.debug('Exiting Program')
     mqttClient.loop_stop()
     mqttClient.disconnect()
     sys.exit(0)
 
+
 def mqtt_connect(client, userdata, flags, rc):
+    """run on successful mqtt connection
+    """
     logging.info("Connected to MQTT Server")
 
+
 def mqtt_on_message(client, userdata, message):
+    """triggered when message is recieved via mqtt
+    """
     logging.debug(message.topic + " " + str(message.payload))
 
     if(message.topic == MQTT_COMMAND or message.topic == MQTT_STATUS):
@@ -44,8 +52,9 @@ def mqtt_on_message(client, userdata, message):
 
         mqttClient.publish(MQTT_STATUS, message.payload, retain=True)
 
+
 def setupSign():
-    """Setup the sign by allocated memory for variables and messages
+    """Setup the sign by allocating memory for variables and messages
     """
     # connect to the sign and clear any data
     betabrite.connect()
@@ -183,13 +192,15 @@ time.sleep(10)
 
 # setup the MQTT connection
 mqttClient = mqtt.Client()
-
 mqttClient.username_pw_set(args.mqtt_username, args.mqtt_password)
+
+# set the callback methods
 mqttClient.on_connect = mqtt_connect
 mqttClient.on_message = mqtt_on_message
 
 mqttClient.connect(args.mqtt)
 
+# subscribe to the built in topics
 mqttClient.subscribe(MQTT_STATUS)
 mqttClient.subscribe(MQTT_COMMAND)
 

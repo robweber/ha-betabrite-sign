@@ -180,6 +180,16 @@ class MessageManager:
         return alphasign.String(data=message, label=self.__getString(name), size=125)
 
     def updateText(self, name, message, priority=False):
+        """Updates a Text object on the sign with a new message
+        using updateString is preferable in most cases but this allows the swapping out of
+        messages with the priority flag
+        :param name: the name of the text object to update
+        :param message: the new message
+        :param priority: if the message should take the place of currently shown messages. Defaults to False.
+        if set to True with a blank message it will erase the priority flag
+
+        :returns: alphasign Text object that can be written to the sign
+        """
         return alphasign.Text(data=message, label=self.__getText(name), priority=priority)
 
     def getVariable(self, name):

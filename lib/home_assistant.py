@@ -2,6 +2,7 @@ import requests
 import json
 from json.decoder import JSONDecodeError
 
+
 class HomeAssistant:
     """The HomeAssistant class is a simple class for the purposes
     of getting state and attribute information for different \
@@ -66,6 +67,9 @@ class HomeAssistant:
 
 
 class TemplateSyntaxError(Exception):
-
+    """Exception to catch when an HA templated message has incorrect syntax
+    thrown by the HomeAssistant class upon unsuccessful template rendering
+    as indicated in the response from HA
+    """
     def __init__(self, message):
         super().__init__(f"Template cannot be rendered: {message}")
