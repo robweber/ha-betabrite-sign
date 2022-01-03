@@ -204,7 +204,7 @@ class MessageManager:
         """
         return self.varObjs[name]
 
-    def getVariables(self, category, func=True):
+    def getVariables(self, category, func=lambda v: True):
         """find all variables of a given category
         :param category: the category (polling, etc) to filter
         :param func: an optional function to further filter the list by,
@@ -213,7 +213,7 @@ class MessageManager:
         :returns: a list of all variables that match the given VariableType category
         """
         # get variables that are part of a particular category
-        return list(filter(lambda v: v.getCategory() == category and func, self.varObjs.values()))
+        return list(filter(lambda v: v.getCategory() == category and func(v), self.varObjs.values()))
 
 
 class UndefinedVariableError(Exception):
