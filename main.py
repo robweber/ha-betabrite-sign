@@ -17,7 +17,6 @@ from lib.constants import POLLING_CATEGORY, MQTT_CATEGORY, MQTT_STATUS, MQTT_ATT
 
 # create global vars
 betabrite = None
-homeA = None
 manager = None
 mqttClient = None
 threadLock = threading.Lock()  # ensure exclusive access to betabrite serial port
@@ -95,6 +94,11 @@ def poll(offset=timedelta(minutes=1)):
     """
     # get all polling type variables
     pollingVars = manager.getVariables(POLLING_CATEGORY)
+
+    # load the HA interface, if needed
+    homeA = None
+    if(args.ha_url and args.ha_token):
+        homeA = HomeAssistant(args.ha_url, args.ha_token)
 
     now = datetime.now()
     for v in pollingVars:
@@ -216,10 +220,6 @@ else:
 
 logging.info("Loading layout: " + args.layout)
 manager = MessageManager(args.layout)
-
-# load the HA interface, if needed
-if(args.ha_url and args.ha_token):
-    homeA = HomeAssistant(args.ha_url, args.ha_token)
 
 setupSign()
 
