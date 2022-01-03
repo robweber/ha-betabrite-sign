@@ -22,8 +22,11 @@ def signal_handler(signum, frame):
     """function to handle when the is killed and exit gracefully
     """
     logging.debug('Exiting Program')
-    mqttClient.loop_stop()
-    mqttClient.disconnect()
+
+    if(mqttClient is not None):
+        mqttClient.loop_stop()
+        mqttClient.disconnect()
+
     sys.exit(0)
 
 
@@ -190,26 +193,31 @@ setupSign()
 # sleep for a few seconds
 time.sleep(10)
 
-# setup the MQTT connection
-mqttClient = mqtt.Client()
-mqttClient.username_pw_set(args.mqtt_username, args.mqtt_password)
+if(args.mqtt):
+    # setup the MQTT connection
+    mqttClient = mqtt.Client()
 
-# set the callback methods
-mqttClient.on_connect = mqtt_connect
-mqttClient.on_message = mqtt_on_message
+    # there may or may not be authentication
+    if(args.mqtt_username and args.mqtt_password):
+        mqttClient.username_pw_set(args.mqtt_username, args.mqtt_password)
 
-mqttClient.connect(args.mqtt)
+    # set the callback methods
+    mqttClient.on_connect = mqtt_connect
+    mqttClient.on_message = mqtt_on_message
 
-# subscribe to the built in topics
-mqttClient.subscribe(MQTT_STATUS)
-mqttClient.subscribe(MQTT_COMMAND)
+    mqttClient.connect(args.mqtt)
 
-mqttClient.loop_start()
+    # subscribe to the built in topics
+    mqttClient.subscribe(MQTT_STATUS)
+    mqttClient.subscribe(MQTT_COMMAND)
 
-# give status time to update
-time.sleep(2)
+    # starts the network loop in the background
+    mqttClient.loop_start()
 
-mqttClient.unsubscribe(MQTT_STATUS)
+    # give status time to update
+    time.sleep(2)
+
+    mqttClient.unsubscribe(MQTT_STATUS)
 
 # go one day backward on first load (ie, force polling)
 poll(timedelta(days=1))
