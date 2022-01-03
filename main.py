@@ -3,6 +3,7 @@ import json
 import logging
 import signal
 import sys
+import threading
 import time
 import lib.alphasign as alphasign
 import paho.mqtt.client as mqtt
@@ -19,7 +20,7 @@ betabrite = None
 homeA = None
 manager = None
 mqttClient = None
-
+threadLock = threading.Lock()  # ensure exclusive access to betabrite serial port
 
 def signal_handler(signum, frame):
     """function to handle when the is killed and exit gracefully
@@ -125,6 +126,7 @@ def poll(offset=timedelta(minutes=1)):
 
 
 def changeState(newState):
+    threadLock.acquire()
     betabrite.connect()
 
     # create the sign object and update the sign
@@ -135,7 +137,7 @@ def changeState(newState):
 
     betabrite.write(offMessage)
     betabrite.disconnect()
-
+    threadLock.release()
 
 def updateString(name, msg):
     """Update a string object on the sign
@@ -148,12 +150,13 @@ def updateString(name, msg):
     msg = msg.replace('_', ' ')
 
     strObj = manager.updateString(name, msg)
-
+    threadLock.acquire()
     betabrite.connect()
 
     betabrite.write(strObj)
 
     betabrite.disconnect()
+    threadLock.release()
 
 
 # parse the arguments
