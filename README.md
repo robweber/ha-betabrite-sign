@@ -190,6 +190,21 @@ variables:
     color: yellow
 ```
 
+__MQTT__
+
+The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Additionally Jinja templates can be used to evaluate the passed in data; but are limited to the data available in the MQTT payload. This is accessed via the `{{ value }}` variable in the template. Topics are limited to the same MQTT host specified in the main program arguments (see above).
+
+```
+variables:
+  mqtt_variable:
+    type: mqtt
+    # the topic to watch
+    template: homeassistant/locks/front_door/state
+    # the template to render when updated
+    text: >-
+      The Front door is {{ value }}
+```
+
 ## Messages
 
 The messages area of the `.yaml` file is where the variables are setup to actually display on the sign. This is where important information such as the sign mode, color, and speed of the message are specified. Variables can also be combined here to show within the same message. The order of the messages is the order they will be sent to the sign.

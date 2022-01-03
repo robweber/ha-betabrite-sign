@@ -243,7 +243,6 @@ if(args.mqtt and args.mqtt_username):
     # get a list of all mqtt variables
     mqttVars = manager.getVariables(MQTT_CATEGORY)
     for v in mqttVars:
-        logging.debug('subscribe to ' + v.getTopic())
         watchTopics.append((v.getTopic(), 0))
 
     # subscribe to the topics

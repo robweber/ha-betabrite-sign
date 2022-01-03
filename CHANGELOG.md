@@ -16,3 +16,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - added fonts for variables and messages
 - integrated MQTT for sign on/off events
 - added Home Assistant MQTT Light yaml file to integrate with HA as a light
+- added MQTT variable types
