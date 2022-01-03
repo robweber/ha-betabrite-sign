@@ -4,6 +4,7 @@ from termcolor import colored
 from . import alphasign
 from . import constants
 from .types.home_assistant import HomeAssistantVariable
+from .types.mqtt import MQTTVariable
 from .types.static import StaticVariable
 from .types.time import DateVariable, TimeVariable
 
@@ -38,6 +39,8 @@ class MessageManager:
 
             if(aVar['type'] == 'date'):
                 self.varObjs[v] = DateVariable(v, aVar)
+            elif(aVar['type'] == 'mqtt'):
+                self.varObjs[v] = MQTTVariable(v, aVar)
             elif(aVar['type'] == 'home_assistant'):
                 self.varObjs[v] = HomeAssistantVariable(v, aVar)
             elif(aVar['type'] == 'static'):
@@ -201,14 +204,16 @@ class MessageManager:
         """
         return self.varObjs[name]
 
-    def getVariables(self, category):
+    def getVariables(self, category, func = True):
         """find all variables of a given category
         :param category: the category (polling, etc) to filter
+        :param func: an optional function to further filter the list by,
+        this should be a lambda expression that takes a single argument
 
         :returns: a list of all variables that match the given VariableType category
         """
         # get variables that are part of a particular category
-        return list(filter(lambda v: v.getCategory() == category, self.varObjs.values()))
+        return list(filter(lambda v: v.getCategory() == category and func, self.varObjs.values()))
 
 
 class UndefinedVariableError(Exception):

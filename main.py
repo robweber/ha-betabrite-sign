@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from termcolor import colored
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant, TemplateSyntaxError
-from lib.constants import POLLING_CATEGORY, MQTT_STATUS, MQTT_ATTRIBUTES, MQTT_COMMAND, SIGN_OFF
+from lib.constants import POLLING_CATEGORY, MQTT_CATEGORY, MQTT_STATUS, MQTT_ATTRIBUTES, MQTT_COMMAND, SIGN_OFF
 
 # create global vars
 betabrite = None
@@ -40,16 +40,27 @@ def mqtt_connect(client, userdata, flags, rc):
 
 
 def mqtt_on_message(client, userdata, message):
-    """triggered when message is recieved via mqtt
+    """triggered when message is received via mqtt
     """
-    logging.debug(message.topic + " " + str(message.payload))
+    logging.debug(colored(message.topic, 'red') + " " + str(message.payload))
 
     if(message.topic == MQTT_COMMAND):
         changeState(str(message.payload.decode('utf-8')))
 
         # publish new status
         mqttClient.publish(MQTT_STATUS, message.payload, retain=True)
+    else:
+        # this is for a variable, load it
+        aVar = manager.getVariables(MQTT_CATEGORY, lambda v: v.getTopic() == message.topic)
 
+        if(aVar is not None and len(aVar) > 0):
+            #render the template
+            temp = Template(aVar[0].getText())
+            newString = temp.render(value=str(message.payload.decode('utf-8')))
+
+            # update the data on the sign
+            logging.debug(f"updated {aVar[0].getName()}:{colored(newString, 'green')}")
+            updateString(aVar[0].getName(), newString)
 
 def setupSign():
     """Setup the sign by allocating memory for variables and messages
@@ -227,7 +238,16 @@ if(args.mqtt and args.mqtt_username):
     mqttClient.connect(args.mqtt)
 
     # subscribe to the built in topics
-    mqttClient.subscribe(MQTT_COMMAND)
+    watchTopics = [(MQTT_COMMAND, 0)]
+
+    # get a list of all mqtt variables
+    mqttVars = manager.getVariables(MQTT_CATEGORY)
+    for v in mqttVars:
+        logging.debug('subscribe to ' + v.getTopic())
+        watchTopics.append((v.getTopic(), 0))
+
+    # subscribe to the topics
+    mqttClient.subscribe(watchTopics)
 
     # starts the network loop in the background
     mqttClient.loop_start()

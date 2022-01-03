@@ -3,6 +3,7 @@ from . import alphasign
 # variable categories
 ALPHASIGN_CATEGORY = 'alphasign'
 POLLING_CATEGORY = 'polling'
+MQTT_CATEGORY = 'mqtt'
 
 # MQTT topics for state and commands
 MQTT_STATUS = "betabrite/sign/status"
