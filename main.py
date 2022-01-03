@@ -5,6 +5,7 @@ import sys
 import time
 import lib.alphasign as alphasign
 import paho.mqtt.client as mqtt
+import paho.mqtt.subscribe as mqtt_subscribe
 from jinja2 import Template
 from datetime import datetime, timedelta
 from lib.manager import MessageManager
@@ -41,18 +42,10 @@ def mqtt_on_message(client, userdata, message):
     """
     logging.debug(message.topic + " " + str(message.payload))
 
-    if(message.topic == MQTT_COMMAND or message.topic == MQTT_STATUS):
-        betabrite.connect()
+    if(message.topic == MQTT_COMMAND):
+        changeState(str(message.payload.decode('utf-8')))
 
-        if(str(message.payload.decode("utf-8")) == 'OFF'):
-            # turn off the sign
-            offMessage = manager.updateText(SIGN_OFF, ' ', True)
-        else:
-            offMessage = manager.updateText(SIGN_OFF, '', True)
-
-        betabrite.write(offMessage)
-        betabrite.disconnect()
-
+        # publish new status
         mqttClient.publish(MQTT_STATUS, message.payload, retain=True)
 
 
@@ -111,6 +104,19 @@ def poll(offset=timedelta(minutes=1)):
             if(newString is not None):
                 logging.debug(f"updated {v.getName()}:{v.render(newString)}")
                 updateString(v.getName(), newString)
+
+
+def changeState(newState):
+    betabrite.connect()
+
+    # create the sign object and update the sign
+    if(newState == 'OFF'):
+        offMessage = manager.updateText(SIGN_OFF, ' ', True)
+    else:
+        offMessage = manager.updateText(SIGN_OFF, '', True)
+
+    betabrite.write(offMessage)
+    betabrite.disconnect()
 
 
 def updateString(name, msg):
@@ -194,6 +200,11 @@ setupSign()
 time.sleep(10)
 
 if(args.mqtt):
+    # get the last known status from MQTT
+    statusMsg = mqtt_subscribe.simple(MQTT_STATUS, hostname=args.mqtt, auth={"username": args.mqtt_username, "password": args.mqtt_password})
+    logging.info(f"Startup state is: {str(statusMsg.payload)}")
+    changeState(str(statusMsg.payload.decode('utf-8')))
+
     # setup the MQTT connection
     mqttClient = mqtt.Client()
 
@@ -208,16 +219,10 @@ if(args.mqtt):
     mqttClient.connect(args.mqtt)
 
     # subscribe to the built in topics
-    mqttClient.subscribe(MQTT_STATUS)
     mqttClient.subscribe(MQTT_COMMAND)
 
     # starts the network loop in the background
     mqttClient.loop_start()
-
-    # give status time to update
-    time.sleep(2)
-
-    mqttClient.unsubscribe(MQTT_STATUS)
 
 # go one day backward on first load (ie, force polling)
 poll(timedelta(days=1))
