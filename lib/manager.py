@@ -196,7 +196,7 @@ class MessageManager:
         """
         return alphasign.Text(data=message, label=self.__getText(name), priority=priority)
 
-    def getVariable(self, name):
+    def getVariableByName(self, name):
         """finds the VariableType object associated with the given name
         :param name: the name, as defined in yaml, of the variable to lookup
 
@@ -204,7 +204,23 @@ class MessageManager:
         """
         return self.varObjs[name]
 
-    def getVariables(self, category, func=lambda v: True):
+    def getVariableByFilter(self, category, func=lambda v: True):
+        """exact same functionality as getVariablesByFilter below
+        however this is guarenteed to return a single result instead of a list
+
+        :return: the VariableType object, could be None if not found or more than one result
+        """
+        result = None
+
+        foundVars = self.getVariablesByFilter(category, func)
+
+        # only return an object if exactly one is found
+        if(len(foundVars) == 1):
+            result = foundVars[0]
+
+        return result
+
+    def getVariablesByFilter(self, category, func=lambda v: True):
         """find all variables of a given category
         :param category: the category (polling, etc) to filter
         :param func: an optional function to further filter the list by,

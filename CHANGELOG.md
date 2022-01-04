@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 
 - Home Assistant variable moved from global to within function where needed
+- renamed `getVariables` to `getVariablesByFilter` to better describe what this is doing
 
 ### Fixed
 

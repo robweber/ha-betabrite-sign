@@ -51,21 +51,21 @@ def mqtt_on_message(client, userdata, message):
         mqttClient.publish(MQTT_STATUS, message.payload, retain=True)
     else:
         # this is for a variable, load it
-        aVar = manager.getVariables(MQTT_CATEGORY, lambda v: v.getTopic() == message.topic)
+        aVar = manager.getVariableByFilter(MQTT_CATEGORY, lambda v: v.getTopic() == message.topic)
 
-        if(aVar is not None and len(aVar) > 0):
+        if(aVar is not None):
             payload = str(message.payload.decode('utf-8'))
 
-            if(aVar[0].parseJson()):
+            if(aVar.parseJson()):
                 payload = json.loads(payload)
 
             # render the template
-            temp = Template(aVar[0].getText())
+            temp = Template(aVar.getText())
             newString = temp.render(value=payload)
 
             # update the data on the sign
-            logging.debug(f"updated {aVar[0].getName()}:{colored(newString, 'green')}")
-            updateString(aVar[0].getName(), newString)
+            logging.debug(f"updated {aVar.getName()}:{colored(newString, 'green')}")
+            updateString(aVar.getName(), newString)
 
 
 def setupSign():
@@ -98,7 +98,7 @@ def poll(offset=timedelta(minutes=1)):
     :param offset: the offset to use when calculating the next update time, 1 min is the default otherwise the next time will never happen
     """
     # get all polling type variables
-    pollingVars = manager.getVariables(POLLING_CATEGORY)
+    pollingVars = manager.getVariablesByFilter(POLLING_CATEGORY)
 
     # load the HA interface, if needed
     homeA = None
@@ -251,7 +251,7 @@ if(args.mqtt and args.mqtt_username):
     watchTopics = [(MQTT_COMMAND, 0)]
 
     # get a list of all mqtt variables
-    mqttVars = manager.getVariables(MQTT_CATEGORY)
+    mqttVars = manager.getVariablesByFilter(MQTT_CATEGORY)
     for v in mqttVars:
         watchTopics.append((v.getTopic(), 0))
 
