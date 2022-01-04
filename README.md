@@ -5,6 +5,25 @@ Integrate an LED sign that uses the [Alphasign protocol](https://www.adaptivedis
 
 Messages are configured for the display using a simple `.yaml` configuration file. Variables can be defined that pull information from Home Assistant via the [templating engine](https://www.home-assistant.io/docs/configuration/templating/). These will dynamically update the sign on either a polling timer or via MQTT topics.
 
+## Table Of Contents
+
+- [Background](#background)
+- [Install](#install)
+  - [Home Assistant Setup](#home-assistant-setup)
+- [Usage](#usage)
+- [Layout File](#layout-file)
+  - [Variables](#variables)
+     - [Time](#time)
+     - [Date](#date)
+     - [Static](#static)
+     - [Home Assistant](#home-assistant)
+     - [MQTT](#mqtt)
+  - [Messages](#messages)
+    - [Parameters](#parameters)
+    - [Examples](#examples)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Background
 
 A long, long time ago, in an apartment far away; my college roommate and I wanted a cool LED sign to display information. I purchased a cheap [Betabrite LED display](https://www.alpha-american.com/p-betabrite.html) and a serial cable. My first crude attempts at this (circa 2006) used Java and some serial commands to write messages to the display. Over time this setup evolved to using a Raspberry Pi and [WebIOPI](http://webiopi.trouch.com/) to update the display. When I started using Home Assistant I hacked and slashed my way to integrating that with the existing setup as well.
@@ -121,7 +140,7 @@ The `layout.yaml` file controls most aspects of displaying messages on the sign.
 The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for dynamic variables can be evaluated by using Jina templates, of which there are a few examples below. For more information on templating, see the [Home Assistant](https://www.home-assistant.io/docs/configuration/templating/) and [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/templates/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
 
 
-__Time__
+#### Time
 
 The time variable utilizes the built-in functionality of the Alphasign protocol to display the current time on the sign.
 
@@ -135,7 +154,7 @@ variables:
     color: green
 ```
 
-__Date__
+#### Date
 
 Similar to the time variable, this displays the current date. Due to limitations with the display this has to be set manually once a day to be correct. This is done by polling in the background once per day.
 
@@ -147,7 +166,7 @@ variables:
     separator: '-'
 ```
 
-__Static__
+#### Static
 
 The static type allows for displaying static text that is loaded once when the sign initalizes and then is never changed.
 
@@ -158,7 +177,7 @@ variables:
     text: "Static Text Example"
 ```
 
-__Home Assistant__
+#### Home Assistant
 
 The Home Assistant type is a polling variable that updates on a given interval. Data will be updated each time the polling interval is hit and the resulting string sent to the sign, wherever it is used in a message. Polling intervals are specified using [cron syntax](https://en.wikipedia.org/wiki/Cron), with a default of every 5 minutes. Home Assistant templates are used to format the results directly in Home Assistant. Examples of this are shown below. Additionally you'll need to specify the url to your Home Assistant instance, and a [long lived access token](https://www.home-assistant.io/docs/authentication/).
 
@@ -190,7 +209,7 @@ variables:
     color: yellow
 ```
 
-__MQTT__
+#### MQTT
 
 The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Additionally Jinja templates can be used to evaluate the passed in data; but are limited to the data available in the MQTT payload. This is accessed via the `{{ value }}` variable in the template. Parsing the payload as a JSON object data can be accessed with ```{{value['key']}}``` or ```{{value.key}}``` Topics are limited to the same MQTT host specified in the main program arguments (see above).
 
@@ -228,7 +247,7 @@ The messages area of the `.yaml` file is where the variables are setup to actual
 
 ### Parameters
 
-__Mode__
+#### Mode
 
 The mode is how the sign will be written across the screen. Valid modes are:
 
@@ -247,7 +266,7 @@ The mode is how the sign will be written across the screen. Valid modes are:
 * welcome - puts the word welcome ahead of the text
 * slot_machine - plays a slot machine animation
 
-__Color__ (optional)
+#### Color (optional)
 
 The color of the message. This can also be specified per variable to have mixed colors within a single message. Valid colors are:
 
@@ -261,7 +280,7 @@ The color of the message. This can also be specified per variable to have mixed 
 * brown
 * color_mix - this is similar to rainbow but each letter is 1 color only
 
-__Font__ (optional)
+#### Font (optional)
 
 Different character sets (fonts) can be specified from the default. These allow some customization over the size and shape of the displayed text.
 
@@ -280,7 +299,7 @@ Different character sets (fonts) can be specified from the default. These allow 
 * seven_fancy_wide
 * wide_stroke_five
 
-__Speed__ (optional)
+#### Speed (optional)
 
 The speed that the message will go across the screen. This is a number 1-5 with 1 being slow and 5 being fast.
 

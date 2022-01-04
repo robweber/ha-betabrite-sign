@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - added ability to parse MQTT payload values as JSON via `parse_json` directive
+- added TOC to README
 
 ### Changed
 
