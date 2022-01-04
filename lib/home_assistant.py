@@ -22,7 +22,7 @@ class HomeAssistant:
     def _makeRequest(self, endpoint, data=None):
         """makes the request to the given HA endpoint
 
-        :returns: string containing the response from Home Assistant
+        :returns: the HTTP response HTTP object
         """
         headers = {
             'Authorization': 'Bearer %s' % self.token,
@@ -35,7 +35,7 @@ class HomeAssistant:
         else:
             response = requests.post('%s%s' % (self.url, endpoint), data=json.dumps(data), headers=headers)
 
-        return response.text
+        return response
 
     def getState(self, entity=''):
         """
@@ -43,7 +43,9 @@ class HomeAssistant:
 
         :returns: a dict containing the state of this entity
         """
-        return json.loads(self._makeRequest('/api/states/%s' % entity))
+        response = self._makeRequest('/api/states/%s' % entity)
+
+        return json.loads(response.text)
 
     def renderTemplate(self, template):
         """sends a template string to Home Assistant to have it rendered
@@ -52,16 +54,15 @@ class HomeAssistant:
 
         :returns: the response from Home Assistant as a string
         """
-        result = self._makeRequest('/api/template', {'template': template})
+        result = None
+        response = self._makeRequest('/api/template', {'template': template})
 
-        try:
-            # if this works we likely have an error
-            errorJson = json.loads(result)
-
+        if(response.status_code == 200):
+            # successful template rendering
+            result = response.text
+        else:
+            errorJson = json.loads(response.text)
             raise TemplateSyntaxError(errorJson['message'])
-        except JSONDecodeError:
-            # do nothing here, this should fail if working
-            pass
 
         return result
 
