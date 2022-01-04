@@ -97,37 +97,35 @@ def poll(offset=timedelta(minutes=1)):
 
     :param offset: the offset to use when calculating the next update time, 1 min is the default otherwise the next time will never happen
     """
-    # get all polling type variables
-    pollingVars = manager.getVariablesByFilter(POLLING_CATEGORY)
+    # get all polling type variables that need to be updated
+    now = datetime.now()
+    pollingVars = manager.getVariablesByFilter(POLLING_CATEGORY, lambda v: v.shouldPoll(now, offset))
 
     # load the HA interface, if needed
     homeA = None
     if(args.ha_url and args.ha_token):
         homeA = HomeAssistant(args.ha_url, args.ha_token)
 
-    now = datetime.now()
     for v in pollingVars:
-        # check if the variable should be updated
-        if(v.shouldPoll(now, offset)):
-            logging.info(f"Updating {v.getName()}")
+        logging.info(f"Updating {v.getName()}")
 
-            # update based on the type
-            newString = None
-            if(v.getType() == 'date'):
-                newString = v.getText()
-            elif(v.getType() == 'home_assistant'):
-                if(homeA is not None):
-                    try:
-                        # render the template in home assistant
-                        newString = homeA.renderTemplate(v.getText()).strip()
-                    except TemplateSyntaxError as te:
-                        logging.error(te)
-                else:
-                    logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
+        # update based on the type
+        newString = None
+        if(v.getType() == 'date'):
+            newString = v.getText()
+        elif(v.getType() == 'home_assistant'):
+            if(homeA is not None):
+                try:
+                    # render the template in home assistant
+                    newString = homeA.renderTemplate(v.getText()).strip()
+                except TemplateSyntaxError as te:
+                    logging.error(te)
+            else:
+                logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
 
-            if(newString is not None):
-                logging.debug(f"updated {v.getName()}:{colored(newString, 'green')}")
-                updateString(v.getName(), newString)
+        if(newString is not None):
+            logging.debug(f"updated {v.getName()}:{colored(newString, 'green')}")
+            updateString(v.getName(), newString)
 
     if(mqttClient is not None):
         # publish to the attributes topic

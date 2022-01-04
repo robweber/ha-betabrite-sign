@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Home Assistant variable moved from global to within function where needed
 - renamed `getVariables` to `getVariablesByFilter` to better describe what this is doing
+- filter polling type variables using `getVariableByFilter` instead of filtering after getting the full list
 
 ### Fixed
 
