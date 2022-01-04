@@ -47,8 +47,9 @@ def mqtt_on_message(client, userdata, message):
     if(message.topic == MQTT_COMMAND):
         changeState(str(message.payload.decode('utf-8')))
 
-        # publish new status
+        # publish new status and last updated attribute
         mqttClient.publish(MQTT_STATUS, message.payload, retain=True)
+        mqttClient.publish(MQTT_ATTRIBUTES, json.dumps({"last_updated": str(datetime.now().isoformat(timespec='seconds'))}), retain=True)
     else:
         # this is for a variable, load it
         aVar = manager.getVariableByFilter(MQTT_CATEGORY, lambda v: v.getTopic() == message.topic)
@@ -126,10 +127,6 @@ def poll(offset=timedelta(minutes=1)):
         if(newString is not None):
             logging.debug(f"updated {v.getName()}:{colored(newString, 'green')}")
             updateString(v.getName(), newString)
-
-    if(mqttClient is not None):
-        # publish to the attributes topic
-        mqttClient.publish(MQTT_ATTRIBUTES, json.dumps({"last_poll": str(now.isoformat(timespec='seconds'))}), retain=True)
 
 
 def changeState(newState):
