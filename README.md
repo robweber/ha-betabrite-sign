@@ -118,7 +118,7 @@ The `layout.yaml` file controls most aspects of displaying messages on the sign.
 
 ### Variables
 
-The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for dynamic variables can be evaluated by using Jina templates, of which there are a few examples below. For more information on templating, see the [Home Assistant](https://www.home-assistant.io/docs/configuration/templating/) and [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
+The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for dynamic variables can be evaluated by using Jina templates, of which there are a few examples below. For more information on templating, see the [Home Assistant](https://www.home-assistant.io/docs/configuration/templating/) and [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/templates/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
 
 
 __Time__
@@ -192,7 +192,7 @@ variables:
 
 __MQTT__
 
-The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Additionally Jinja templates can be used to evaluate the passed in data; but are limited to the data available in the MQTT payload. This is accessed via the `{{ value }}` variable in the template. Parsing the payload as a JSON object data can be accessed with ```{{value['key']}}``` Topics are limited to the same MQTT host specified in the main program arguments (see above).
+The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Additionally Jinja templates can be used to evaluate the passed in data; but are limited to the data available in the MQTT payload. This is accessed via the `{{ value }}` variable in the template. Parsing the payload as a JSON object data can be accessed with ```{{value['key']}}``` or ```{{value.key}}``` Topics are limited to the same MQTT host specified in the main program arguments (see above).
 
 ```
 variables:
@@ -213,8 +213,8 @@ variables:
     parse_json: true
     # the template to render when updated
     text: >-
-      {% if value['state'] == 'playing' %}
-      Now playing {{ value['song'] }}
+      {% if value.state == 'playing' %}
+      Now playing {{ value.song }}
       {% else %}
       Nothing playing
       {% endif %}
