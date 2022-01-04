@@ -199,16 +199,18 @@ variables:
   mqtt_variable:
     type: mqtt
     # the topic to watch
-    template: homeassistant/locks/front_door/state
+    topic: homeassistant/locks/front_door/state
     # the template to render when updated
     text: >-
       The Front door is {{ value }}
+    # optional mqtt quality of service (0 is default)
+    qos: 1
 
   # more complicated example converting payload to JSON
   mqtt_variable2:
     type: mqtt
     # the topic to watch
-    template: homeassistant/media/living_room/status
+    topic: homeassistant/media/living_room/status
     # set this to True to render payload as json
     parse_json: true
     # the template to render when updated

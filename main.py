@@ -246,12 +246,12 @@ if(args.mqtt and args.mqtt_username):
     mqttClient.connect(args.mqtt)
 
     # subscribe to the built in topics
-    watchTopics = [(MQTT_COMMAND, 0)]
+    watchTopics = [(MQTT_COMMAND, 1)]
 
     # get a list of all mqtt variables
     mqttVars = manager.getVariablesByFilter(MQTT_CATEGORY)
     for v in mqttVars:
-        watchTopics.append((v.getTopic(), 0))
+        watchTopics.append((v.getTopic(), v.getQos()))
 
     # subscribe to the topics
     mqttClient.subscribe(watchTopics)
