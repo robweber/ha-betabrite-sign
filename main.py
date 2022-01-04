@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from termcolor import colored
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant, TemplateSyntaxError
-from lib.constants import POLLING_CATEGORY, MQTT_CATEGORY, MQTT_STATUS, MQTT_ATTRIBUTES, MQTT_COMMAND, SIGN_OFF
+from lib.constants import POLLING_CATEGORY, MQTT_CATEGORY, MQTT_STATUS, MQTT_ATTRIBUTES, MQTT_COMMAND, MQTT_AVAILABLE, SIGN_OFF
 
 # create global vars
 betabrite = None
@@ -49,7 +49,7 @@ def mqtt_on_message(client, userdata, message):
 
         # publish new status and last updated attribute
         mqttClient.publish(MQTT_STATUS, message.payload, retain=True)
-        mqttClient.publish(MQTT_ATTRIBUTES, json.dumps({"last_updated": str(datetime.now().isoformat(timespec='seconds'))}), retain=True)
+        mqttClient.publish(MQTT_ATTRIBUTES, json.dumps({"last_updated": str(datetime.now().astimezone().isoformat(timespec='seconds'))}), retain=True)
     else:
         # this is for a variable, load it
         aVar = manager.getVariableByFilter(MQTT_CATEGORY, lambda v: v.getTopic() == message.topic)
@@ -128,6 +128,9 @@ def poll(offset=timedelta(minutes=1)):
             logging.debug(f"updated {v.getName()}:{colored(newString, 'green')}")
             updateString(v.getName(), newString)
 
+    if(mqttClient != None):
+        # after each polling check publish the timestamp to the availability topic
+        mqttClient.publish(MQTT_AVAILABLE, str(datetime.now().astimezone().isoformat(timespec='seconds')), retain=True)
 
 def changeState(newState):
     threadLock.acquire()

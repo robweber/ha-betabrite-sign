@@ -9,6 +9,7 @@ MQTT_CATEGORY = 'mqtt'
 MQTT_STATUS = "betabrite/sign/status"
 MQTT_ATTRIBUTES = "betabrite/sign/attributes"
 MQTT_COMMAND = "betabrite/sign/switch"
+MQTT_AVAILABLE = "betabrite/sign/available"
 
 # variable for when the sign is in off mode
 SIGN_OFF = "ALPHA_SIGN_OFF"

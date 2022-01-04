@@ -50,13 +50,14 @@ sudo pip3 install -r install/requirements.txt
 
 ### Home Assistant Setup
 
-This code can run standalone, or be further integrated with Home Assistant to show up as a light entity through the use of a [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/). This allows Home Assistant to get some run-time data and control the sign as though it was a light. For this to work MQTT must be setup via the arguments below. A sample YAML file for creating the Home Assistant device is located in the `install` directory.
+This code can run standalone, or be further integrated with Home Assistant to show up as a light entity through the use of a [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/). This allows Home Assistant to get some run-time data and control the sign as though it was a light. For this to work MQTT must be setup via the arguments below. A sample YAML file for creating the Home Assistant device is located in the `install` directory. The availability template bases it's status on if a timestamp has been published within the last 5 minutes. When the program is running this should happen once per minute. 
 
 When MQTT is configured the program will watch for commands and publish to the following topics.
 
 * betabrite/sign/status
 * betabrite/sign/attributes
 * betabrite/sign/switch
+* betabrite/sign/available
 
 Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then remove it to return the display to normal messaging (on).
 
