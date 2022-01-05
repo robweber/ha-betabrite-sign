@@ -29,9 +29,6 @@ class MQTTVariable(VariableType):
     def __init__(self, name, config):
         super().__init__('mqtt', name, config)
 
-        if('parse_json' not in self.config):
-            self.config['parse_json'] = False
-
         if('qos' not in self.config):
             self.config['qos'] = 0
 
@@ -40,9 +37,6 @@ class MQTTVariable(VariableType):
 
     def get_qos(self):
         return self.config['qos']
-
-    def parse_json(self):
-        return self.config['parse_json']
 
     def get_text(self):
         return self.config['text']

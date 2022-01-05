@@ -212,7 +212,7 @@ variables:
 
 #### MQTT
 
-The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Additionally Jinja templates can be used to evaluate the passed in data; but are limited to the data available in the MQTT payload. This is accessed via the `{{ value }}` variable in the template. Parsing the payload as a JSON object data can be accessed with ```{{value['key']}}``` or ```{{value.key}}``` Topics are limited to the same MQTT host specified in the main program arguments (see above).
+The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Additionally Jinja templates can be used to evaluate the passed in data; but are limited to the data available in the MQTT payload. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with ```{{value['key']}}``` or ```{{value.key}}```. Topics are limited to the same MQTT host specified in the main program arguments (see above).
 
 ```
 variables:
@@ -231,8 +231,6 @@ variables:
     type: mqtt
     # the topic to watch
     topic: homeassistant/media/living_room/status
-    # set this to True to render payload as json
-    parse_json: true
     # the template to render when updated
     text: >-
       {% if value.state == 'playing' %}
