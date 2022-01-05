@@ -18,7 +18,7 @@ class HomeAssistant:
         self.url = url
         self.token = token
 
-    def _makeRequest(self, endpoint, data=None):
+    def _make_request(self, endpoint, data=None):
         """makes the request to the given HA endpoint
 
         :returns: the HTTP response HTTP object
@@ -36,18 +36,18 @@ class HomeAssistant:
 
         return response
 
-    def getState(self, entity=''):
+    def get_state(self, entity=''):
         """get the state of a specific HA entity
 
         :param entity: the entity name in Home Assistant you want to get the state of
 
         :returns: a dict containing the state of this entity
         """
-        response = self._makeRequest('/api/states/%s' % entity)
+        response = self._make_request('/api/states/%s' % entity)
 
         return json.loads(response.text)
 
-    def renderTemplate(self, template):
+    def render_template(self, template):
         """sends a template string to Home Assistant to have it rendered
 
         :param template: the string as a valid HA template
@@ -55,7 +55,7 @@ class HomeAssistant:
         :returns: the response from Home Assistant as a string
         """
         result = None
-        response = self._makeRequest('/api/template', {'template': template})
+        response = self._make_request('/api/template', {'template': template})
 
         if(response.status_code == 200):
             # successful template rendering

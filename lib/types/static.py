@@ -8,8 +8,8 @@ class StaticVariable(AlphaSignVariable):
     def __init__(self, name, config):
         super().__init__('static', name, config)
 
-    def getText(self):
+    def get_text(self):
         return self.config['text']
 
-    def getStartup(self):
-        return self.getText()
+    def get_startup(self):
+        return self.get_text()

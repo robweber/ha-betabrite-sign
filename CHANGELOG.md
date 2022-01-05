@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## Version 1.0
 
+### Changed
+
+- changed some function names to conform to PEP8 standards
+
 ### Removed
 
 - removed local `alphasign` project files, pull in as a dependency instead

@@ -17,15 +17,15 @@ class VariableType:
         self.name = name
         self.config = config
 
-    def getName(self):
+    def get_name(self):
         """:returns: the name of this variable"""
         return self.name
 
-    def getType(self):
+    def get_type(self):
         """:returns: the type of this variable """
         return self.type
 
-    def getDisplayParams(self):
+    def get_display_params(self):
         """formats any display parameters for this variable
         so it can be sent to the alphasign as part of a String object
 
@@ -41,11 +41,11 @@ class VariableType:
 
         return result
 
-    def getText(self):
+    def get_text(self):
         """:returns: the text for this variable as defined in yaml file"""
         return self.config['text']
 
-    def getStartup(self):
+    def get_startup(self):
         """:returns: the startup text for this variable as defined in the yaml file"""
         result = ""
 
@@ -55,7 +55,7 @@ class VariableType:
         return result
 
     @staticmethod
-    def getCategory(self):
+    def get_category(self):
         """the category of this variable, implemented by subclasses"""
         raise NotImplementedError
 
@@ -76,12 +76,7 @@ class PollingVariable(VariableType):
         if 'cron' not in self.config:
             self.config['cron'] = "*/5 * * * *"
 
-    def __findNext(self):
-        cron = croniter(self.config['cron'])
-
-        self.next_update = cron.get_next(datetime)
-
-    def shouldPoll(self, current_time, offset):
+    def should_poll(self, current_time, offset):
         """decides if this variable should be updated based on
         the configured cron expression. This is done using the current
         time and an offset to decide. Doing it this way ensures a valid "next update"
@@ -109,7 +104,7 @@ class PollingVariable(VariableType):
 
         return result
 
-    def getCategory(self):
+    def get_category(self):
         return constants.POLLING_CATEGORY
 
 
@@ -122,5 +117,5 @@ class AlphaSignVariable(VariableType):
     def __init__(self, type, name, config):
         super().__init__(type, name, config)
 
-    def getCategory(self):
+    def get_category(self):
         return constants.ALPHASIGN_CATEGORY

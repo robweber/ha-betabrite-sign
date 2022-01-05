@@ -26,9 +26,9 @@ class MessageManager:
             self.config = yaml.safe_load(file)
 
         # load all variable objects right away
-        self.__loadVariables()
+        self.__load_variables()
 
-    def __loadVariables(self):
+    def __load_variables(self):
         """create VariableType objects from the variables
         key in the yaml file
         """
@@ -46,7 +46,7 @@ class MessageManager:
             elif(aVar['type'] == 'time'):
                 self.varObjs[v] = TimeVariable(v, aVar)
 
-    def __allocateString(self, name):
+    def __allocate_string(self, name):
         """create a string label to allocate on the sign
 
         :returns: the next string allocation number
@@ -57,7 +57,7 @@ class MessageManager:
 
         return nextInt
 
-    def __allocateText(self, name):
+    def __allocate_text(self, name):
         """create a text label to allocate on the sign
 
         :returns: the next allocation letter
@@ -68,7 +68,7 @@ class MessageManager:
 
         return nextLetter
 
-    def __generateTextParams(self, m):
+    def __generate_text_params(self, m):
         """takes the configuration options and turns
         them into alphasign parameters to send to the display
 
@@ -87,7 +87,7 @@ class MessageManager:
 
         return result
 
-    def __getString(self, name):
+    def __get_string(self, name):
         """lookup a previously allocated string
 
         :returns: the allocation number identified by this string ID
@@ -97,7 +97,7 @@ class MessageManager:
 
         return self.stringObjs[name]
 
-    def __getText(self, name):
+    def __get_text(self, name):
         """lookup a previously allocated text object
 
         :returns: the allocation letter identified by this text ID
@@ -115,7 +115,7 @@ class MessageManager:
         allocateText = []  # textObjs
 
         # create a special message for when the sign is off
-        offMessage = alphasign.Text(data="", label=self.__allocateText(constants.SIGN_OFF), mode=constants.ALPHA_MODES['hold'])
+        offMessage = alphasign.Text(data="", label=self.__allocate_text(constants.SIGN_OFF), mode=constants.ALPHA_MODES['hold'])
         allocateText.append(offMessage)
 
         # load messages from "messages" key in yaml file
@@ -138,22 +138,22 @@ class MessageManager:
                     stringObj = None
                     if(v in allocateStrings.keys()):
                         # use pre-allocated string object if already loaded once
-                        logging.info(f"{aVar.getName()} alreadying loaded, adding to message")
+                        logging.info(f"{aVar.get_name()} alreadying loaded, adding to message")
                         stringObj = allocateStrings[v]
                         cliText = f"{cliText} {colored(v, 'green')}"
                     else:
-                        logging.info(f"Loading variable {aVar.getName()}:{aVar.getType()} for message")
-                        if(aVar.getType() == 'time'):
-                            stringObj = aVar.getStartup()
+                        logging.info(f"Loading variable {aVar.get_name()}:{aVar.get_type()} for message")
+                        if(aVar.get_type() == 'time'):
+                            stringObj = aVar.get_startup()
                             betabrite.write(stringObj)
                             cliText = f"{cliText} {colored(v, 'green')}"
                         else:
-                            stringObj = alphasign.String(data=aVar.getStartup(),
-                                                         label=self.__allocateString(aVar.getName()), size=125)
+                            stringObj = alphasign.String(data=aVar.get_startup(),
+                                                         label=self.__allocate_string(aVar.get_name()), size=125)
                             allocateStrings[v] = stringObj
-                            cliText = f"{cliText} {colored(aVar.getStartup(), 'green')}"
+                            cliText = f"{cliText} {colored(aVar.get_startup(), 'green')}"
 
-                    stringText = f"{stringText} {aVar.getDisplayParams()}{stringObj.call()}"
+                    stringText = f"{stringText} {aVar.get_display_params()}{stringObj.call()}"
                 else:
                     # kill the process here, can't recover from this
                     raise UndefinedVariableError(v)
@@ -161,9 +161,9 @@ class MessageManager:
             cliText = cliText.strip()
             # create text object, setting the string text
             logging.debug(f"'{cliText}' - MODE: {aMessage['mode']}")
-            messageParams = self.__generateTextParams(aMessage)
+            messageParams = self.__generate_text_params(aMessage)
             alphaObj = alphasign.Text("%s%s" % (messageParams, stringText), mode=constants.ALPHA_MODES[aMessage['mode']],
-                                      label=self.__allocateText(f"{self.MESSAGE_TEXT}_{i}"))
+                                      label=self.__allocate_text(f"{self.MESSAGE_TEXT}_{i}"))
 
             allocateText.append(alphaObj)
 
@@ -172,7 +172,7 @@ class MessageManager:
         # return objects that should be loaded into sign memory
         return {"run": runList, "allocate": allocateText + list(allocateStrings.values())}
 
-    def updateString(self, name, message):
+    def update_string(self, name, message):
         """Updates a string object on the sign with a new message
 
         :param name: the name, as defined in yaml, of the variable to update
@@ -181,11 +181,11 @@ class MessageManager:
         :returns: alphasign String object that can be written to the sign
         """
         # create the string object
-        return alphasign.String(data=message, label=self.__getString(name), size=125)
+        return alphasign.String(data=message, label=self.__get_string(name), size=125)
 
-    def updateText(self, name, message, priority=False):
+    def update_text(self, name, message, priority=False):
         """Updates a Text object on the sign with a new message
-        using updateString is preferable in most cases but this allows the swapping out of
+        using update_string is preferable in most cases but this allows the swapping out of
         messages with the priority flag
 
         :param name: the name of the text object to update
@@ -195,9 +195,9 @@ class MessageManager:
 
         :returns: alphasign Text object that can be written to the sign
         """
-        return alphasign.Text(data=message, label=self.__getText(name), priority=priority)
+        return alphasign.Text(data=message, label=self.__get_text(name), priority=priority)
 
-    def getVariableByName(self, name):
+    def get_variable_by_name(self, name):
         """finds the VariableType object associated with the given name
         :param name: the name, as defined in yaml, of the variable to lookup
 
@@ -205,15 +205,15 @@ class MessageManager:
         """
         return self.varObjs[name]
 
-    def getVariableByFilter(self, category, func=lambda v: True):
-        """exact same functionality as getVariablesByFilter below
+    def get_variable_by_filter(self, category, func=lambda v: True):
+        """exact same functionality as get_variables_by_filter below
         however this is guarenteed to return a single result instead of a list
 
         :return: the VariableType object, could be None if not found or more than one result
         """
         result = None
 
-        foundVars = self.getVariablesByFilter(category, func)
+        foundVars = self.get_variables_by_filter(category, func)
 
         # only return an object if exactly one is found
         if(len(foundVars) == 1):
@@ -221,7 +221,7 @@ class MessageManager:
 
         return result
 
-    def getVariablesByFilter(self, category, func=lambda v: True):
+    def get_variables_by_filter(self, category, func=lambda v: True):
         """find all variables of a given category
 
         :param category: the category (polling, etc) to filter
@@ -231,7 +231,7 @@ class MessageManager:
         :returns: a list of all variables that match the given VariableType category
         """
         # get variables that are part of a particular category
-        return list(filter(lambda v: v.getCategory() == category and func(v), self.varObjs.values()))
+        return list(filter(lambda v: v.get_category() == category and func(v), self.varObjs.values()))
 
 
 class UndefinedVariableError(Exception):

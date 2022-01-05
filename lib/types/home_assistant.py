@@ -12,5 +12,5 @@ class HomeAssistantVariable(PollingVariable):
     def __init__(self, name, config):
         super().__init__('home_assistant', name, config)
 
-    def getText(self):
+    def get_text(self):
         return self.config['template']

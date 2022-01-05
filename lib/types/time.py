@@ -23,14 +23,14 @@ class DateVariable(PollingVariable):
         # set the cron time to be at midnight each day
         self.config['cron'] = '0 0 * * *'
 
-    def getText(self):
+    def get_text(self):
         dateObj = datetime.datetime.today()
         dateSep = self.config['separator']
 
         return f"{dateObj.month}{dateSep}{dateObj.day}{dateSep}{dateObj.year}"
 
-    def getStartup(self):
-        return self.getText()
+    def get_startup(self):
+        return self.get_text()
 
 
 class TimeVariable(AlphaSignVariable):
@@ -41,11 +41,11 @@ class TimeVariable(AlphaSignVariable):
     def __init__(self, name, config):
         super().__init__('time', name, config)
 
-    def getText(self):
+    def get_text(self):
         # create the alphasign Time object
         timeObj = alphasign.time.Time()
 
         return timeObj
 
-    def getStartup(self):
-        return self.getText()
+    def get_startup(self):
+        return self.get_text()

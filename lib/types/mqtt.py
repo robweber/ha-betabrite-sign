@@ -20,17 +20,17 @@ class MQTTVariable(VariableType):
         if('qos' not in self.config):
             self.config['qos'] = 0
 
-    def getTopic(self):
+    def get_topic(self):
         return self.config['topic']
 
-    def getQos(self):
+    def get_qos(self):
         return self.config['qos']
 
-    def parseJson(self):
+    def parse_json(self):
         return self.config['parse_json']
 
-    def getText(self):
+    def get_text(self):
         return self.config['text']
 
-    def getCategory(self):
+    def get_category(self):
         return constants.MQTT_CATEGORY
