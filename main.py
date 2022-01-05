@@ -79,7 +79,7 @@ def mqtt_on_message(client, userdata, message):
 
             # render the template
             temp = Template(aVar.get_text())
-            newString = temp.render(value=payload)
+            newString = temp.render(value=payload).strip()
 
             # update the data on the sign
             logging.debug(f"updated {aVar.get_name()}:'{colored(newString, 'green')}'")
