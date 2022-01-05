@@ -74,7 +74,8 @@ def mqtt_on_message(client, userdata, message):
         if(aVar is not None):
             payload = str(message.payload.decode('utf-8'))
 
-            if(aVar.parse_json()):
+            # decode if payload is json
+            if(constants.is_json(payload)):
                 payload = json.loads(payload)
 
             # render the template

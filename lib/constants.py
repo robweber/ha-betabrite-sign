@@ -14,6 +14,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import alphasign
+import json
+from json.decoder import JSONDecodeError
 
 # variable categories
 ALPHASIGN_CATEGORY = 'alphasign'
@@ -52,3 +54,16 @@ ALPHA_FONTS = {"five_high_std": alphasign.charsets.FIVE_HIGH_STD, "five_stroke":
                "full_height_std": alphasign.charsets.FULL_HEIGHT_STD, "seven_shadow_fancy": alphasign.charsets.SEVEN_SHADOW_FANCY,
                "five_wide": alphasign.charsets.FIVE_WIDE, "seven_wide": alphasign.charsets.SEVEN_WIDE,
                "seven_fancy_wide": alphasign.charsets.SEVEN_FANCY_WIDE, "wide_stroke_five": alphasign.charsets.WIDE_STROKE_FIVE}
+
+def is_json(str):
+    """Checks if a string can be decoded into a JSON object"""
+    result = False
+
+    try:
+        json.loads(str)
+        result = True
+    except JSONDecodeError as je:
+        # do nothing
+        pass
+
+    return result
