@@ -28,7 +28,7 @@ from datetime import datetime, timedelta
 from termcolor import colored
 from lib.manager import MessageManager
 from lib.home_assistant import HomeAssistant, TemplateSyntaxError
-from lib.constants import POLLING_CATEGORY, MQTT_CATEGORY, MQTT_STATUS, MQTT_ATTRIBUTES, MQTT_COMMAND, MQTT_AVAILABLE, SIGN_OFF
+from lib import constants
 
 # create global vars
 betabrite = None
@@ -43,7 +43,7 @@ def signal_handler(signum, frame):
 
     if(mqtt_client is not None):
         # publish we're going offline
-        mqtt_client.publish(MQTT_AVAILABLE, "offline", retain=True)
+        mqtt_client.publish(constants.MQTT_AVAILABLE, "offline", retain=True)
 
         # disconnect
         mqtt_client.loop_stop()
@@ -61,15 +61,15 @@ def mqtt_on_message(client, userdata, message):
     """triggered when message is received via mqtt"""
     logging.debug(colored(message.topic, 'red') + " " + str(message.payload))
 
-    if(message.topic == MQTT_COMMAND):
+    if(message.topic == constants.MQTT_COMMAND):
         change_state(str(message.payload.decode('utf-8')))
 
         # publish new status and last updated attribute
-        mqtt_client.publish(MQTT_STATUS, message.payload, retain=True)
-        mqtt_client.publish(MQTT_ATTRIBUTES, json.dumps({"last_updated": str(datetime.now().astimezone().isoformat(timespec='seconds'))}), retain=True)
+        mqtt_client.publish(constants.MQTT_STATUS, message.payload, retain=True)
+        mqtt_client.publish(constants.MQTT_ATTRIBUTES, json.dumps({"last_updated": str(datetime.now().astimezone().isoformat(timespec='seconds'))}), retain=True)
     else:
         # this is for a variable, load it
-        aVar = manager.get_variable_by_filter(MQTT_CATEGORY, lambda v: v.get_topic() == message.topic)
+        aVar = manager.get_variable_by_filter(constants.MQTT_CATEGORY, lambda v: v.get_topic() == message.topic)
 
         if(aVar is not None):
             payload = str(message.payload.decode('utf-8'))
@@ -116,7 +116,7 @@ def poll(offset=timedelta(minutes=1)):
     """
     # get all polling type variables that need to be updated
     now = datetime.now()
-    pollingVars = manager.get_variables_by_filter(POLLING_CATEGORY, lambda v: v.should_poll(now, offset))
+    pollingVars = manager.get_variables_by_filter(constants.POLLING_CATEGORY, lambda v: v.should_poll(now, offset))
 
     # load the HA interface, if needed
     homeA = None
@@ -156,9 +156,9 @@ def change_state(newState):
 
     # create the sign object and update the sign
     if(newState == 'OFF'):
-        offMessage = manager.update_text(SIGN_OFF, ' ', True)
+        offMessage = manager.update_text(constants.SIGN_OFF, ' ', True)
     else:
-        offMessage = manager.update_text(SIGN_OFF, '', True)
+        offMessage = manager.update_text(constants.SIGN_OFF, '', True)
 
     betabrite.write(offMessage)
     betabrite.disconnect()
@@ -250,7 +250,7 @@ time.sleep(10)
 
 if(args.mqtt and args.mqtt_username):
     # get the last known status from MQTT
-    statusMsg = mqtt_subscribe.simple(MQTT_STATUS, hostname=args.mqtt, auth={"username": args.mqtt_username, "password": args.mqtt_password})
+    statusMsg = mqtt_subscribe.simple(constants.MQTT_STATUS, hostname=args.mqtt, auth={"username": args.mqtt_username, "password": args.mqtt_password})
     logging.info(f"Startup state is: {colored(str(statusMsg.payload.decode('utf-8')), 'yellow')}")
     change_state(str(statusMsg.payload.decode('utf-8')))
 
@@ -263,15 +263,15 @@ if(args.mqtt and args.mqtt_username):
     mqtt_client.on_message = mqtt_on_message
 
     # set last will in case of crash
-    mqtt_client.will_set(MQTT_AVAILABLE, "offline", qos=1, retain=True)
+    mqtt_client.will_set(constants.MQTT_AVAILABLE, "offline", qos=1, retain=True)
 
     mqtt_client.connect(args.mqtt)
 
     # subscribe to the built in topics
-    watchTopics = [(MQTT_COMMAND, 1)]
+    watchTopics = [(constants.MQTT_COMMAND, 1)]
 
     # get a list of all mqtt variables
-    mqttVars = manager.get_variables_by_filter(MQTT_CATEGORY)
+    mqttVars = manager.get_variables_by_filter(constants.MQTT_CATEGORY)
     for v in mqttVars:
         watchTopics.append((v.get_topic(), v.get_qos()))
 
@@ -282,7 +282,7 @@ if(args.mqtt and args.mqtt_username):
     mqtt_client.loop_start()
 
     # let HA know we're online
-    mqtt_client.publish(MQTT_AVAILABLE, "online", retain=True)
+    mqtt_client.publish(constants.MQTT_AVAILABLE, "online", retain=True)
 else:
     logging.info("No MQTT server or username, skipping MQTT setup")
 
