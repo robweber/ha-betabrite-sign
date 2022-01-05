@@ -66,7 +66,7 @@ def mqtt_on_message(client, userdata, message):
             newString = temp.render(value=payload)
 
             # update the data on the sign
-            logging.debug(f"updated {aVar.getName()}:{colored(newString, 'green')}")
+            logging.debug(f"updated {aVar.getName()}:'{colored(newString, 'green')}'")
             updateString(aVar.getName(), newString)
 
 
@@ -125,7 +125,7 @@ def poll(offset=timedelta(minutes=1)):
                 logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
 
         if(newString is not None):
-            logging.debug(f"updated {v.getName()}:{colored(newString, 'green')}")
+            logging.debug(f"updated {v.getName()}:'{colored(newString, 'green')}'")
             updateString(v.getName(), newString)
 
 

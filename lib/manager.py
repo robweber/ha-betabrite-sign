@@ -158,8 +158,9 @@ class MessageManager:
                     # kill the process here, can't recover from this
                     raise UndefinedVariableError(v)
 
+            cliText = cliText.strip()
             # create text object, setting the string text
-            logging.debug(f"{cliText} - MODE: {aMessage['mode']}")
+            logging.debug(f"'{cliText}' - MODE: {aMessage['mode']}")
             messageParams = self.__generateTextParams(aMessage)
             alphaObj = alphasign.Text("%s%s" % (messageParams, stringText), mode=constants.ALPHA_MODES[aMessage['mode']],
                                       label=self.__allocateText(f"{self.MESSAGE_TEXT}_{i}"))
@@ -222,7 +223,7 @@ class MessageManager:
 
     def getVariablesByFilter(self, category, func=lambda v: True):
         """find all variables of a given category
-        
+
         :param category: the category (polling, etc) to filter
         :param func: an optional function to further filter the list by,
         this should be a lambda expression that takes a single argument

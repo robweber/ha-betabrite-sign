@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - fixed issue with multiple threads accessing serial port via `connect()`
 - `getVariables` filter function didn't pass argument, always returned True. Fixed now.
 - TemplateSyntaxErrors now trigger on incorrect HTTP response code rather than looking for JSON in the result
+- minor variable formatting issues (spacing, storage, etc)
 
 ## Alpha
 
