@@ -21,6 +21,7 @@ manager = None
 mqttClient = None
 threadLock = threading.Lock()  # ensure exclusive access to betabrite serial port
 
+
 def signal_handler(signum, frame):
     """function to handle when the is killed and exit gracefully"""
     logging.debug('Exiting Program')
@@ -147,6 +148,7 @@ def changeState(newState):
     betabrite.write(offMessage)
     betabrite.disconnect()
     threadLock.release()
+
 
 def updateString(name, msg):
     """Update a string object on the sign

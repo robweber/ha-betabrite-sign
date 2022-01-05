@@ -1,6 +1,5 @@
 import requests
 import json
-from json.decoder import JSONDecodeError
 
 
 class HomeAssistant:
@@ -39,7 +38,7 @@ class HomeAssistant:
 
     def getState(self, entity=''):
         """get the state of a specific HA entity
-        
+
         :param entity: the entity name in Home Assistant you want to get the state of
 
         :returns: a dict containing the state of this entity
