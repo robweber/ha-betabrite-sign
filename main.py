@@ -22,8 +22,7 @@ mqttClient = None
 threadLock = threading.Lock()  # ensure exclusive access to betabrite serial port
 
 def signal_handler(signum, frame):
-    """function to handle when the is killed and exit gracefully
-    """
+    """function to handle when the is killed and exit gracefully"""
     logging.debug('Exiting Program')
 
     if(mqttClient is not None):
@@ -38,14 +37,12 @@ def signal_handler(signum, frame):
 
 
 def mqtt_connect(client, userdata, flags, rc):
-    """run on successful mqtt connection
-    """
+    """run on successful mqtt connection"""
     logging.info("Connected to MQTT Server")
 
 
 def mqtt_on_message(client, userdata, message):
-    """triggered when message is received via mqtt
-    """
+    """triggered when message is received via mqtt"""
     logging.debug(colored(message.topic, 'red') + " " + str(message.payload))
 
     if(message.topic == MQTT_COMMAND):
@@ -74,8 +71,7 @@ def mqtt_on_message(client, userdata, message):
 
 
 def setupSign():
-    """Setup the sign by allocating memory for variables and messages
-    """
+    """Setup the sign by allocating memory for variables and messages"""
     # connect to the sign and clear any data
     betabrite.connect()
     betabrite.clear_memory()
@@ -134,6 +130,11 @@ def poll(offset=timedelta(minutes=1)):
 
 
 def changeState(newState):
+    """changes the state of the sign on or off
+    this is called when triggered via the MQTT_COMMAND topic
+
+    :param newState: the new state of the sign (ON/OFF)
+    """
     threadLock.acquire()
     betabrite.connect()
 

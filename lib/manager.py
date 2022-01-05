@@ -21,9 +21,7 @@ class MessageManager:
     varObjs = {}  # variables, extending VariableType
 
     def __init__(self, configFile):
-        """
-        :param configFile: path to the yaml configuration file
-        """
+        """:param configFile: path to the yaml configuration file"""
         with open(configFile, 'r') as file:
             self.config = yaml.safe_load(file)
 
@@ -175,6 +173,7 @@ class MessageManager:
 
     def updateString(self, name, message):
         """Updates a string object on the sign with a new message
+
         :param name: the name, as defined in yaml, of the variable to update
         :message message: the new message
 
@@ -187,6 +186,7 @@ class MessageManager:
         """Updates a Text object on the sign with a new message
         using updateString is preferable in most cases but this allows the swapping out of
         messages with the priority flag
+
         :param name: the name of the text object to update
         :param message: the new message
         :param priority: if the message should take the place of currently shown messages. Defaults to False.
@@ -222,6 +222,7 @@ class MessageManager:
 
     def getVariablesByFilter(self, category, func=lambda v: True):
         """find all variables of a given category
+        
         :param category: the category (polling, etc) to filter
         :param func: an optional function to further filter the list by,
         this should be a lambda expression that takes a single argument

@@ -5,7 +5,7 @@ from json.decoder import JSONDecodeError
 
 class HomeAssistant:
     """The HomeAssistant class is a simple class for the purposes
-    of getting state and attribute information for different \
+    of getting state and attribute information for different
     entities from Home Assistant.
     """
     url = None
@@ -38,7 +38,8 @@ class HomeAssistant:
         return response
 
     def getState(self, entity=''):
-        """
+        """get the state of a specific HA entity
+        
         :param entity: the entity name in Home Assistant you want to get the state of
 
         :returns: a dict containing the state of this entity
