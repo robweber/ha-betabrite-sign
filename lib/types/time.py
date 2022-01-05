@@ -12,22 +12,22 @@ class DateVariable(PollingVariable):
     Special configuration options in yaml are:
      * separator: the separator character between the date fields
     """
-    dateSep = '/'
 
     def __init__(self, name, config):
         super().__init__('date', name, config)
 
         # allow for custom separator between date values
-        if('seperator' in self.config):
-            self.dateSep = self.config['separator']
+        if('separator' not in self.config):
+            self.config['separator'] = '/'
 
         # set the cron time to be at midnight each day
         self.config['cron'] = '0 0 * * *'
 
     def getText(self):
         dateObj = datetime.datetime.today()
+        dateSep = self.config['separator']
 
-        return f"{dateObj.month}{self.dateSep}{dateObj.day}{self.dateSep}{dateObj.year}"
+        return f"{dateObj.month}{dateSep}{dateObj.day}{dateSep}{dateObj.year}"
 
     def getStartup(self):
         return self.getText()
