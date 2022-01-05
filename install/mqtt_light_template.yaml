@@ -5,7 +5,6 @@
     command_topic: "betabrite/sign/switch"
     json_attributes_topic: "betabrite/sign/attributes"
     availability_topic: "betabrite/sign/available"
-    availability_template: "{% if as_datetime(value) > now() - timedelta(minutes=5) %}online{% else %}offline{% endif %}"
     qos: 0
     payload_on: "ON"
     payload_off: "OFF"
