@@ -50,7 +50,7 @@ sudo pip3 install -r install/requirements.txt
 
 ### Home Assistant Setup
 
-This code can run standalone, or be further integrated with Home Assistant to show up as a light entity through the use of a [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/). This allows Home Assistant to get some run-time data and control the sign as though it was a light. For this to work MQTT must be setup via the arguments below. A sample YAML file for creating the Home Assistant device is located in the `install` directory. The availability template triggers when the program exits or crashes causing the entity to show up as unavailable. 
+This code can run standalone, or be further integrated with Home Assistant to show up as a light entity through the use of a [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/). This allows Home Assistant to get some run-time data and control the sign as though it was a light. For this to work MQTT must be setup via the arguments below. A sample YAML file for creating the Home Assistant device is located in the `install` directory. The availability template triggers when the program exits or crashes causing the entity to show up as unavailable.
 
 When MQTT is configured the program will watch for commands and publish to the following topics.
 
@@ -340,4 +340,4 @@ This is mostly a project I made for fun so not looking to really modify it too m
 
 ## License
 
-[MIT License](https://github.com/robweber/ha-betabrite-sign/blob/main/LICENSE)
+[GPLv3](https://github.com/robweber/ha-betabrite-sign/blob/main/LICENSE)

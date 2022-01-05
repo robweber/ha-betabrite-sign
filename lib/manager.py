@@ -1,7 +1,7 @@
+import alphasign
 import logging
 import yaml
 from termcolor import colored
-from . import alphasign
 from . import constants
 from .types.home_assistant import HomeAssistantVariable
 from .types.mqtt import MQTTVariable

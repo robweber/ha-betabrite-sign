@@ -1,6 +1,6 @@
+import alphasign
 import datetime
 from .. variable_type import AlphaSignVariable, PollingVariable
-from .. import alphasign
 
 
 class DateVariable(PollingVariable):

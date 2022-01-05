@@ -1,4 +1,4 @@
-from . import alphasign
+import alphasign
 
 # variable categories
 ALPHASIGN_CATEGORY = 'alphasign'

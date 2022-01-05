@@ -5,7 +5,7 @@ import signal
 import sys
 import threading
 import time
-import lib.alphasign as alphasign
+import alphasign
 import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as mqtt_subscribe
 from jinja2 import Template

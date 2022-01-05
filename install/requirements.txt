@@ -1,5 +1,6 @@
 configargparse
 croniter
+git+https://github.com/robweber/alphasign.git#egg=alphasign
 Jinja2
 paho-mqtt
 pyserial
