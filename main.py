@@ -27,6 +27,10 @@ def signal_handler(signum, frame):
     logging.debug('Exiting Program')
 
     if(mqttClient is not None):
+        # publish we're going offline
+        mqttClient.publish(MQTT_AVAILABLE, "offline", retain=True)
+
+        # disconnect
         mqttClient.loop_stop()
         mqttClient.disconnect()
 
@@ -128,9 +132,6 @@ def poll(offset=timedelta(minutes=1)):
             logging.debug(f"updated {v.getName()}:{colored(newString, 'green')}")
             updateString(v.getName(), newString)
 
-    if(mqttClient != None):
-        # after each polling check publish the timestamp to the availability topic
-        mqttClient.publish(MQTT_AVAILABLE, str(datetime.now().astimezone().isoformat(timespec='seconds')), retain=True)
 
 def changeState(newState):
     threadLock.acquire()
@@ -243,6 +244,9 @@ if(args.mqtt and args.mqtt_username):
     mqttClient.on_connect = mqtt_connect
     mqttClient.on_message = mqtt_on_message
 
+    # set last will in case of crash
+    mqttClient.will_set(MQTT_AVAILABLE, "offline", qos=1, retain=True)
+
     mqttClient.connect(args.mqtt)
 
     # subscribe to the built in topics
@@ -258,6 +262,9 @@ if(args.mqtt and args.mqtt_username):
 
     # starts the network loop in the background
     mqttClient.loop_start()
+
+    # let HA know we're online
+    mqttClient.publish(MQTT_AVAILABLE, "online", retain=True)
 else:
     logging.info("No MQTT server or username, skipping MQTT setup")
 
