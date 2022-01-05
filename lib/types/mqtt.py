@@ -23,7 +23,6 @@ class MQTTVariable(VariableType):
     Special configuration options are:
       * topic: the MQTT topic to monitor for updates
       * qos: the MQTT quality of service (0-2) to use
-      * parse_json: True/False value on if the payload contains JSON
     """
 
     def __init__(self, name, config):
