@@ -11,6 +11,7 @@ Messages are configured for the display using a simple `.yaml` configuration fil
 - [Install](#install)
   - [Home Assistant Setup](#home-assistant-setup)
 - [Usage](#usage)
+  - [Testing](#testing)
 - [Layout File](#layout-file)
   - [Variables](#variables)
      - [Time](#time)
