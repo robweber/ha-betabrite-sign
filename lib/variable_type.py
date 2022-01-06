@@ -136,8 +136,8 @@ class AlphaSignVariable(VariableType):
     Alphasign protocol objects to display data
     """
 
-    def __init__(self, type, name, config):
-        super().__init__(type, name, config)
+    def __init__(self, type, name, config, defaults={}):
+        super().__init__(type, name, config, defaults)
 
     def get_category(self):
         return constants.ALPHASIGN_CATEGORY
