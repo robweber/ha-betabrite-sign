@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - changed some function names to conform to PEP8 standards
 - import entire constants file to `main.py` instead of every constant needed
 
+### Fixed
+
+- removed @staticmethod designator from `get_category`, this was a cut/paste mistake
+
 ### Removed
 
 - removed local `alphasign` project files, pull in as a dependency instead

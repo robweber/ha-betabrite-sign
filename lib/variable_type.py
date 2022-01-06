@@ -69,7 +69,6 @@ class VariableType:
 
         return result
 
-    @staticmethod
     def get_category(self):
         """the category of this variable, implemented by subclasses"""
         raise NotImplementedError
