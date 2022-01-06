@@ -27,7 +27,7 @@ Messages are configured for the display using a simple `.yaml` configuration fil
 
 ## Background
 
-A long, long time ago, in an apartment far away; my college roommate and I wanted a cool LED sign to display information. I purchased a cheap [Betabrite LED display](https://www.alpha-american.com/p-betabrite.html) and a serial cable. My first crude attempts at this (circa 2006) used Java and some serial commands to write messages to the display. Over time this setup evolved to using a Raspberry Pi and [WebIOPI](http://webiopi.trouch.com/) to update the display. When I started using Home Assistant I hacked and slashed my way to integrating that with the existing setup as well.
+A long, long time ago, in an apartment far away; my college roommate and I wanted a cool LED sign to display information. I purchased a cheap [Betabrite LED display](https://www.alpha-american.com/p-betabrite.html) and a serial cable. My [first crude attempts](https://sourceforge.net/projects/betasigncontrol/) at this (circa 2007) used Java and some serial commands to write messages to the display. Over time this setup evolved to using a Raspberry Pi and [WebIOPI](http://webiopi.trouch.com/) to update the display. When I started using Home Assistant I hacked and slashed my way to integrating that with the existing setup as well.
 
 After some time with Home Assistant I realized there had to be a better way. Projects like [ESPHome](https://esphome.io/) showed me there were better integration methods. I didn't want to write an entire custom integration for Home Assistant; but yet my existing setup was way too cumbersome and relied on a lot of code rewrites every time I wanted to add something.
 
