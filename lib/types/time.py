@@ -49,9 +49,20 @@ class TimeVariable(AlphaSignVariable):
     """Represents the time object on the alphasign
     This is a special object in the alphasign protocol
     once it is set the sign will keep the time up to date
+
+    Special configuration options in yaml are:
+    * format: 12 or 24 if you want a standard or 24 hour clock.
+
     """
     def __init__(self, name, config):
-        super().__init__('time', name, config)
+        super().__init__('time', name, config, {"format": 12})
+
+    def get_time_format(self):
+        """get if this should be a 12 hr or 24 hour clock display
+
+        :returns: a 0 or 1 depending on if a 12 or 24 hour clock
+        """
+        return 0 if self.config['format'] == 12 else 1
 
     def get_text(self):
         # create the alphasign Time object

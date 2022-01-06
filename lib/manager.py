@@ -160,6 +160,7 @@ class MessageManager:
                         logging.info(f"Loading variable {aVar.get_name()}:{aVar.get_type()} for message")
                         if(aVar.get_type() == 'time'):
                             stringObj = aVar.get_startup()
+                            betabrite.write(stringObj.set_format(aVar.get_time_format()))  # write the time format
                             betabrite.write(stringObj)
                             cliText.append(colored(v, 'green'))
                         else:

@@ -177,6 +177,8 @@ variables:
   current_time:
     # type of variable
     type: time
+    # optional, 12 or 24 depending on the type of clock you wish to see
+    format: 12
     # color of message, optional
     color: green
 ```
