@@ -25,7 +25,7 @@ class VariableType:
     """
     type = None
     name = None
-    config = {"startup": ""}
+    config = None
 
     def __init__(self, type, name, config, defaults={}):
         """
@@ -38,7 +38,7 @@ class VariableType:
         self.name = name
 
         # set defaults and override with user values
-        self.config.update(defaults)
+        self.config = defaults.copy()
         self.config.update(config)
 
     def get_name(self):
