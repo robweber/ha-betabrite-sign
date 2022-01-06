@@ -22,6 +22,7 @@ class MQTTVariable(VariableType):
 
     Special configuration options are:
       * topic: the MQTT topic to monitor for updates
+      * template: what to render on the sign
       * qos: the MQTT quality of service (0-2) to use
     """
 
