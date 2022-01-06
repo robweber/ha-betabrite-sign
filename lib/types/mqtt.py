@@ -27,10 +27,7 @@ class MQTTVariable(VariableType):
     """
 
     def __init__(self, name, config):
-        super().__init__('mqtt', name, config)
-
-        if('qos' not in self.config):
-            self.config['qos'] = 0
+        super().__init__('mqtt', name, config, {"qos": 0})
 
     def get_topic(self):
         return self.config['topic']

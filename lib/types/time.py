@@ -29,13 +29,10 @@ class DateVariable(PollingVariable):
     """
 
     def __init__(self, name, config):
-        super().__init__('date', name, config)
-
-        # allow for custom separator between date values
-        if('separator' not in self.config):
-            self.config['separator'] = '/'
+        super().__init__('date', name, config, {"separator": "/"})
 
         # set the cron time to be at midnight each day
+        # this is not a default so set after defaults merged
         self.config['cron'] = '0 0 * * *'
 
     def get_text(self):

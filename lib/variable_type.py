@@ -25,12 +25,21 @@ class VariableType:
     """
     type = None
     name = None
-    config = None
+    config = {"startup": ""}
 
-    def __init__(self, type, name, config):
+    def __init__(self, type, name, config, defaults={}):
+        """
+        :param type: the type of variable, unique to subclasses
+        :param name: the name of the variable, as defined by the user in yaml file
+        :param config: a dict containing the config as read from the yaml file
+        :param defaults: default config options as defined in subclasses
+        """
         self.type = type
         self.name = name
-        self.config = config
+
+        # set defaults and override with user values
+        self.config.update(defaults)
+        self.config.update(config)
 
     def get_name(self):
         """:returns: the name of this variable"""
@@ -82,13 +91,11 @@ class PollingVariable(VariableType):
     using the "cron" parameter in the YAML config, if missing
     it will default to every 5 minutes
     """
+    __defaults = {"cron": "*/5 * * * *"}
 
-    def __init__(self, type, name, config):
-        super().__init__(type, name, config)
-
-        # default poll time is every 5 min
-        if 'cron' not in self.config:
-            self.config['cron'] = "*/5 * * * *"
+    def __init__(self, type, name, config, defaults={}):
+        self.__defaults.update(defaults)  # merge upstream defaults
+        super().__init__(type, name, config, self.__defaults)
 
     def should_poll(self, current_time, offset):
         """decides if this variable should be updated based on
