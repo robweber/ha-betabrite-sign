@@ -38,7 +38,7 @@ class MQTTVariable(VariableType):
         return self.config['qos']
 
     def get_text(self):
-        return self.config['text']
+        return self.config['template']
 
     def get_category(self):
         return constants.MQTT_CATEGORY

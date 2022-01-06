@@ -221,7 +221,7 @@ variables:
     # the topic to watch
     topic: homeassistant/locks/front_door/state
     # the template to render when updated
-    text: >-
+    template: >-
       The Front door is {{ value }}
     # optional mqtt quality of service (0 is default)
     qos: 1
@@ -232,7 +232,7 @@ variables:
     # the topic to watch
     topic: homeassistant/media/living_room/status
     # the template to render when updated
-    text: >-
+    template: >-
       {% if value.state == 'playing' %}
       Now playing {{ value.song }}
       {% else %}
