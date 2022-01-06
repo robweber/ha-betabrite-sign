@@ -132,6 +132,31 @@ sudo systemctl start ha-sign
 sudo systemctl stop ha-sign
 ```
 
+### Testing
+
+There is a basic test utility also included to test if communication to your sign is working or just test different message configurations. It can be accessed via the `test_utility.py` script. As with the main program using a device of __cli__ will output everything to the display and simply simulate the commands. Parameters for the color, font, and mode are shown below in the [messages](#messages) area.
+
+```
+usage: test_utility.py [-h] [-d DEVICE] -m MESSAGE [-C COLOR] [-F FONT]
+                       [-M MODE]
+
+Betabrite Sign Test Utility
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d DEVICE, --device DEVICE
+                        Path to device where Alphasign is connected, default
+                        is /dev/ttyUSB0, can also use 'cli' to output to
+                        screen only
+  -m MESSAGE, --message MESSAGE
+                        The message to display on the sign
+  -C COLOR, --color COLOR
+                        The color of the message
+  -F FONT, --font FONT  Message font
+  -M MODE, --mode MODE  The display mode, default is hold
+
+```
+
 ## Layout File
 
 The `layout.yaml` file controls most aspects of displaying messages on the sign. This is where variables are defined and various modes and colors for display are setup.

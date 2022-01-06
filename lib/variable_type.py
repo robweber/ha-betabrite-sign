@@ -112,6 +112,7 @@ class PollingVariable(VariableType):
         :param current_time: a datetime object that represents the time to
         compare against, usually the current time (datetime.now())
         :param offset: timedelta representing the offset to subtract from current time
+
         :returns: True/False if the variable should be updated
         """
         result = False

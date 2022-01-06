@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 
+- added a test utility class to send simple messages to the LED display for testing
+
+## Version 1.0
+
+### Added
+
 - defaults can be set in Variable subclasses and passed up be included in the config object
 - added project version to startup output
 
