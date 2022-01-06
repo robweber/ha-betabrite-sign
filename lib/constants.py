@@ -58,6 +58,7 @@ ALPHA_FONTS = {"five_high_std": alphasign.charsets.FIVE_HIGH_STD, "five_stroke":
                "five_wide": alphasign.charsets.FIVE_WIDE, "seven_wide": alphasign.charsets.SEVEN_WIDE,
                "seven_fancy_wide": alphasign.charsets.SEVEN_FANCY_WIDE, "wide_stroke_five": alphasign.charsets.WIDE_STROKE_FIVE}
 
+
 def is_json(str):
     """Checks if a string can be decoded into a JSON object"""
     result = False
@@ -65,7 +66,7 @@ def is_json(str):
     try:
         json.loads(str)
         result = True
-    except JSONDecodeError as je:
+    except JSONDecodeError:
         # do nothing
         pass
 

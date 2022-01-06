@@ -66,7 +66,9 @@ def mqtt_on_message(client, userdata, message):
 
         # publish new status and last updated attribute
         mqtt_client.publish(constants.MQTT_STATUS, message.payload, retain=True)
-        mqtt_client.publish(constants.MQTT_ATTRIBUTES, json.dumps({"last_updated": str(datetime.now().astimezone().isoformat(timespec='seconds'))}), retain=True)
+        mqtt_client.publish(constants.MQTT_ATTRIBUTES,
+                            json.dumps({"last_updated": str(datetime.now().astimezone().isoformat(timespec='seconds'))}),
+                            retain=True)
     else:
         # this is for a variable, load it
         aVar = manager.get_variable_by_filter(constants.MQTT_CATEGORY, lambda v: v.get_topic() == message.topic)
@@ -251,7 +253,8 @@ time.sleep(10)
 
 if(args.mqtt and args.mqtt_username):
     # get the last known status from MQTT
-    statusMsg = mqtt_subscribe.simple(constants.MQTT_STATUS, hostname=args.mqtt, auth={"username": args.mqtt_username, "password": args.mqtt_password})
+    statusMsg = mqtt_subscribe.simple(constants.MQTT_STATUS, hostname=args.mqtt,
+                                      auth={"username": args.mqtt_username, "password": args.mqtt_password})
     logging.info(f"Startup state is: {colored(str(statusMsg.payload.decode('utf-8')), 'yellow')}")
     change_state(str(statusMsg.payload.decode('utf-8')))
 
