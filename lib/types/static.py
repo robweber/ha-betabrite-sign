@@ -23,8 +23,5 @@ class StaticVariable(AlphaSignVariable):
     def __init__(self, name, config):
         super().__init__('static', name, config)
 
-    def get_text(self):
-        return self.config['text']
-
     def get_startup(self):
         return self.get_text()
