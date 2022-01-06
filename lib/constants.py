@@ -17,6 +17,9 @@ import alphasign
 import json
 from json.decoder import JSONDecodeError
 
+# current version
+PROJECT_VERSION = "1.0"
+
 # variable categories
 ALPHASIGN_CATEGORY = 'alphasign'
 POLLING_CATEGORY = 'polling'

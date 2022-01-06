@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - defaults can be set in Variable subclasses and passed up be included in the config object
+- added project version to startup output
 
 ### Changed
 

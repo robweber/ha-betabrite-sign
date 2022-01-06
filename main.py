@@ -233,7 +233,7 @@ logging.basicConfig(datefmt='%m/%d %H:%M',
 
 logging.debug('Debug Mode On')
 
-logging.info("Setting up sign")
+logging.info(f"Starting Home Assistant Betabrite Sign - Version {constants.PROJECT_VERSION}")
 
 if(args.device == 'cli'):
     logging.info('Outputting sign info to CLI')
