@@ -64,7 +64,7 @@ Turning the sign off and on is done via a special Text object allocated when the
 
 ## Usage
 
-Once installed copy the existing `data/layout.yaml.example` file to `data/layout.yaml`. This file is read on startup to configure the messages sent to the display. There are two main sections to the file __variables__ and __messages__. The variables section defines strings that will be updated dynamically on the sign. The messages area defines the format of how the text will be displayed on the sign, this includes things like the display mode and color. For dynamic updates to work you'll need to poll Home Assistant or utilize MQTT. For a more complete breakdown of the options available in the layout file, see the Variables and Messages sections below.
+Once installed copy the existing `data/layout.yaml.example` file to `data/layout.yaml`. This file is read on startup to configure the messages sent to the display. There are two main sections to the file __variables__ and __messages__. The variables section defines strings that will be updated dynamically on the sign. The messages area defines the format of how the text will be displayed on the sign, this includes things like the display mode and color. For dynamic updates to work you'll need to poll Home Assistant or utilize MQTT. For a more complete breakdown of the options available in the layout file, see the [Variables](#variables) and [Messages](#messages) sections below.
 
 You can run the program with the following command:
 
@@ -164,7 +164,7 @@ The `layout.yaml` file controls most aspects of displaying messages on the sign.
 
 ### Variables
 
-The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for dynamic variables can be evaluated by using Jina templates, of which there are a few examples below. For more information on templating, see the [Home Assistant](https://www.home-assistant.io/docs/configuration/templating/) and [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/templates/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
+The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for dynamic variables can be evaluated by using Jijna templates, of which there are a few examples below. For more information on templating, see the [Home Assistant](https://www.home-assistant.io/docs/configuration/templating/) and [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/templates/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
 
 
 #### Time
@@ -227,7 +227,7 @@ variables:
     type: home_assistant
     # outputs "Everyone is home" or "Everyone is not home"
     text: >-
-      {% if states('person.person_a') == 'home' and states('person.person_b']) %}
+      {% if states('person.person_a') == 'home' and states('person.person_b']) == 'home' %}
       Everyone is home
       {% else %}
       Everyone is gone
@@ -360,7 +360,7 @@ messages:
 
 ## Contributing
 
-This is mostly a project I made for fun so not looking to really modify it too much. If you have troubles or find a bug, post it an issue. I'll review PRs as well if it fixes functionality or adds something really cool.
+This is mostly a project I made for fun so not looking to really modify it too much. If you have troubles or find a bug, post an issue. I'll review PRs as well if it fixes functionality or adds something really cool.
 
 ## License
 
