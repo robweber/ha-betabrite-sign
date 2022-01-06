@@ -143,8 +143,8 @@ class MessageManager:
             if(not isinstance(aMessage['data'], list)):
                 messageVars = [aMessage['data']]
 
-            stringText = ""
-            cliText = ""
+            stringText = []
+            cliText = []
             for v in messageVars:
                 # load each variable and extract it's startup text
                 if(v in self.varObjs.keys()):
@@ -155,29 +155,28 @@ class MessageManager:
                         # use pre-allocated string object if already loaded once
                         logging.info(f"{aVar.get_name()} alreadying loaded, adding to message")
                         stringObj = allocateStrings[v]
-                        cliText = f"{cliText} {colored(v, 'green')}"
+                        cliText.append(colored(v, 'green'))
                     else:
                         logging.info(f"Loading variable {aVar.get_name()}:{aVar.get_type()} for message")
                         if(aVar.get_type() == 'time'):
                             stringObj = aVar.get_startup()
                             betabrite.write(stringObj)
-                            cliText = f"{cliText} {colored(v, 'green')}"
+                            cliText.append(colored(v, 'green'))
                         else:
                             stringObj = alphasign.String(data=aVar.get_startup(),
                                                          label=self.__allocate_string(aVar.get_name()), size=125)
                             allocateStrings[v] = stringObj
-                            cliText = f"{cliText} {colored(aVar.get_startup(), 'green')}"
+                            cliText.append(colored(aVar.get_startup(), 'green'))
 
-                    stringText = f"{stringText} {aVar.get_display_params()}{stringObj.call()}"
+                    stringText.append(f"{aVar.get_display_params()}{stringObj.call()}")
                 else:
                     # kill the process here, can't recover from this
                     raise UndefinedVariableError(v)
 
-            cliText = cliText.strip()
             # create text object, setting the string text
-            logging.debug(f"'{cliText}' - MODE: {aMessage['mode']}")
+            logging.debug(f"'{' '.join(cliText)}' - MODE: {aMessage['mode']}")
             messageParams = self.__generate_text_params(aMessage)
-            alphaObj = alphasign.Text("%s%s" % (messageParams, stringText), mode=constants.ALPHA_MODES[aMessage['mode']],
+            alphaObj = alphasign.Text("%s%s" % (messageParams, ' '.join(stringText)), mode=constants.ALPHA_MODES[aMessage['mode']],
                                       label=self.__allocate_text(f"{self.MESSAGE_TEXT}_{i}"))
 
             allocateText.append(alphaObj)

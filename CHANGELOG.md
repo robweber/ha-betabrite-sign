@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - changed some function names to conform to PEP8 standards
 - import entire constants file to `main.py` instead of every constant needed
+- in `MessageManager` startup using arrays and `join` method instead of one large string with spaces
 
 ### Fixed
 
