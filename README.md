@@ -185,14 +185,14 @@ variables:
 
 #### Date
 
-Similar to the time variable, this displays the current date. Due to limitations with the display this has to be set manually once a day to be correct. This is done by polling in the background once per day.
+Similar to the time variable, this displays the current date. Due to limitations with the display this has to be set manually once a day to be correct. This is done by polling in the background once per day. When formatting the date you can use any format codes accepted by [strftime()](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior). Keep in mind you can use time codes however this will only update once per day - use the time variable if you want to keep real time. 
 
 ```
 variables:
   current_date:
     type: date
-    # optional parameter to set the separation character between the month, day, and year. Default is a '/'
-    separator: '-'
+    # optional parameter to format the date differently
+    format: "%A, %B %m, %Y"
 ```
 
 #### Static

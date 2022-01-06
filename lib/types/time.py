@@ -25,11 +25,11 @@ class DateVariable(PollingVariable):
     on the sign each day.
 
     Special configuration options in yaml are:
-     * separator: the separator character between the date fields
+     * format: the format of the date string, using strftime, default  is mm/dd/yy
     """
 
     def __init__(self, name, config):
-        super().__init__('date', name, config, {"separator": "/"})
+        super().__init__('date', name, config, {"format": "%m/%d/%y"})
 
         # set the cron time to be at midnight each day
         # this is not a default so set after defaults merged
@@ -37,9 +37,8 @@ class DateVariable(PollingVariable):
 
     def get_text(self):
         dateObj = datetime.datetime.today()
-        dateSep = self.config['separator']
 
-        return f"{dateObj.month}{dateSep}{dateObj.day}{dateSep}{dateObj.year}"
+        return dateObj.strftime(self.config['format'])
 
     def get_startup(self):
         return self.get_text()
