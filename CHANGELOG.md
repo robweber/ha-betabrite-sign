@@ -4,11 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## Version 1.0
+## Version 1.1 (unreleased)
 
 ### Added
 
 - added a test utility class to send simple messages to the LED display for testing
+- mqtt variables can use the `update_template` key to define a template used to evaluate if the display should be updated. MQTT is often chatty and this can cut down on unneeded updates
 
 ## Version 1.0
 

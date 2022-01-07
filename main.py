@@ -80,13 +80,16 @@ def mqtt_on_message(client, userdata, message):
             if(constants.is_json(payload)):
                 payload = json.loads(payload)
 
-            # render the template
-            temp = Template(aVar.get_text())
-            newString = temp.render(value=payload).strip()
+            if(aVar.should_update(payload)):
+                # render the template
+                temp = Template(aVar.get_text())
+                newString = temp.render(value=payload).strip()
 
-            # update the data on the sign
-            logging.debug(f"updated {aVar.get_name()}:'{colored(newString, 'green')}'")
-            update_string(aVar.get_name(), newString)
+                # update the data on the sign
+                logging.debug(f"updated {aVar.get_name()}:'{colored(newString, 'green')}'")
+                update_string(aVar.get_name(), newString)
+            else:
+                logging.debug(f"update conditional not met for {aVar.get_name()}")
 
 
 def setup():

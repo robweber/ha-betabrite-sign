@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+from jinja2 import Template
 from .. import constants
 from .. variable_type import VariableType
 
@@ -27,13 +28,27 @@ class MQTTVariable(VariableType):
     """
 
     def __init__(self, name, config):
-        super().__init__('mqtt', name, config, {"qos": 0})
+        super().__init__('mqtt', name, config, {"qos": 0, 'update_template': "True"})
 
     def get_topic(self):
         return self.config['topic']
 
     def get_qos(self):
         return self.config['qos']
+
+    def should_update(self, value):
+        """determine if the text of this variable should be updated based on a templated
+        conditional in the yaml configuration. By default this will always return True unless
+        defined otherwise.
+
+        :returns: boolean value, True/False
+        """
+        # create a template from the update conditional
+        template = Template(self.config['update_template'])
+
+        # evaluate it and return the result as a boolean
+        result = template.render(value=value).strip()
+        return result.lower() == "true"
 
     def get_text(self):
         return self.config['template']
