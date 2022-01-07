@@ -185,7 +185,7 @@ variables:
 
 #### Date
 
-Similar to the time variable, this displays the current date. Due to limitations with the display this has to be set manually once a day to be correct. This is done by polling in the background once per day. When formatting the date you can use any format codes accepted by [strftime()](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior). Keep in mind you can use time codes however this will only update once per day - use the time variable if you want to keep real time. 
+Similar to the time variable, this displays the current date. Due to limitations with the display this has to be set manually once a day to be correct. This is done by polling in the background once per day. When formatting the date you can use any format codes accepted by [strftime()](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior). Keep in mind you can use time codes however this will only update once per day - use the time variable if you want to keep real time.
 
 ```
 variables:
@@ -240,7 +240,9 @@ variables:
 
 #### MQTT
 
-The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Additionally Jinja templates can be used to evaluate the passed in data; but are limited to the data available in the MQTT payload. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with ```{{value['key']}}``` or ```{{value.key}}```. Topics are limited to the same MQTT host specified in the main program arguments (see above).
+The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Topics are limited to the same MQTT host specified in the main program arguments (see above). Additionally Jinja templates can be used to evaluate the passed in data; but are limited to the data available in the MQTT payload. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with ```{{value['key']}}``` or ```{{value.key}}```. The previous payload can also be accessed via the ``` {{ previous }}``` variable.
+
+MQTT can sometimes be very chatty so an additional `update_template` key is available. Using this allows you to define a True/False statement to determine if the data in the payload should actually trigger an update to the sign. Both the current ```value``` and ```previous``` values are available just like in the text template. 
 
 ```
 variables:
@@ -254,8 +256,8 @@ variables:
     # optional mqtt quality of service (0 is default)
     qos: 1
 
-  # more complicated example converting payload to JSON
-  mqtt_variable2:
+  # an example where the payload contains JSON
+  mqtt_json:
     type: mqtt
     # the topic to watch
     topic: homeassistant/media/living_room/status
@@ -266,6 +268,16 @@ variables:
       {% else %}
       Nothing playing
       {% endif %}
+
+  mqtt_conditional:
+    type: mqtt
+    topic: homeassistant/locks/front_door/state
+    template: >-
+      The Front door is {{ value.state }}
+    # example of a conditional, assuming a timestamp is passed to the attibute "last_updated"
+    # returns true if the state has changed
+    update_template: >-
+      {{ value.state != previous.state }}
 ```
 
 ## Messages

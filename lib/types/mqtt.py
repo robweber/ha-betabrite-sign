@@ -36,10 +36,13 @@ class MQTTVariable(VariableType):
     def get_qos(self):
         return self.config['qos']
 
-    def should_update(self, value):
+    def should_update(self, current_payload, previous_payload):
         """determine if the text of this variable should be updated based on a templated
         conditional in the yaml configuration. By default this will always return True unless
         defined otherwise.
+
+        :param current_payload: the current payload from the MQTT topic
+        :param previous_payload: the previous payload
 
         :returns: boolean value, True/False
         """
@@ -47,7 +50,7 @@ class MQTTVariable(VariableType):
         template = Template(self.config['update_template'])
 
         # evaluate it and return the result as a boolean
-        result = template.render(value=value).strip()
+        result = template.render(value=current_payload, previous=previous_payload).strip()
         return result.lower() == "true"
 
     def get_text(self):

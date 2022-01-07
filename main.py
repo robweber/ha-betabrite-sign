@@ -34,6 +34,7 @@ from lib import constants
 betabrite = None
 manager = None
 mqtt_client = None
+mqtt_payloads = {}
 thread_lock = threading.Lock()  # ensure exclusive access to betabrite serial port
 
 
@@ -79,11 +80,17 @@ def mqtt_on_message(client, userdata, message):
             # decode if payload is json
             if(constants.is_json(payload)):
                 payload = json.loads(payload)
+                previous_payload = mqtt_payloads[aVar.get_name()] if aVar.get_name() in mqtt_payloads else {}
+            else:
+                previous_payload = mqtt_payloads[aVar.get_name()] if aVar.get_name() in mqtt_payloads else ""
 
-            if(aVar.should_update(payload)):
+            if(aVar.should_update(payload, previous_payload)):
                 # render the template
                 temp = Template(aVar.get_text())
-                newString = temp.render(value=payload).strip()
+                newString = temp.render(value=payload, previous=previous_payload).strip()
+
+                # save the payload
+                mqtt_payloads[aVar.get_name()] = payload
 
                 # update the data on the sign
                 logging.debug(f"updated {aVar.get_name()}:'{colored(newString, 'green')}'")
