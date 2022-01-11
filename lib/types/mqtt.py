@@ -58,3 +58,21 @@ class MQTTVariable(VariableType):
 
     def get_category(self):
         return constants.MQTT_CATEGORY
+
+
+class MQTTPayloadManager:
+    __payloads = {}
+
+    def __init__(self, vars):
+        # initalize each variable
+        var_names = [v.get_name() for v in vars]
+        self.__payloads = dict.fromkeys(var_names, "")
+
+    def set_payload(self, var, payload):
+        self.__payloads[var] = payload
+
+    def get_payload(self, var):
+        return self.__payloads[var]
+
+    def has_value(self, var):
+        return self.__payloads[var] != ""

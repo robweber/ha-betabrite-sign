@@ -27,6 +27,7 @@ from jinja2 import Template
 from datetime import datetime, timedelta
 from termcolor import colored
 from lib.manager import MessageManager
+from lib.types.mqtt import MQTTPayloadManager
 from lib.home_assistant import HomeAssistant, TemplateSyntaxError
 from lib import constants
 
@@ -34,7 +35,7 @@ from lib import constants
 betabrite = None
 manager = None
 mqtt_client = None
-mqtt_payloads = {}
+mqtt_payloads = None
 thread_lock = threading.Lock()  # ensure exclusive access to betabrite serial port
 
 
@@ -82,8 +83,8 @@ def mqtt_on_message(client, userdata, message):
                 payload = json.loads(payload)
 
             # only proceed if we have a previous hit
-            if(aVar.get_name() in mqtt_payloads):
-                previous_payload = mqtt_payloads[aVar.get_name()]
+            if(mqtt_payloads.has_value(aVar.get_name())):
+                previous_payload = mqtt_payloads.get_payload(aVar.get_name())
 
                 if(aVar.should_update(payload, previous_payload)):
                     # render the template
@@ -91,7 +92,7 @@ def mqtt_on_message(client, userdata, message):
                     newString = temp.render(value=payload, previous=previous_payload).strip()
 
                     # save the payload
-                    mqtt_payloads[aVar.get_name()] = payload
+                    mqtt_payloads.set_payload(aVar.get_name(), payload)
 
                     # update the data on the sign
                     logging.debug(f"updated {aVar.get_name()}:'{colored(newString, 'green')}'")
@@ -100,7 +101,7 @@ def mqtt_on_message(client, userdata, message):
                     logging.debug(f"update conditional not met for {aVar.get_name()}")
             else:
                 # first hit on this topic
-                mqtt_payloads[aVar.get_name()] = payload
+                mqtt_payloads.set_payload(aVar.get_name(), payload)
 
 
 def setup():
@@ -266,6 +267,9 @@ setup()
 time.sleep(10)
 
 if(args.mqtt and args.mqtt_username):
+    # setup the payload manager
+    mqtt_payloads = MQTTPayloadManager(manager.get_variables_by_filter(constants.MQTT_CATEGORY))
+
     # get the last known status from MQTT
     statusMsg = mqtt_subscribe.simple(constants.MQTT_STATUS, hostname=args.mqtt,
                                       auth={"username": args.mqtt_username, "password": args.mqtt_password})
