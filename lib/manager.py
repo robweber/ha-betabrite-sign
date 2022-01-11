@@ -121,10 +121,11 @@ class MessageManager:
 
         :returns: the allocation number identified by this string ID
         """
-        if(name not in self.stringObjs.keys()):
-            raise UndefinedVariableError(name)
+        result = None
+        if(name in self.stringObjs.keys()):
+            self.stringObjs[name]
 
-        return self.stringObjs[name]
+        return result
 
     def __get_text(self, name):
         """lookup a previously allocated text object
@@ -209,8 +210,14 @@ class MessageManager:
 
         :returns: alphasign String object that can be written to the sign
         """
-        # create the string object
-        return alphasign.String(data=message, label=self.__get_string(name), size=125)
+        result = None
+        id = self.__get_string(name)
+
+        if(id is not None):
+            # create the string object
+            alphasign.String(data=message, label=id, size=125)
+
+        return result
 
     def update_text(self, name, message, priority=False):
         """Updates a Text object on the sign with a new message

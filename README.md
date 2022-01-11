@@ -160,7 +160,7 @@ optional arguments:
 
 ## Layout File
 
-The `layout.yaml` file controls most aspects of displaying messages on the sign. This is where variables are defined and various modes and colors for display are setup. If the contents of the file do not validate against constraints (ie incorrect variable types, colors, etc) the program will exit with an error on startup. 
+The `layout.yaml` file controls most aspects of displaying messages on the sign. This is where variables are defined and various modes and colors for display are setup. If the contents of the file do not validate against constraints (ie incorrect variable types, colors, etc) the program will exit with an error on startup.
 
 ### Variables
 
@@ -278,6 +278,33 @@ variables:
     # returns true if the state has changed
     update_template: >-
       {{ value.state != previous.state }}
+```
+
+A more advanced technique for combing data can be done through the `get_payload()` template method. Similar to the [states()](https://www.home-assistant.io/docs/configuration/templating/#states) method in Home Assistant; this allows MQTT templates to get payloads from other MQTT topics. These topics can be defined for the sole purpose of holding information for use later. The example below subscribes to 2 topics, one for geolocation and one for general home/away presence. The `mqtt_location` variable references the presence information to decide if the person is home or not before displaying the full geo location. 
+
+```
+variables:
+  mqtt_presence:
+    type:mqtt
+    # published home/away status
+    topic: homeassistant/person/person_a
+  mqtt_location:
+    type: mqtt
+    # geolocation published from Home Assistant Companion App
+    topic: homeassistant/mobile_app/person_a/geo_location
+    # use this to render the template as it will get updated more often
+    template: >-
+    {% if get_payload('mqtt_presence') == 'home' %}
+    Person A is Home
+    {% else %}
+    Person A is {{ value }}
+    {% endif %}
+# only display one message on the sign
+messages:
+  - data:
+      - mqtt_location
+    color: green
+    mode: hold
 ```
 
 ## Messages

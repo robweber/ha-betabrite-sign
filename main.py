@@ -23,7 +23,6 @@ import time
 import alphasign
 import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as mqtt_subscribe
-from jinja2 import Template
 from datetime import datetime, timedelta
 from termcolor import colored
 from lib.manager import MessageManager
@@ -84,12 +83,10 @@ def mqtt_on_message(client, userdata, message):
 
             # only proceed if we have a previous hit
             if(mqtt_payloads.has_value(aVar.get_name())):
-                previous_payload = mqtt_payloads.get_payload(aVar.get_name())
 
-                if(aVar.should_update(payload, previous_payload)):
+                if(mqtt_payloads.should_update(aVar, payload)):
                     # render the template
-                    temp = Template(aVar.get_text())
-                    newString = temp.render(value=payload, previous=previous_payload).strip()
+                    newString = mqtt_payloads.render_template(aVar, payload)
 
                     # save the payload
                     mqtt_payloads.set_payload(aVar.get_name(), payload)
@@ -194,13 +191,16 @@ def update_string(name, msg):
     msg = msg.replace('_', ' ')
 
     strObj = manager.update_string(name, msg)
-    thread_lock.acquire()
-    betabrite.connect()
 
-    betabrite.write(strObj)
+    # write to sign if this String exists
+    if(strObj is not None):
+        thread_lock.acquire()
+        betabrite.connect()
 
-    betabrite.disconnect()
-    thread_lock.release()
+        betabrite.write(strObj)
+
+        betabrite.disconnect()
+        thread_lock.release()
 
 
 # parse the arguments

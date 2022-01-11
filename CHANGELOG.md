@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - mqtt variables can use the `update_template` key to define a template used to evaluate if the display should be updated. MQTT is often chatty and this can cut down on unneeded updates
 - mqtt templates can now access the previous MQTT payload via the ```previous``` variable
 - `layout.yaml` file is parsed on startup for common errors, program is halted if the schema cannot validate
+- added global Jinja method `get_payload()` for use in evaluating MQTT Variables. Can get the payload from any defined MQTT variable type
+
+### Changed
+
+- variables can be defined and referenced without having to be part of a given message. Useful for calling variables from within other templates.
 
 ## Version 1.0
 
