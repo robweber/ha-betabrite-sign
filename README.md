@@ -160,7 +160,7 @@ optional arguments:
 
 ## Layout File
 
-The `layout.yaml` file controls most aspects of displaying messages on the sign. This is where variables are defined and various modes and colors for display are setup.
+The `layout.yaml` file controls most aspects of displaying messages on the sign. This is where variables are defined and various modes and colors for display are setup. If the contents of the file do not validate against constraints (ie incorrect variable types, colors, etc) the program will exit with an error on startup. 
 
 ### Variables
 

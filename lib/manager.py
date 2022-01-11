@@ -15,7 +15,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import alphasign
 import logging
+import sys
 import yaml
+from cerberus import Validator
 from termcolor import colored
 from . import constants
 from .types.home_assistant import HomeAssistantVariable
@@ -37,8 +39,20 @@ class MessageManager:
 
     def __init__(self, configFile):
         """:param configFile: path to the yaml configuration file"""
+
+        # load the schema and config file
+        with open('data/schema.yaml', 'r') as file:
+            schema = yaml.safe_load(file)
+
         with open(configFile, 'r') as file:
             self.config = yaml.safe_load(file)
+
+        # validate the config, kill the program if invalid
+        v = Validator(schema)
+        if(not v.validate(self.config, schema)):
+            logging.error(f"Error in layout file: {configFile}")
+            logging.error(str(v.errors))
+            sys.exit(2)
 
         # load all variable objects right away
         self.__load_variables()

@@ -1,0 +1,149 @@
+# schema for the layout file, validated on startup
+variables:
+  required: True
+  type: dict
+  valueschema:
+    type: dict
+    schema:
+      type:
+        required: True
+        type: string
+        allowed:
+          - time
+          - date
+          - static
+          - home_assistant
+          - mqtt
+      color:
+        required: False
+        type: string
+        allowed:
+          - green
+          - red
+          - orange
+          - yellow
+          - rainbow1
+          - rainbow2
+          - amber
+          - brown
+          - color_mix
+      cron:
+        type: string
+        dependencies:
+          type:
+            - home_assistant
+      format:
+        required: False
+        type:
+          - string
+          - number
+        dependencies:
+          type:
+            - time
+            - date
+      qos:
+        type: number
+        min: 0
+        max: 2
+        dependencies:
+          type:
+            - mqtt
+      startup:
+        required: False
+        type: string
+        dependencies:
+          type:
+            - home_assistant
+            - mqtt
+      template:
+        type: string
+        dependencies:
+          type:
+            - home_assistant
+            - mqtt
+      text:
+        type: string
+        dependencies:
+          type:
+            - static
+      topic:
+        type: string
+        dependencies:
+          type:
+            - mqtt
+      update_template:
+        type: string
+        dependencies:
+          type:
+            - mqtt
+messages:
+  required: True
+  type: list
+  schema:
+    type: dict
+    schema:
+      data:
+        required: True
+        type:
+          - string
+          - list
+      mode:
+        required: True
+        type: string
+        allowed:
+          - hold
+          - rotate
+          - roll_up
+          - roll_down
+          - roll_left
+          - roll_right
+          - wipe_up
+          - wipe_down
+          - wipe_left
+          - wipe_right
+          - scroll
+          - twinkle
+          - sparkle
+          - snow
+          - interlock
+          - spray
+          - switch
+          - starburst
+          - welcome
+          - slot_machine
+      color:
+        required: False
+        type: string
+        allowed:
+          - green
+          - red
+          - orange
+          - yellow
+          - rainbow1
+          - rainbow2
+          - amber
+          - brown
+          - color_mix
+      font:
+        required: False
+        type: string
+        allowed:
+          - five_high_std
+          - five_stroke
+          - seven_high_std
+          - seven_stroke
+          - seven_high_fancy
+          - ten_high_std
+          - seven_shadow
+          - full_height_fancy
+          - full_height_std
+          - seven_shadow_fancy
+          - five_wide
+          - seven_wide
+          - seven_fancy_wide
+          - wide_stroke_five
+      speed:
+        required: False
+        type: number
+        min: 1
+        max: 5
