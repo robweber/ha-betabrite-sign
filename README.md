@@ -217,8 +217,8 @@ variables:
   # a simple example that just shows the state of an entity
   show_state:
     type: home_assistant
-    # the text to be sent to the display
-    template: "This entity is: {{ states('sensor.name' }}"  # show the state of this entity
+    # the text to be sent to the display - just show the state of this entity
+    template: "This entity is: {{ states('sensor.name' }}"
     # this is the text shown when the program first loads, before the entity is polled
     startup: "No data yet"
     # how often, to update as a cron expression, if missing defaults to every 5 min
@@ -228,7 +228,7 @@ variables:
   show_presence:
     type: home_assistant
     # outputs "Everyone is home" or "Everyone is not home"
-    text: >-
+    template: >-
       {% if states('person.person_a') == 'home' and states('person.person_b']) == 'home' %}
       Everyone is home
       {% else %}
@@ -242,7 +242,7 @@ variables:
 
 The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Topics are limited to the same MQTT host specified in the main program arguments (see above). Additionally Jinja templates can be used to evaluate the passed in data; but are limited to the data available in the MQTT payload. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with ```{{value['key']}}``` or ```{{value.key}}```. The previous payload can also be accessed via the ``` {{ previous }}``` variable.
 
-MQTT can sometimes be very chatty so an additional `update_template` key is available. Using this allows you to define a True/False statement to determine if the data in the payload should actually trigger an update to the sign. Both the current ```value``` and ```previous``` values are available just like in the text template. 
+MQTT can sometimes be very chatty so an additional `update_template` key is available. Using this allows you to define a True/False statement to determine if the data in the payload should actually trigger an update to the sign. Both the current ```value``` and ```previous``` values are available just like in the text template.
 
 ```
 variables:
@@ -274,7 +274,7 @@ variables:
     topic: homeassistant/locks/front_door/state
     template: >-
       The Front door is {{ value.state }}
-    # example of a conditional, assuming a timestamp is passed to the attibute "last_updated"
+    # example of a conditional
     # returns true if the state has changed
     update_template: >-
       {{ value.state != previous.state }}
