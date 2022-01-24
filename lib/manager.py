@@ -123,7 +123,7 @@ class MessageManager:
         """
         result = None
         if(name in self.stringObjs.keys()):
-            self.stringObjs[name]
+            result = self.stringObjs[name]
 
         return result
 
@@ -215,7 +215,7 @@ class MessageManager:
 
         if(id is not None):
             # create the string object
-            alphasign.String(data=message, label=id, size=125)
+            result = alphasign.String(data=message, label=id, size=125)
 
         return result
 

@@ -201,6 +201,8 @@ def update_string(name, msg):
 
         betabrite.disconnect()
         thread_lock.release()
+    else:
+        logging.debug(f"can't allocated object for find {name}")
 
 
 # parse the arguments
