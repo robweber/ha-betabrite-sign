@@ -81,24 +81,28 @@ def mqtt_on_message(client, userdata, message):
             if(constants.is_json(payload)):
                 payload = json.loads(payload)
 
-            # only proceed if we have a previous hit
-            if(mqtt_payloads.has_value(aVar.get_name())):
+            # save the new payload
+            mqtt_payloads.set_payload(aVar.get_name(), payload)
 
-                if(mqtt_payloads.should_update(aVar, payload)):
-                    # render the template
-                    newString = mqtt_payloads.render_template(aVar, payload)
+            # render this variable
+            render_mqtt(aVar)
 
-                    # save the payload
-                    mqtt_payloads.set_payload(aVar.get_name(), payload)
+            # re-render any dependant variables
+            for dep in mqtt_payloads.get_dependencies(aVar.get_name()):
+                render_mqtt(manager.get_variable_by_name(dep))
 
-                    # update the data on the sign
-                    logging.debug(f"updated {aVar.get_name()}:'{colored(newString, 'green')}'")
-                    update_string(aVar.get_name(), newString)
-                else:
-                    logging.debug(f"update conditional not met for {aVar.get_name()}")
-            else:
-                # first hit on this topic
-                mqtt_payloads.set_payload(aVar.get_name(), payload)
+
+def render_mqtt(var):
+    """Render the mqtt variable and update the sign"""
+    if(mqtt_payloads.should_update(var)):
+        # render the template
+        newString = mqtt_payloads.render_template(var)
+
+        # update the data on the sign
+        logging.debug(f"updated {var.get_name()}:'{colored(newString, 'green')}'")
+        update_string(var.get_name(), newString)
+    else:
+        logging.debug(f"update conditional not met for {var.get_name()}")
 
 
 def setup():

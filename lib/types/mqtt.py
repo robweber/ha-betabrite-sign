@@ -35,7 +35,7 @@ class MQTTVariable(VariableType):
 
         # get variables this var depends on
         self.__depends = []
-        matches = re.findall("get_payload\('\w+'\)", self.get_text())
+        matches = re.findall("get_payload\('\w+'\)", self.get_text())  # noqa: W605
         for m in matches:
             depend = m[13:-2]  # strip the function from the var name
             if(depend not in self.__depends):
@@ -105,6 +105,19 @@ class MQTTPayloadManager:
         """
         return self.__payloads[var]
 
+    def get_dependencies(self, var):
+        """get any variables that uses the given variable in a template via get_payload
+
+        :param var: the MQTT variable name
+
+        :returns: a list of dependency variable names, or a blank list if none
+        """
+        result = []
+        if(var in self.__depends.keys()):
+            result = self.__depends[var]
+
+        return result
+
     def has_value(self, var):
         """does this variable have a valid payload
         :param var: the MQTT variable name
@@ -113,32 +126,29 @@ class MQTTPayloadManager:
         """
         return self.__payloads[var] != ""
 
-    def should_update(self, var, payload):
+    def should_update(self, var):
         """evaluate the update_template conditional of this variable
         in the yaml configuration. By default this will always return True unless
         defined otherwise.
 
         :param var: the MQTT variable object
-        :param payload: the new payload from the topic
 
         :returns: boolean value, True/False
         """
         template = self.__jinja_env.from_string(var.update_template())
 
         # evaluate it and return the result as a boolean
-        result = template.render(value=payload, previous=self.get_payload(var.get_name())).strip()
+        result = template.render(value=self.get_payload(var.get_name())).strip()
         return result.lower() == "true"
 
-    def render_template(self, var, payload):
+    def render_template(self, var):
         """render the template for this variable
-        the new payload is passed in as the "value" variable
-        and the old payload as the "previous" variable
+        the payload is passed in as the "value" variable
 
         :param var: the MQTT variable object
-        :param payload: the new payload from the topic
 
         :returns: the result of the rendered template
         """
         template = self.__jinja_env.from_string(var.get_text())
 
-        return template.render(value=payload, previous=self.get_payload(var.get_name())).strip()
+        return template.render(value=self.get_payload(var.get_name())).strip()
