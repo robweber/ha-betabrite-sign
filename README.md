@@ -240,9 +240,9 @@ variables:
 
 #### MQTT
 
-The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Topics are limited to the same MQTT host specified in the main program arguments (see above). Additionally Jinja templates can be used to evaluate the passed in data; but are limited to the data available in the MQTT payload. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with ```{{value['key']}}``` or ```{{value.key}}```. The previous payload can also be accessed via the ``` {{ previous }}``` variable.
+The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Topics are limited to the same MQTT host specified in the main program arguments (see above). Additionally Jinja templates can be used to evaluate the passed in data. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with ```{{value['key']}}``` or ```{{value.key}}```.
 
-MQTT can sometimes be very chatty so an additional `update_template` key is available. Using this allows you to define a True/False statement to determine if the data in the payload should actually trigger an update to the sign. Both the current ```value``` and ```previous``` values are available just like in the text template.
+MQTT can sometimes be very chatty so an additional `update_template` key is available. Using this allows you to define a True/False statement to determine if the data in the payload should actually trigger an update to the sign. The current ```value```  is available just like in the text template.
 
 ```
 variables:
@@ -260,7 +260,7 @@ variables:
   mqtt_json:
     type: mqtt
     # the topic to watch
-    topic: homeassistant/media/living_room/status
+    topic: homeassistant/media_player/living_room/status
     # the template to render when updated
     template: >-
       {% if value.state == 'playing' %}
@@ -275,24 +275,23 @@ variables:
     template: >-
       The Front door is {{ value.state }}
     # example of a conditional
-    # returns true if the state has changed
+    # returns true if the state is not unknown
     update_template: >-
-      {{ value.state != previous.state }}
+      {{ value.state != 'unknown' }}
 ```
 
-A more advanced technique for combing data can be done through the `get_payload()` template method. Similar to the [states()](https://www.home-assistant.io/docs/configuration/templating/#states) method in Home Assistant; this allows MQTT templates to get payloads from other MQTT topics. These topics can be defined for the sole purpose of holding information for use later. The example below subscribes to 2 topics, one for geolocation and one for general home/away presence. The `mqtt_location` variable references the presence information to decide if the person is home or not before displaying the full geo location. 
+A more advanced technique for combining data can be done through the `get_payload()` template method. Similar to the [states()](https://www.home-assistant.io/docs/configuration/templating/#states) method in Home Assistant; this allows MQTT templates to get payloads from other MQTT topics. These topics can be defined for the sole purpose of holding information for use later. The example below subscribes to 2 topics, one for geolocation and one for general home/away presence. The `mqtt_location` variable references the presence information to decide if the person is home or not before displaying the full geo location.  Any time a variable is updated that is used within other templates the downstream template will also be updated. These are found at runtime by looking for `get_payload()` method calls.
 
 ```
 variables:
   mqtt_presence:
     type:mqtt
     # published home/away status
-    topic: homeassistant/person/person_a
+    topic: homeassistant/person/person_a/state
   mqtt_location:
     type: mqtt
     # geolocation published from Home Assistant Companion App
     topic: homeassistant/mobile_app/person_a/geo_location
-    # use this to render the template as it will get updated more often
     template: >-
     {% if get_payload('mqtt_presence') == 'home' %}
     Person A is Home
