@@ -14,6 +14,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import jinja2
+import re
 from .. import constants
 from .. variable_type import VariableType
 
@@ -27,9 +28,21 @@ class MQTTVariable(VariableType):
       * qos: the MQTT quality of service (0-2) to use
       * update_template: eval True/False if this template should be updated
     """
+    __depends = None
 
     def __init__(self, name, config):
         super().__init__('mqtt', name, config, {"qos": 0, 'update_template': "True", "template": "{{ value }}"})
+
+        # get variables this var depends on
+        self.__depends = []
+        matches = re.findall("get_payload\('\w+'\)", self.get_text())
+        for m in matches:
+            depend = m[13:-2]  # strip the function from the var name
+            if(depend not in self.__depends):
+                self.__depends.append(depend)
+
+    def get_dependencies(self):
+        return self.__depends
 
     def get_topic(self):
         return self.config['topic']
@@ -52,7 +65,8 @@ class MQTTPayloadManager:
     templates via Jinja from MQTT variables
     """
     __jinja_env = None
-    __payloads = {}
+    __payloads = None
+    __depends = None
 
     def __init__(self, vars):
         """
@@ -65,6 +79,15 @@ class MQTTPayloadManager:
         # setup jinja environment
         self.__jinja_env = jinja2.Environment()
         self.__jinja_env.globals['get_payload'] = self.get_payload
+
+        # get any variable dependencies
+        self.__depends = {}
+        for v in vars:
+            for d in v.get_dependencies():
+                if(d in self.__depends.keys()):
+                    self.__depends[d].append(v.get_name())
+                else:
+                    self.__depends[d] = [v.get_name()]
 
     def set_payload(self, var, payload):
         """set the given MQTT payload for this variable name
