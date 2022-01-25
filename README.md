@@ -9,7 +9,7 @@ Messages are configured for the display using a simple `.yaml` configuration fil
 
 - [Background](#background)
 - [Install](#install)
-  - [Home Assistant Setup](#home-assistant-setup)
+  - [Home Assistant Entity Setup](#home-assistant-setup)
 - [Usage](#usage)
   - [Testing](#testing)
 - [Layout File](#layout-file)
@@ -49,7 +49,7 @@ sudo pip3 install -r install/requirements.txt
 
 ```
 
-### Home Assistant Setup
+### Home Assistant Entity Setup
 
 This code can run standalone, or be further integrated with Home Assistant to show up as a light entity through the use of a [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/). This allows Home Assistant to get some run-time data and control the sign as though it was a light. For this to work MQTT must be setup via the arguments below. A sample YAML file for creating the Home Assistant device is located in the `install` directory. The availability template triggers when the program exits or crashes causing the entity to show up as unavailable.
 
@@ -61,6 +61,10 @@ When MQTT is configured the program will watch for commands and publish to the f
 * betabrite/sign/available
 
 Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then remove it to return the display to normal messaging (on).
+
+### Home Assistant MQTT Setup
+
+Topics from any MQTT device can be monitored, but a common use case is to get entity information from Home Assistant. Utilizing the [MQTT broker](https://github.com/home-assistant/addons/tree/master/mosquitto) add-on for Home Assistant and the built in [state stream integration](https://www.home-assistant.io/integrations/mqtt_statestream/) it is very easy to get up to date entity information pushed to the LED sign. See the pages for each of these on their setup within Home Assistant. Once configured you can monitor the state topics required to get the information needed to display on the sign.
 
 ## Usage
 
