@@ -35,6 +35,7 @@ class MessageManager:
     config = None  # yaml file
     stringObjs = {}  # alphasign string object Ids
     textObjs = {}  # alphasign text object ids
+    runList = {}
     varObjs = {}  # variables, extending VariableType
 
     def __init__(self, configFile):
@@ -140,7 +141,6 @@ class MessageManager:
 
         :returns: a dict containing objects to allocate and write to the sign
         """
-        runList = []
         allocateStrings = {}  # name: stringObj value
         allocateText = []  # textObjs
 
@@ -148,59 +148,62 @@ class MessageManager:
         offMessage = alphasign.Text(data="", label=self.__allocate_text(constants.SIGN_OFF), mode=constants.ALPHA_MODES['hold'])
         allocateText.append(offMessage)
 
-        # load messages from "messages" key in yaml file
-        for i in range(0, len(self.config['messages'])):
-            # get the message
-            aMessage = self.config['messages'][i]
+        # load all queues from the display section of the yaml file
+        for q in self.config['display']:
+            self.runList[q] = []
 
-            # load message data from variables
-            messageVars = aMessage['data']
-            if(not isinstance(aMessage['data'], list)):
-                messageVars = [aMessage['data']]
+            # go through all messages in this queue
+            for i in range(0, len(self.config['display'][q])):
+                aMessage = self.config['display'][q][i]
 
-            stringText = []
-            cliText = []
-            for v in messageVars:
-                # load each variable and extract it's startup text
-                if(v in self.varObjs.keys()):
-                    aVar = self.varObjs[v]
+                # create message from variables
+                messageVars = aMessage['message']
+                if(not isinstance(aMessage['message'], list)):
+                    messageVars = [aMessage['message']]
 
-                    stringObj = None
-                    if(v in allocateStrings.keys()):
-                        # use pre-allocated string object if already loaded once
-                        logging.info(f"{aVar.get_name()} alreadying loaded, adding to message")
-                        stringObj = allocateStrings[v]
-                        cliText.append(colored(v, 'green'))
-                    else:
-                        logging.info(f"Loading variable {aVar.get_name()}:{aVar.get_type()} for message")
-                        if(aVar.get_type() == 'time'):
-                            stringObj = aVar.get_startup()
-                            betabrite.write(stringObj.set_format(aVar.get_time_format()))  # write the time format
-                            betabrite.write(stringObj)
+                stringText = []
+                cliText = []
+                for v in messageVars:
+                    # load each variable and extract it's startup text
+                    if(v in self.varObjs.keys()):
+                        aVar = self.varObjs[v]
+
+                        stringObj = None
+                        if(v in allocateStrings.keys()):
+                            # use pre-allocated string object if already loaded once
+                            logging.info(f"{aVar.get_name()} alreadying loaded, adding to message")
+                            stringObj = allocateStrings[v]
                             cliText.append(colored(v, 'green'))
                         else:
-                            stringObj = alphasign.String(data=aVar.get_startup(),
-                                                         label=self.__allocate_string(aVar.get_name()), size=125)
-                            allocateStrings[v] = stringObj
-                            cliText.append(colored(aVar.get_startup(), 'green'))
+                            logging.info(f"Loading variable {aVar.get_name()}:{aVar.get_type()} for message")
+                            if(aVar.get_type() == 'time'):
+                                stringObj = aVar.get_startup()
+                                betabrite.write(stringObj.set_format(aVar.get_time_format()))  # write the time format
+                                betabrite.write(stringObj)
+                                cliText.append(colored(v, 'green'))
+                            else:
+                                stringObj = alphasign.String(data=aVar.get_startup(),
+                                                             label=self.__allocate_string(aVar.get_name()), size=125)
+                                allocateStrings[v] = stringObj
+                                cliText.append(colored(aVar.get_startup(), 'green'))
 
-                    stringText.append(f"{aVar.get_display_params()}{stringObj.call()}")
-                else:
-                    # kill the process here, can't recover from this
-                    raise UndefinedVariableError(v)
+                        stringText.append(f"{aVar.get_display_params()}{stringObj.call()}")
+                    else:
+                        # kill the process here, can't recover from this
+                        raise UndefinedVariableError(v)
 
-            # create text object, setting the string text
-            logging.debug(f"'{' '.join(cliText)}' - MODE: {aMessage['mode']}")
-            messageParams = self.__generate_text_params(aMessage)
-            alphaObj = alphasign.Text("%s%s" % (messageParams, ' '.join(stringText)), mode=constants.ALPHA_MODES[aMessage['mode']],
-                                      label=self.__allocate_text(f"{self.MESSAGE_TEXT}_{i}"))
+                # create text object, setting the string text
+                logging.debug(f"'{' '.join(cliText)}' - MODE: {aMessage['mode']}")
+                messageParams = self.__generate_text_params(aMessage)
+                alphaObj = alphasign.Text("%s%s" % (messageParams, ' '.join(stringText)), mode=constants.ALPHA_MODES[aMessage['mode']],
+                                          label=self.__allocate_text(f"{self.MESSAGE_TEXT}_{q}_{i}"))
 
-            allocateText.append(alphaObj)
+                allocateText.append(alphaObj)
 
-            runList.append(alphaObj)
+                self.runList[q].append(alphaObj)
 
         # return objects that should be loaded into sign memory
-        return {"run": runList, "allocate": allocateText + list(allocateStrings.values())}
+        return {"run": self.runList['main'], "allocate": allocateText + list(allocateStrings.values())}
 
     def update_string(self, name, message):
         """Updates a string object on the sign with a new message

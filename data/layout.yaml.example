@@ -8,12 +8,13 @@ variables:
   static_text:
     type: static
     text: "Betabrite Sign Test"
-messages:
-  - data:
-      - current_time
-      - current_date
-    mode: hold
-  - data:
-      - static_text
-    mode: "rotate"
-    color: "rainbow1"
+display:
+  main:
+    - message:
+        - current_time
+        - current_date
+      mode: hold
+    - message:
+        - static_text
+      mode: "rotate"
+      color: "rainbow1"
