@@ -127,6 +127,8 @@ def setup():
 
     betabrite.disconnect()
 
+    logging.info(f"loading message queue: {colored('main', 'yellow')}")
+
 
 def poll(offset=timedelta(minutes=1)):
     """Gets all polling type variables and checks if they need updating

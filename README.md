@@ -10,6 +10,7 @@ Messages are configured for the display using a simple `.yaml` configuration fil
 - [Background](#background)
 - [Install](#install)
   - [Home Assistant Entity Setup](#home-assistant-setup)
+  - [Home Assistant MQTT Setup](#home-assistant-mqtt-setup)
 - [Usage](#usage)
   - [Testing](#testing)
 - [Layout File](#layout-file)
@@ -19,7 +20,7 @@ Messages are configured for the display using a simple `.yaml` configuration fil
      - [Static](#static)
      - [Home Assistant](#home-assistant)
      - [MQTT](#mqtt)
-  - [Messages](#messages)
+  - [Display](#display)
     - [Parameters](#parameters)
     - [Examples](#examples)
 - [Contributing](#contributing)
@@ -303,16 +304,19 @@ variables:
     Person A is {{ value }}
     {% endif %}
 # only display one message on the sign
-messages:
-  - data:
-      - mqtt_location
-    color: green
-    mode: hold
+display:
+  main:
+    - message:
+        - mqtt_location
+      color: green
+      mode: hold
 ```
 
-## Messages
+## Display
 
-The messages area of the `.yaml` file is where the variables are setup to actually display on the sign. This is where important information such as the sign mode, color, and speed of the message are specified. Variables can also be combined here to show within the same message. The order of the messages is the order they will be sent to the sign.
+The display area of the `.yaml` file is where messages are setup to actually display on the sign.  This is where important information such as the sign mode, color, and speed of the message are specified. Variables can also be combined here to show within the same message. The order of the messages is the order they will be sent to the sign.
+
+Each queue can contain multiple message and multiple message queues can be defined; however the default `main` queue must always be present.
 
 ### Parameters
 
@@ -377,29 +381,31 @@ The speed that the message will go across the screen. This is a number 1-5 with 
 The simplest message contains a static variable, and hence won't be updated after the sign is loaded. Variables are set with the `data` tag.
 
 ```
-messages:
-  - data:
-      - static_text
-    mode: "rotate"
-    color: "rainbow1"
+display:
+  main:
+    - message:
+        - static_text
+      mode: "rotate"
+      color: "rainbow1"
 ```
 
 Below is an example with dynamic variables and multiple variables combined.
 
 ```
-messages:
+display:
+  main:
   # show the output of one variable
-  - data:
-    - show_presence
-    mode: "rotate"
-    color: "orange"
-  # show the date and time in one message
-  - data:
-      - current_time
-      - current_date
-    mode: hold
-    speed: 2
-    font: seven_high_std
+    - message:
+      - show_presence
+      mode: "rotate"
+      color: "orange"
+    # show the date and time in one message
+    - message:
+        - current_time
+        - current_date
+      mode: hold
+      speed: 2
+      font: seven_high_std
 ```
 
 ## Contributing
