@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - `layout.yaml` file is parsed on startup for common errors, program is halted if the schema cannot validate
 - added global Jinja method `get_payload()` for use in evaluating MQTT Variables. Can get the payload from any defined MQTT variable type
 - MQTT messages are re-rendered whenever a variable referenced in them changes
+- multiple message queues can be defined and selected by defining `active_template` conditions.
 
 ### Changed
 

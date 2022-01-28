@@ -314,11 +314,13 @@ display:
 
 ## Display
 
-The display area of the `.yaml` file is where messages are setup to actually display on the sign.  This is where important information such as the sign mode, color, and speed of the message are specified. Variables can also be combined here to show within the same message. The order of the messages is the order they will be sent to the sign.
+The display area of the `.yaml` file is where messages are setup to actually display on the sign. Each message queue has a name and a list of messages. Within each message is where important information such as the sign mode, color, and speed of the message are specified. Variables can also be combined here to show within the same message. The order of the messages is the order they will be sent to the sign.
 
-Each queue can contain multiple message and multiple message queues can be defined; however the default `main` queue must always be present.
+The `main` queue must be present, as this is the default and loaded on startup. Additional queues can be defined as well. The currently active queue is determined by evaluating the `active_template`. This template should return True/False to determine if the queue should be set to active. These are evaluated top-down, so the first queue that returns True is set as active. If no statement returns True, then the `main` queue is set to active automatically. Examples of this are below. __Note:__ the active queue is re-evaluated every minute, not on the fly, so there may be some delay between variables updating and the queue changing.
 
 ### Parameters
+
+These parameters are used within the `message` tag.
 
 #### Mode
 
@@ -378,15 +380,16 @@ The speed that the message will go across the screen. This is a number 1-5 with 
 
 ### Examples
 
-The simplest message contains a static variable, and hence won't be updated after the sign is loaded. Variables are set with the `data` tag.
+The simplest message contains a static variable, within the main queue. This won't be updated after the sign is loaded.
 
 ```
 display:
   main:
-    - message:
-        - static_text
-      mode: "rotate"
-      color: "rainbow1"
+    queue:
+      - message:
+          - static_text
+        mode: "rotate"
+        color: "rainbow1"
 ```
 
 Below is an example with dynamic variables and multiple variables combined.
@@ -394,18 +397,51 @@ Below is an example with dynamic variables and multiple variables combined.
 ```
 display:
   main:
-  # show the output of one variable
-    - message:
-      - show_presence
-      mode: "rotate"
-      color: "orange"
-    # show the date and time in one message
-    - message:
+    queue:
+      # show the output of one variable
+      - message:
+        - show_presence
+        mode: "rotate"
+        color: "orange"
+      # show the date and time in one message
+      - message:
+          - current_time
+          - current_date
+        mode: hold
+        speed: 2
+        font: seven_high_std
+```
+
+Finally, this example has multiple message queues defined. The variable `lights` contains a payload of either on or off from Home Assistant. This is used to trigger the correct queue.
+
+```
+variables:
+  current_time:
+    type: time
+  static_text:
+    type: static
+    text: "The lights are on"
+  lights:
+    type: mqtt
+    topic: homeassistant/light/living_room/state
+display:
+  # show only the time when the lights are off
+  main:
+    queue:
+      - message:
         - current_time
-        - current_date
-      mode: hold
-      speed: 2
-      font: seven_high_std
+        mode: hold
+        color: red
+  # show this queue when the lights are on
+  lights_on:
+    queue:
+      - message:
+        - current_time
+        - static_text
+        mode: rotate
+        color: green
+    update_template: >-
+      {{ get_payload('lights') == 'on' }}  
 ```
 
 ## Contributing
