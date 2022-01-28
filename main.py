@@ -65,11 +65,10 @@ def mqtt_on_message(client, userdata, message):
     if(message.topic == constants.MQTT_SWITCH):
         change_state(str(message.payload.decode('utf-8')))
 
-        # publish new status and last updated attribute
+        # publish new status and any attributes
         mqtt_client.publish(constants.MQTT_STATUS, message.payload, retain=True)
-        mqtt_client.publish(constants.MQTT_ATTRIBUTES,
-                            json.dumps({"last_updated": str(datetime.now().astimezone().isoformat(timespec='seconds'))}),
-                            retain=True)
+        mqtt_publish_attributes()
+
     elif(message.topic == constants.MQTT_COMMAND):
         # format is {command:"", params: {}}
         payload = json.loads(message.payload.decode('utf-8'))
@@ -95,6 +94,15 @@ def mqtt_on_message(client, userdata, message):
             for dep in payload_manager.get_dependencies(aVar.get_name()):
                 render_mqtt(manager.get_variable_by_name(dep))
 
+def mqtt_publish_attributes():
+    # make sure MQTT is setup
+    if(mqtt_client is not None):
+        attributes = {"last_updated": str(datetime.now().astimezone().isoformat(timespec='seconds')),
+                      "active_queue": active_queue}
+
+        mqtt_client.publish(constants.MQTT_ATTRIBUTES,
+                            json.dumps(attributes),
+                            retain=True)
 
 def render_mqtt(var):
     """Render the mqtt variable and update the sign"""
@@ -214,6 +222,7 @@ def find_active_queue():
 
         # save the new queue name
         active_queue = new_queue
+        mqtt_publish_attributes()
 
 
 def update_string(name, msg):
@@ -344,6 +353,7 @@ if(args.mqtt and args.mqtt_username):
 
     # let HA know we're online
     mqtt_client.publish(constants.MQTT_AVAILABLE, "online", retain=True)
+    mqtt_publish_attributes()
 else:
     logging.info("No MQTT server or username, skipping MQTT setup")
 
