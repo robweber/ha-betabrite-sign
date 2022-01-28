@@ -444,6 +444,21 @@ display:
       {{ get_payload('lights') == 'on' }}  
 ```
 
+## Templating
+
+There are a handful of custom macros and filters available to use in local Jinja templates, outside of the built in ones. These can be used in MQTT templates, update templates or active queue templates.
+
+### Macros
+
+__get_payload__ - return the payload of a variable, or a blank string if there isn't one `{{ get_payload('custom_var_name') }}`
+__now__ - returns a Python datetime object that represents the current time `{{ now() }}`
+__timedelta__ - returns a Python timedelta object `{{ now() + timedelta(minutes=30) }}`
+__strptime__ - uses the Python strptime function to parse a string into a datetime object `{{ strptime("January 12, 2022", "%B %d, %Y")}}`
+
+### Filters
+
+__shorten_urls__ - finds all urls in a given string and shortens them, useful when URLs are part of text but you don't want the full string on the display. The shortened form is just the domain of the link `{{ "text with a url https://www.google.com/" | shorten_urls }}`
+
 ## Contributing
 
 This is mostly a project I made for fun so not looking to really modify it too much. If you have troubles or find a bug, post an issue. I'll review PRs as well if it fixes functionality or adds something really cool.

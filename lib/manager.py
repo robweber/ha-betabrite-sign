@@ -327,10 +327,14 @@ class PayloadManager:
         var_names = [v.get_name() for v in vars]
         self.__payloads = dict.fromkeys(var_names, "")
 
-        # setup jinja environment
+        # setup jinja environment - macros and filters
         self.__jinja_env = jinja2.Environment()
         self.__jinja_env.globals['get_payload'] = self.get_payload
         self.__jinja_env.globals['now'] = jinja_custom.get_date
+        self.__jinja_env.globals['timedelta'] = jinja_custom.get_timedelta
+        self.__jinja_env.globals['strptime'] = jinja_custom.create_time
+
+        self.__jinja_env.filters['shorten_urls'] = jinja_custom.shorten_urls
 
         # get any variable dependencies
         self.__depends = {}
