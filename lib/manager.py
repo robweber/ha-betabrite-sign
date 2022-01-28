@@ -21,6 +21,7 @@ import yaml
 from cerberus import Validator
 from termcolor import colored
 from . import constants
+from . import jinja_custom
 from .types.home_assistant import HomeAssistantVariable
 from .types.mqtt import MQTTVariable
 from .types.static import StaticVariable
@@ -329,6 +330,7 @@ class PayloadManager:
         # setup jinja environment
         self.__jinja_env = jinja2.Environment()
         self.__jinja_env.globals['get_payload'] = self.get_payload
+        self.__jinja_env.globals['now'] = jinja_custom.get_date
 
         # get any variable dependencies
         self.__depends = {}
@@ -418,6 +420,7 @@ class PayloadManager:
         template = self.__jinja_env.from_string(template_string)
 
         return template.render().strip()
+
 
 class UndefinedVariableError(Exception):
     """This error is thrown when the key passed to lookup a variable

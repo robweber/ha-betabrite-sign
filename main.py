@@ -94,6 +94,7 @@ def mqtt_on_message(client, userdata, message):
             for dep in payload_manager.get_dependencies(aVar.get_name()):
                 render_mqtt(manager.get_variable_by_name(dep))
 
+
 def mqtt_publish_attributes():
     # make sure MQTT is setup
     if(mqtt_client is not None):
@@ -103,6 +104,7 @@ def mqtt_publish_attributes():
         mqtt_client.publish(constants.MQTT_ATTRIBUTES,
                             json.dumps(attributes),
                             retain=True)
+
 
 def render_mqtt(var):
     """Render the mqtt variable and update the sign"""
