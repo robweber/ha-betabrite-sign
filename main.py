@@ -25,16 +25,16 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as mqtt_subscribe
 from datetime import datetime, timedelta
 from termcolor import colored
-from lib.manager import MessageManager
-from lib.types.mqtt import MQTTPayloadManager
+from lib.manager import MessageManager, PayloadManager
 from lib.home_assistant import HomeAssistant, TemplateSyntaxError
 from lib import constants
 
 # create global vars
+active_queue = "main"  # default active queue at startup
 betabrite = None
 manager = None
 mqtt_client = None
-mqtt_payloads = None
+payload_manager = None
 thread_lock = threading.Lock()  # ensure exclusive access to betabrite serial port
 
 
@@ -62,7 +62,7 @@ def mqtt_on_message(client, userdata, message):
     """triggered when message is received via mqtt"""
     logging.debug(colored(message.topic, 'red') + " " + str(message.payload))
 
-    if(message.topic == constants.MQTT_COMMAND):
+    if(message.topic == constants.MQTT_SWITCH):
         change_state(str(message.payload.decode('utf-8')))
 
         # publish new status and last updated attribute
@@ -70,6 +70,10 @@ def mqtt_on_message(client, userdata, message):
         mqtt_client.publish(constants.MQTT_ATTRIBUTES,
                             json.dumps({"last_updated": str(datetime.now().astimezone().isoformat(timespec='seconds'))}),
                             retain=True)
+    elif(message.topic == constants.MQTT_COMMAND):
+        # format is {command:"", params: {}}
+        payload = json.loads(message.payload.decode('utf-8'))
+
     else:
         # this is for a variable, load it
         aVar = manager.get_variable_by_filter(constants.MQTT_CATEGORY, lambda v: v.get_topic() == message.topic)
@@ -82,21 +86,21 @@ def mqtt_on_message(client, userdata, message):
                 payload = json.loads(payload)
 
             # save the new payload
-            mqtt_payloads.set_payload(aVar.get_name(), payload)
+            payload_manager.set_payload(aVar.get_name(), payload)
 
             # render this variable
             render_mqtt(aVar)
 
             # re-render any dependant variables
-            for dep in mqtt_payloads.get_dependencies(aVar.get_name()):
+            for dep in payload_manager.get_dependencies(aVar.get_name()):
                 render_mqtt(manager.get_variable_by_name(dep))
 
 
 def render_mqtt(var):
     """Render the mqtt variable and update the sign"""
-    if(mqtt_payloads.should_update(var)):
+    if(payload_manager.should_update(var)):
         # render the template
-        newString = mqtt_payloads.render_template(var)
+        newString = payload_manager.render_variable(var)
 
         # update the data on the sign
         logging.debug(f"updated {var.get_name()}:'{colored(newString, 'green')}'")
@@ -154,8 +158,9 @@ def poll(offset=timedelta(minutes=1)):
         elif(v.get_type() == 'home_assistant'):
             if(homeA is not None):
                 try:
-                    # render the template in home assistant
+                    # render the template in home assistant, save the result
                     newString = homeA.render_template(v.get_text()).strip()
+                    payload_manager.set_payload(v.get_name(), newString)
                 except TemplateSyntaxError as te:
                     logging.error(te)
             else:
@@ -168,7 +173,7 @@ def poll(offset=timedelta(minutes=1)):
 
 def change_state(newState):
     """changes the state of the sign on or off
-    this is called when triggered via the MQTT_COMMAND topic
+    this is called when triggered via the MQTT_SWITCH topic
 
     :param newState: the new state of the sign (ON/OFF)
     """
@@ -184,6 +189,28 @@ def change_state(newState):
     betabrite.write(offMessage)
     betabrite.disconnect()
     thread_lock.release()
+
+
+def find_active_queue():
+    """finds the active queue based on the rules defined in the config file
+    and swaps the queue if necessary
+    """
+
+    new_queue = manager.find_active_queue(payload_manager)
+
+    # swap the queue if it's not the current one
+    if(new_queue != active_queue):
+        queue_list = manager.get_queue(name)
+
+        thread_lock.acquire()
+        betabrite.connect()
+
+        # set the new run sequence
+        betabrite.set_run_sequence(tuple(queue_list))
+        logging.info(f"loading message queue: {colored(name, 'yellow')}")
+
+        betabrite.disconnect()
+        thread_lock.release()
 
 
 def update_string(name, msg):
@@ -208,7 +235,7 @@ def update_string(name, msg):
         betabrite.disconnect()
         thread_lock.release()
     else:
-        logging.debug(f"can't allocated object for find {name}")
+        logging.debug(f"can't find allocated object for {name}")
 
 
 # parse the arguments
@@ -274,9 +301,10 @@ setup()
 # sleep for a few seconds
 time.sleep(10)
 
+# setup the payload manager
+payload_manager = PayloadManager(manager.get_variables_by_filter(constants.MQTT_CATEGORY))
+
 if(args.mqtt and args.mqtt_username):
-    # setup the payload manager
-    mqtt_payloads = MQTTPayloadManager(manager.get_variables_by_filter(constants.MQTT_CATEGORY))
 
     # get the last known status from MQTT
     statusMsg = mqtt_subscribe.simple(constants.MQTT_STATUS, hostname=args.mqtt,
@@ -298,7 +326,7 @@ if(args.mqtt and args.mqtt_username):
     mqtt_client.connect(args.mqtt)
 
     # subscribe to the built in topics
-    watchTopics = [(constants.MQTT_COMMAND, 1)]
+    watchTopics = [(constants.MQTT_SWITCH, 1), (constants.MQTT_COMMAND, 1)]
 
     # get a list of all mqtt variables
     mqttVars = manager.get_variables_by_filter(constants.MQTT_CATEGORY)
@@ -325,3 +353,4 @@ while 1:
     time.sleep(60 - datetime.now().second)
 
     poll()
+    find_active_queue()

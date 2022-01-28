@@ -14,6 +14,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import alphasign
+import jinja2
 import logging
 import sys
 import yaml
@@ -153,8 +154,8 @@ class MessageManager:
             self.runList[q] = []
 
             # go through all messages in this queue
-            for i in range(0, len(self.config['display'][q])):
-                aMessage = self.config['display'][q][i]
+            for i in range(0, len(self.config['display'][q]['queue'])):
+                aMessage = self.config['display'][q]['queue'][i]
 
                 # create message from variables
                 messageVars = aMessage['message']
@@ -171,7 +172,7 @@ class MessageManager:
                         stringObj = None
                         if(v in allocateStrings.keys()):
                             # use pre-allocated string object if already loaded once
-                            logging.info(f"{aVar.get_name()} alreadying loaded, adding to message")
+                            logging.info(f"{aVar.get_name()} already loaded, adding to message")
                             stringObj = allocateStrings[v]
                             cliText.append(colored(v, 'green'))
                         else:
@@ -236,6 +237,42 @@ class MessageManager:
         """
         return alphasign.Text(data=message, label=self.__get_text(name), priority=priority)
 
+    def find_active_queue(self, evaluator):
+        """returns the currently active message queue from evaluating the active_template
+        associated with each queue. If none are found "main" is returned
+
+        :param evaluator: the PayloadManager class to use in evaluating the templates
+
+        :returns: the active message queue name
+        """
+        result = "main"
+
+        for q in self.config['display']:
+            if(q != "main" and 'active_template' in self.config['display'][q]):
+                template = self.config['display'][q]['active_template']
+
+                if(evaluator.render_template(template) == "true"):
+                    result = q
+                    break
+
+        return result
+
+    def get_queue(self, name):
+        """get the message queue given by the name, if it exits, otherwise return the main queue
+
+        :param name: the name of the queue to find
+
+        :returns: the message queue as a list
+        """
+        result = None
+
+        if(name in self.runList.keys()):
+            result = self.runList[name]
+        else:
+            result = self.runList["main"]
+
+        return result
+
     def get_variable_by_name(self, name):
         """finds the VariableType object associated with the given name
         :param name: the name, as defined in yaml, of the variable to lookup
@@ -272,6 +309,115 @@ class MessageManager:
         # get variables that are part of a particular category
         return list(filter(lambda v: v.get_category() == category and func(v), self.varObjs.values()))
 
+
+class PayloadManager:
+    """Manages information about variable state payloads and evaluates
+    templates via Jinja
+    """
+    __jinja_env = None
+    __payloads = None
+    __depends = None
+
+    def __init__(self, vars):
+        """
+        :params vars: list of MQTT variable objects
+        """
+        # initalize each variable
+        var_names = [v.get_name() for v in vars]
+        self.__payloads = dict.fromkeys(var_names, "")
+
+        # setup jinja environment
+        self.__jinja_env = jinja2.Environment()
+        self.__jinja_env.globals['get_payload'] = self.get_payload
+
+        # get any variable dependencies
+        self.__depends = {}
+        for v in vars:
+            for d in v.get_dependencies():
+                if(d in self.__depends.keys()):
+                    self.__depends[d].append(v.get_name())
+                else:
+                    self.__depends[d] = [v.get_name()]
+
+    def set_payload(self, var, payload):
+        """set the given MQTT payload for this variable name
+        :param var: the MQTT variable name as a string
+        :param payload: the topic payload
+        """
+        self.__payloads[var] = payload
+
+    def get_payload(self, var):
+        """return the payload, if any, for this variable
+
+        :param var: the MQTT variable name
+
+        :returns: the payload or a blank string if it doesn't exist
+        """
+        result = ""
+        if(var in self.__payloads.keys()):
+            result = self.__payloads[var]
+
+        return result
+
+    def get_dependencies(self, var):
+        """get any variables that uses the given variable in a template via get_payload
+
+        :param var: the MQTT variable name
+
+        :returns: a list of dependency variable names, or a blank list if none
+        """
+        result = []
+        if(var in self.__depends.keys()):
+            result = self.__depends[var]
+
+        return result
+
+    def has_value(self, var):
+        """does this variable have a valid payload
+        :param var: the MQTT variable name
+
+        :returns: True/False
+        """
+        return self.__payloads[var] != ""
+
+    def should_update(self, var):
+        """evaluate the update_template conditional of this variable
+        in the yaml configuration. By default this will always return True unless
+        defined otherwise.
+
+        :param var: the MQTT variable object
+
+        :returns: boolean value, True/False
+        """
+        template = self.__jinja_env.from_string(var.update_template())
+
+        # evaluate it and return the result as a boolean
+        result = template.render(value=self.get_payload(var.get_name())).strip()
+        return result.lower() == "true"
+
+    def render_variable(self, var):
+        """render the template for this variable
+        the payload is passed in as the "value" variable
+
+        :param var: the MQTT variable object
+
+        :returns: the result of the rendered template
+        """
+        template = self.__jinja_env.from_string(var.get_text())
+
+        return template.render(value=self.get_payload(var.get_name())).strip()
+
+    def render_template(self, template_string):
+        """generically renders a template string
+
+        :param template: the jinja template string
+
+        :returns: the result of the rendered template
+        """
+
+        template = self.__jinja_env.from_string(template_string)
+
+        return template.render().strip()
 
 class UndefinedVariableError(Exception):
     """This error is thrown when the key passed to lookup a variable

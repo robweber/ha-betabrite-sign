@@ -80,72 +80,78 @@ display:
   required: True
   type: dict
   valueschema:
-    type: list
+    type: dict
     schema:
-      type: dict
-      schema:
-        message:
-          required: True
-          type:
-            - string
-            - list
-        mode:
-          required: True
-          type: string
-          allowed:
-            - hold
-            - rotate
-            - roll_up
-            - roll_down
-            - roll_left
-            - roll_right
-            - wipe_up
-            - wipe_down
-            - wipe_left
-            - wipe_right
-            - scroll
-            - twinkle
-            - sparkle
-            - snow
-            - interlock
-            - spray
-            - switch
-            - starburst
-            - welcome
-            - slot_machine
-        color:
-          required: False
-          type: string
-          allowed:
-            - green
-            - red
-            - orange
-            - yellow
-            - rainbow1
-            - rainbow2
-            - amber
-            - brown
-            - color_mix
-        font:
-          required: False
-          type: string
-          allowed:
-            - five_high_std
-            - five_stroke
-            - seven_high_std
-            - seven_stroke
-            - seven_high_fancy
-            - ten_high_std
-            - seven_shadow
-            - full_height_fancy
-            - full_height_std
-            - seven_shadow_fancy
-            - five_wide
-            - seven_wide
-            - seven_fancy_wide
-            - wide_stroke_five
-        speed:
-          required: False
-          type: number
-          min: 1
-          max: 5
+      queue:
+        type: list
+        schema:
+          type: dict
+          schema:
+            message:
+              required: True
+              type:
+                - string
+                - list
+            mode:
+              required: True
+              type: string
+              allowed:
+                - hold
+                - rotate
+                - roll_up
+                - roll_down
+                - roll_left
+                - roll_right
+                - wipe_up
+                - wipe_down
+                - wipe_left
+                - wipe_right
+                - scroll
+                - twinkle
+                - sparkle
+                - snow
+                - interlock
+                - spray
+                - switch
+                - starburst
+                - welcome
+                - slot_machine
+            color:
+              required: False
+              type: string
+              allowed:
+                - green
+                - red
+                - orange
+                - yellow
+                - rainbow1
+                - rainbow2
+                - amber
+                - brown
+                - color_mix
+            font:
+              required: False
+              type: string
+              allowed:
+                - five_high_std
+                - five_stroke
+                - seven_high_std
+                - seven_stroke
+                - seven_high_fancy
+                - ten_high_std
+                - seven_shadow
+                - full_height_fancy
+                - full_height_std
+                - seven_shadow_fancy
+                - five_wide
+                - seven_wide
+                - seven_fancy_wide
+                - wide_stroke_five
+            speed:
+              required: False
+              type: number
+              min: 1
+              max: 5
+      active_template:
+        required: False
+        type: string
