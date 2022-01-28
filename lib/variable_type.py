@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import re
 from croniter import croniter
 from datetime import datetime
 from . import constants
@@ -141,3 +142,39 @@ class AlphaSignVariable(VariableType):
 
     def get_category(self):
         return constants.ALPHASIGN_CATEGORY
+
+
+class TemplateVariable(VariableType):
+    """The TemplateVariable type defines a Jinja template that can be evaluated by
+    the local Jinja environment
+
+    Special configuration options are:
+      * template: what to render on the sign
+      * update_template: eval True/False if this template should be updated
+    """
+    __defaults = {'update_template': "True"}
+    __depends = None
+
+    def __init__(self, type, name, config, defaults={}):
+        self.__defaults.update(defaults)
+        super().__init__(type, name, config, self.__defaults)
+
+        # get variables this var depends on
+        self.__depends = []
+        matches = re.findall("get_payload\('\w+'\)", self.get_text())  # noqa: W605
+        for m in matches:
+            depend = m[13:-2]  # strip the function from the var name
+            if(depend not in self.__depends):
+                self.__depends.append(depend)
+
+    def get_dependencies(self):
+        return self.__depends
+
+    def update_template(self):
+        return self.config['update_template']
+
+    def get_text(self):
+        return self.config['template']
+
+    def get_category(self):
+        return constants.TEMPLATE_CATEGORY

@@ -13,12 +13,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import re
 from .. import constants
-from .. variable_type import VariableType
+from .. variable_type import TemplateVariable
 
 
-class MQTTVariable(VariableType):
+class MQTTVariable(TemplateVariable):
     """The MQTT variable watches a specific MQTT topic for updates
 
     Special configuration options are:
@@ -32,28 +31,8 @@ class MQTTVariable(VariableType):
     def __init__(self, name, config):
         super().__init__('mqtt', name, config, {"qos": 0, 'update_template': "True", "template": "{{ value }}"})
 
-        # get variables this var depends on
-        self.__depends = []
-        matches = re.findall("get_payload\('\w+'\)", self.get_text())  # noqa: W605
-        for m in matches:
-            depend = m[13:-2]  # strip the function from the var name
-            if(depend not in self.__depends):
-                self.__depends.append(depend)
-
-    def get_dependencies(self):
-        return self.__depends
-
     def get_topic(self):
         return self.config['topic']
 
     def get_qos(self):
         return self.config['qos']
-
-    def update_template(self):
-        return self.config['update_template']
-
-    def get_text(self):
-        return self.config['template']
-
-    def get_category(self):
-        return constants.MQTT_CATEGORY
