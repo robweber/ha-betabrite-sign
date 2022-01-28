@@ -23,7 +23,7 @@ PROJECT_VERSION = "2.0"
 # variable categories
 ALPHASIGN_CATEGORY = 'alphasign'
 POLLING_CATEGORY = 'polling'
-TEMPLATE_CATEGORY = 'template'
+MQTT_CATEGORY = 'mqtt'
 
 # MQTT topics for state and commands
 MQTT_STATUS = "betabrite/sign/status"

@@ -75,7 +75,7 @@ def mqtt_on_message(client, userdata, message):
 
     else:
         # this is for a variable, load it
-        aVar = manager.get_variable_by_filter(constants.TEMPLATE_CATEGORY, lambda v: v.get_type() == 'mqtt' and v.get_topic() == message.topic)
+        aVar = manager.get_variable_by_filter(constants.MQTT_CATEGORY, lambda v: v.get_topic() == message.topic)
 
         if(aVar is not None):
             payload = str(message.payload.decode('utf-8'))
@@ -316,7 +316,7 @@ setup()
 time.sleep(10)
 
 # setup the payload manager
-payload_manager = PayloadManager(manager.get_variables_by_filter(constants.TEMPLATE_CATEGORY))
+payload_manager = PayloadManager(manager.get_variables_by_filter(constants.MQTT_CATEGORY))
 
 if(args.mqtt and args.mqtt_username):
 
@@ -343,7 +343,7 @@ if(args.mqtt and args.mqtt_username):
     watchTopics = [(constants.MQTT_SWITCH, 1), (constants.MQTT_COMMAND, 1)]
 
     # get a list of all mqtt variables
-    mqttVars = manager.get_variables_by_filter(constants.TEMPLATE_CATEGORY, lambda v: v.get_type() == 'mqtt')
+    mqttVars = manager.get_variables_by_filter(constants.MQTT_CATEGORY)
     for v in mqttVars:
         watchTopics.append((v.get_topic(), v.get_qos()))
 
