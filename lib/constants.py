@@ -18,7 +18,7 @@ import json
 from json.decoder import JSONDecodeError
 
 # current version
-PROJECT_VERSION = "1.0"
+PROJECT_VERSION = "2.0"
 
 # variable categories
 ALPHASIGN_CATEGORY = 'alphasign'
