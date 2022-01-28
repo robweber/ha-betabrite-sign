@@ -195,22 +195,25 @@ def find_active_queue():
     """finds the active queue based on the rules defined in the config file
     and swaps the queue if necessary
     """
-
+    global active_queue
     new_queue = manager.find_active_queue(payload_manager)
 
     # swap the queue if it's not the current one
     if(new_queue != active_queue):
-        queue_list = manager.get_queue(name)
+        queue_list = manager.get_queue(new_queue)
 
         thread_lock.acquire()
         betabrite.connect()
 
         # set the new run sequence
         betabrite.set_run_sequence(tuple(queue_list))
-        logging.info(f"loading message queue: {colored(name, 'yellow')}")
+        logging.info(f"loading message queue: {colored(new_queue, 'yellow')}")
 
         betabrite.disconnect()
         thread_lock.release()
+
+        # save the new queue name
+        active_queue = new_queue
 
 
 def update_string(name, msg):

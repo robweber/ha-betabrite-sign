@@ -251,7 +251,7 @@ class MessageManager:
             if(q != "main" and 'active_template' in self.config['display'][q]):
                 template = self.config['display'][q]['active_template']
 
-                if(evaluator.render_template(template) == "true"):
+                if(evaluator.render_template(template).lower() == "true"):
                     result = q
                     break
 
