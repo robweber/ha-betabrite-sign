@@ -78,24 +78,38 @@ class MessageManager:
             elif(aVar['type'] == 'time'):
                 self.varObjs[v] = TimeVariable(v, aVar)
 
+    def __get_char(self, start, offset):
+        """helper method to return a single character based on the
+        ASCII start point and an offset to add to it
+        for example __get_char(65, 2) would be the character 'C' which is ASCII 67
+
+        :param start: the ascii start number
+        :param offset: the offset to add to the start
+
+        :returns: the character defined start + offset
+        """
+        print(f"Creating File Label {chr(start + offset)}")
+        return chr(start + offset)
+
     def __allocate_string(self, name):
         """create a string label to allocate on the sign
 
         :returns: the next string allocation number
         """
-        # strings use numbers for allocation
-        nextInt = str(len(self.stringObjs) + 1)
-        self.stringObjs[name] = nextInt
+        # strings use lowercase letters, convert from ASCII int value
+        nextLetter = self.__get_char(97, len(self.stringObjs))
 
-        return nextInt
+        self.stringObjs[name] = nextLetter
+
+        return nextLetter
 
     def __allocate_text(self, name):
         """create a text label to allocate on the sign
 
         :returns: the next allocation letter
         """
-        # text objects use letters, convert from ASCII int value
-        nextLetter = chr(len(self.textObjs) + 65)
+        # text objects use capital letters, convert from ASCII int value
+        nextLetter = self.__get_char(65, len(self.textObjs))
         self.textObjs[name] = nextLetter
 
         return nextLetter

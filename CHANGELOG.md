@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - added some additional Jinja macros and filters
 
+### Changed
+
+- file labels for Strings are now lowercase letters instead of numbers. This is due to the fact that double digit numbers are not supported as file labels
+
 ## Version 2.0
 
 ### Added
