@@ -451,8 +451,11 @@ There are a handful of custom macros and filters available to use in local Jinja
 ### Macros
 
 __get_payload__ - return the payload of a variable, or a blank string if there isn't one `{{ get_payload('custom_var_name') }}`
+
 __now__ - returns a Python datetime object that represents the current time `{{ now() }}`
+
 __timedelta__ - returns a Python timedelta object `{{ now() + timedelta(minutes=30) }}`
+
 __strptime__ - uses the Python strptime function to parse a string into a datetime object `{{ strptime("January 12, 2022", "%B %d, %Y")}}`
 
 ### Filters
