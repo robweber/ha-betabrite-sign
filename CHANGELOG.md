@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - added filter `color` to MQTT templates to the color can be changed within a string
 
+### Changed
+
+- time now displays in log instead of just the name of the item variable
+
+### Fixed
+
+- removed some debug `print` statements that were left behind
+
 ## Version 2.1
 
 ### Added
