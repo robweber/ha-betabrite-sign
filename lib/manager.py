@@ -391,7 +391,7 @@ class PayloadManager:
         :returns: True if variable payload equals the expected_value, false if otherwise
         """
         payload = self.get_payload(var)
-        print(f"{payload}:{expected_value}")
+
         return payload == expected_value
 
     def get_dependencies(self, var):
