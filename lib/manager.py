@@ -344,6 +344,7 @@ class PayloadManager:
         # setup jinja environment - macros and filters
         self.__jinja_env = jinja2.Environment()
         self.__jinja_env.globals['get_payload'] = self.get_payload
+        self.__jinja_env.globals['is_payload'] = self.is_payload
         self.__jinja_env.globals['now'] = jinja_custom.get_date
         self.__jinja_env.globals['timedelta'] = jinja_custom.get_timedelta
         self.__jinja_env.globals['strptime'] = jinja_custom.create_time
@@ -379,6 +380,19 @@ class PayloadManager:
             result = self.__payloads[var]
 
         return result
+
+    def is_payload(self, var, expected_value):
+        """compares the given variable's payload against the expected value to return
+        either True or False, the same as doing get_payload() == "expected_value"
+
+        :param var: the MQTT variable name
+        :param expected_value: the comparison value
+
+        :returns: True if variable payload equals the expected_value, false if otherwise
+        """
+        payload = self.get_payload(var)
+        print(f"{payload}:{expected_value}")
+        return payload == expected_value
 
     def get_dependencies(self, var):
         """get any variables that uses the given variable in a template via get_payload
