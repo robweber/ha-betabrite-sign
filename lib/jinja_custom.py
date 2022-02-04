@@ -15,6 +15,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import datetime
 import re
 from urllib.parse import urlparse
+from . import constants
 
 
 # global macros
@@ -55,3 +56,20 @@ def shorten_urls(value):
         value = value.replace(m[0], url.netloc)
 
     return value
+
+
+def set_color(text, color):
+    """returns the string along with the valid Alphasign color code so that strings
+    can have different colors within message templates
+
+    :params text: the text to color, first argument of a filter
+    :params color: a valid color text value, rainbow values cannot be used within Strings (per Alphasign protocol)
+
+    :returns: the text plus the valid Alphasign color code value
+    """
+
+    if(color == 'rainbow1' or color == 'rainbow2'):
+        # convert this to green as this won't work
+        color = 'green'
+
+    return f"{constants.ALPHA_COLORS[color]}{text}"
