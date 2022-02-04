@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 
 - time now displays in log instead of just the name of the item variable
+- dependency parsing now uses regex grouping to make things easier
 
 ### Fixed
 
