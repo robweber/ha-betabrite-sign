@@ -193,10 +193,10 @@ class MessageManager:
                         else:
                             logging.info(f"Loading variable {aVar.get_name()}:{aVar.get_type()} for message")
                             if(aVar.get_type() == 'time'):
-                                stringObj = aVar.get_startup()
+                                stringObj = aVar.get_text()
                                 betabrite.write(stringObj.set_format(aVar.get_time_format()))  # write the time format
                                 betabrite.write(stringObj)
-                                cliText.append(colored(v, 'green'))
+                                cliText.append(colored(aVar.get_startup(), 'green'))
                             else:
                                 stringObj = alphasign.String(data=aVar.get_startup(),
                                                              label=self.__allocate_string(aVar.get_name()), size=125)
