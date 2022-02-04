@@ -113,7 +113,7 @@ def render_mqtt(var):
         newString = payload_manager.render_variable(var)
 
         # update the data on the sign
-        logging.debug(f"updated {var.get_name()}:'{colored(newString, 'green')}'")
+        logging.debug(f"updated {var.get_name()}:'{colored(constants.strip_control(newString), 'green')}'")
         update_string(var.get_name(), newString)
     else:
         logging.debug(f"update conditional not met for {var.get_name()}")
