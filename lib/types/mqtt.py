@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import logging
 import re
 from .. import constants
 from .. variable_type import VariableType
@@ -32,14 +33,18 @@ class MQTTVariable(VariableType):
     def __init__(self, name, config):
         super().__init__('mqtt', name, config, {"qos": 0, 'update_template': "True", "template": "{{ value }}"})
 
-        # get variables this var depends on
+        # get variables this var depends on based on 'get_payload' or 'is_payload'
+        # uses matching per description https://docs.python.org/3/library/re.html#re.findall
         self.__depends = []
-        matches = re.findall("get_payload\('\w+'\)", self.get_text())  # noqa: W605
+        matches = re.findall("(is_payload\('(\w+)',)|(get_payload\('(\w+)'\))", self.get_text())  # noqa: W605
         for m in matches:
-            depend = m[13:-2]  # strip the function from the var name
+            # will be in group 1 or 3
+            depend = m[1] if m[1] != '' else m[3]
             if(depend not in self.__depends):
                 self.__depends.append(depend)
 
+        if(len(self.__depends) > 0):
+            logging.debug(f"{name} depends: {self.__depends}")
     def get_dependencies(self):
         return self.__depends
 
