@@ -473,14 +473,37 @@ Example:
 
 ```
 
+#### get_payload_attr(var_name, attribute_name)
+
+Returns the attribute value of a given payload variable. This is helper method to quickly get attribute values where you know the payload is JSON. This will return `None` if the attribute does not exist.
+
+```
+{{ get_payload_attr('custom_var_name', 'attribute_name') }}
+```
+
 #### is_payload(var_name, expected_value)
 
 Similar to `get_payload` but this will evaluate against an expected value and return True/False.
 
 ```
-{{ is_payload('var_name', 'on') }}
+{% is_payload('var_name', 'on') %}
+Value is on
+{% endif %}
+
 # is the same as
-{{ get_payload('var_name') == 'on' }}
+{% if get_payload('var_name') == 'on' %}
+Value is on
+{% endif %}
+```
+
+#### is_payload_attr(var_name, attribute_name, expected_value)
+
+Combination of `is_payload` and `get_payload_attr` to compare the attribute value to an expected value.
+
+```
+{% if is_payload_attr('var_name', 'attribute_name', 'on') %}
+Value is On
+{% endif %}
 ```
 
 #### now()
