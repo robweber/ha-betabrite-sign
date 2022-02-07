@@ -23,6 +23,9 @@ Messages are configured for the display using a simple `.yaml` configuration fil
   - [Display](#display)
     - [Parameters](#parameters)
     - [Examples](#examples)
+ - [Templating](#templating)
+    - [Macros](#macros)
+    - [Filters](#filters)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -285,7 +288,7 @@ variables:
       {{ value.state != 'unknown' }}
 ```
 
-A more advanced technique for combining data can be done through the `get_payload()` template method. Similar to the [states()](https://www.home-assistant.io/docs/configuration/templating/#states) method in Home Assistant; this allows MQTT templates to get payloads from other MQTT topics. These topics can be defined for the sole purpose of holding information for use later. The example below subscribes to 2 topics, one for geolocation and one for general home/away presence. The `mqtt_location` variable references the presence information to decide if the person is home or not before displaying the full geo location.  Any time a variable is updated that is used within other templates the downstream template will also be updated. These are found at runtime by looking for `get_payload()` method calls.
+A more advanced technique for combining data can be done through the `get_payload()` or `is_payload()` template methods. Similar to the [states()](https://www.home-assistant.io/docs/configuration/templating/#states) methods in Home Assistant; this allows MQTT templates to get payloads from other MQTT topics. These topics can be defined for the sole purpose of holding information for use later. The example below subscribes to 2 topics, one for geolocation and one for general home/away presence. The `mqtt_location` variable references the presence information to decide if the person is home or not before displaying the full geo location.  Any time a variable is updated that is used within other templates the downstream template will also be updated. These are found at runtime and displayed when debug logging is enabled.
 
 ```
 variables:
@@ -298,7 +301,7 @@ variables:
     # geolocation published from Home Assistant Companion App
     topic: homeassistant/mobile_app/person_a/geo_location
     template: >-
-    {% if get_payload('mqtt_presence') == 'home' %}
+    {% if is_payload('mqtt_presence', 'home') %}
     Person A is Home
     {% else %}
     Person A is {{ value }}
@@ -441,7 +444,7 @@ display:
         mode: rotate
         color: green
     update_template: >-
-      {{ get_payload('lights') == 'on' }}  
+      {{ is_payload('lights', 'on') }}  
 ```
 
 ## Templating
@@ -452,6 +455,8 @@ There are a handful of custom macros and filters available to use in local Jinja
 
 __get_payload__ - return the payload of a variable, or a blank string if there isn't one `{{ get_payload('custom_var_name') }}`
 
+__is_payload__ - similar to `get_payload` but this will evaluate against an expected value and return True/False. `{{ is_payload('var_name', 'on') }}` is the same as `{{ get_payload('var_name') == 'on' }}`
+
 __now__ - returns a Python datetime object that represents the current time `{{ now() }}`
 
 __timedelta__ - returns a Python timedelta object `{{ now() + timedelta(minutes=30) }}`
@@ -459,6 +464,8 @@ __timedelta__ - returns a Python timedelta object `{{ now() + timedelta(minutes=
 __strptime__ - uses the Python strptime function to parse a string into a datetime object `{{ strptime("January 12, 2022", "%B %d, %Y")}}`
 
 ### Filters
+
+__color__ - can be used with a template to change the color of a string within the template. Due to how the Alphasign protocol handles colors, everything after this filter will use this color until a new color code is used. This is useful for when you want the color to be based on a condition. For example `original string color until {{ 'this is red' | color('red') }}`
 
 __shorten_urls__ - finds all urls in a given string and shortens them, useful when URLs are part of text but you don't want the full string on the display. The shortened form is just the domain of the link `{{ "text with a url https://www.google.com/" | shorten_urls }}`
 

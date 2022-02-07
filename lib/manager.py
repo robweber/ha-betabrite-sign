@@ -88,7 +88,7 @@ class MessageManager:
 
         :returns: the character defined start + offset
         """
-        print(f"Creating File Label {chr(start + offset)}")
+
         return chr(start + offset)
 
     def __allocate_string(self, name):
@@ -193,10 +193,10 @@ class MessageManager:
                         else:
                             logging.info(f"Loading variable {aVar.get_name()}:{aVar.get_type()} for message")
                             if(aVar.get_type() == 'time'):
-                                stringObj = aVar.get_startup()
+                                stringObj = aVar.get_text()
                                 betabrite.write(stringObj.set_format(aVar.get_time_format()))  # write the time format
                                 betabrite.write(stringObj)
-                                cliText.append(colored(v, 'green'))
+                                cliText.append(colored(aVar.get_startup(), 'green'))
                             else:
                                 stringObj = alphasign.String(data=aVar.get_startup(),
                                                              label=self.__allocate_string(aVar.get_name()), size=125)
@@ -344,11 +344,13 @@ class PayloadManager:
         # setup jinja environment - macros and filters
         self.__jinja_env = jinja2.Environment()
         self.__jinja_env.globals['get_payload'] = self.get_payload
+        self.__jinja_env.globals['is_payload'] = self.is_payload
         self.__jinja_env.globals['now'] = jinja_custom.get_date
         self.__jinja_env.globals['timedelta'] = jinja_custom.get_timedelta
         self.__jinja_env.globals['strptime'] = jinja_custom.create_time
 
         self.__jinja_env.filters['shorten_urls'] = jinja_custom.shorten_urls
+        self.__jinja_env.filters['color'] = jinja_custom.set_color
 
         # get any variable dependencies
         self.__depends = {}
@@ -378,6 +380,19 @@ class PayloadManager:
             result = self.__payloads[var]
 
         return result
+
+    def is_payload(self, var, expected_value):
+        """compares the given variable's payload against the expected value to return
+        either True or False, the same as doing get_payload() == "expected_value"
+
+        :param var: the MQTT variable name
+        :param expected_value: the comparison value
+
+        :returns: True if variable payload equals the expected_value, false if otherwise
+        """
+        payload = self.get_payload(var)
+
+        return payload == expected_value
 
     def get_dependencies(self, var):
         """get any variables that uses the given variable in a template via get_payload

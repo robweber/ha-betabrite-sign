@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## Unreleased
+
+### Added
+
+- added filter `color` to MQTT templates to the color can be changed within a string
+- added `is_payload` macro so comparisons can be done quickly within templates, similar to using `{{ get_payload() == 'val' }}`
+
+### Changed
+
+- time now displays in log instead of just the name of the item variable
+- dependency parsing now uses regex grouping to make things easier
+
+### Fixed
+
+- removed some debug `print` statements that were left behind
+
 ## Version 2.1
 
 ### Added

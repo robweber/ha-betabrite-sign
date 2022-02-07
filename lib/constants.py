@@ -15,6 +15,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import alphasign
 import json
+import re
 from json.decoder import JSONDecodeError
 
 # current version
@@ -72,3 +73,12 @@ def is_json(str):
         pass
 
     return result
+
+def strip_control(str):
+    """strips Alphasign control characters from a string so it can be logged properly
+    :param str: the string to check for Alphasign control characters
+
+    :returns: the cleaned string
+    """
+
+    return re.sub("\\x1c([1-8]|[A-C])", "", str)

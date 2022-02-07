@@ -14,7 +14,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import alphasign
-import datetime
+from datetime import datetime
 from .. variable_type import AlphaSignVariable, PollingVariable
 
 
@@ -36,7 +36,7 @@ class DateVariable(PollingVariable):
         self.config['cron'] = '0 0 * * *'
 
     def get_text(self):
-        dateObj = datetime.datetime.today()
+        dateObj = datetime.today()
 
         return dateObj.strftime(self.config['format'])
 
@@ -70,4 +70,5 @@ class TimeVariable(AlphaSignVariable):
         return timeObj
 
     def get_startup(self):
-        return self.get_text()
+        format = "%I:%M%p" if self.get_time_format() == 0 else "%H:%M"
+        return datetime.now().strftime(format)
