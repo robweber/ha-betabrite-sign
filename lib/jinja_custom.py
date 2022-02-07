@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 from . import constants
 
 
-# global macros
+# global functions
 def get_date():
     """same as calling datetime.now()
     https://docs.python.org/3/library/datetime.html

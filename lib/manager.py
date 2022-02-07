@@ -341,7 +341,7 @@ class PayloadManager:
         var_names = [v.get_name() for v in vars]
         self.__payloads = dict.fromkeys(var_names, "")
 
-        # setup jinja environment - macros and filters
+        # setup jinja environment - functions and filters
         self.__jinja_env = jinja2.Environment()
         self.__jinja_env.globals['get_payload'] = self.get_payload
         self.__jinja_env.globals['is_payload'] = self.is_payload
