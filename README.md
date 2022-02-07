@@ -1,4 +1,6 @@
 # Home Assistant Betabrite Sign
+[![License](https://img.shields.io/github/license/robweber/cronxbmc)](https://github.com/robweber/cronxbmc/blob/master/LICENSE.txt)
+[![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
 Integrate an LED sign that uses the [Alphasign protocol](https://www.adaptivedisplays.com/resources/documentation-and-manuals/support-documents/bid/264113/Alpha-Sign-Communications-Protocol-pn-97088061) with your [Home Assistant](https://www.home-assistant.io/) installation. This project seeks to provide a headless Python program that will communicate with the sign and allow for updates by either querying a Home Assistant instance or getting status updates via MQTT. It can also integrate with Home Assistant as a light entity to expose information directly to your smart home.
