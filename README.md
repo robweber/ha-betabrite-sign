@@ -27,7 +27,7 @@ Messages are configured for the display using a simple `.yaml` configuration fil
     - [Parameters](#parameters)
     - [Examples](#examples)
  - [Templating](#templating)
-    - [Macros](#macros)
+    - [Functions](#functions)
     - [Filters](#filters)
 - [Contributing](#contributing)
 - [License](#license)
@@ -452,25 +452,78 @@ display:
 
 ## Templating
 
-There are a handful of custom macros and filters available to use in local Jinja templates, outside of the built in ones. These can be used in MQTT templates, update templates or active queue templates.
+There are a handful of custom functions and filters available to use in local Jinja templates, outside of the built in ones. These can be used in MQTT templates, update templates or active queue templates.
 
-### Macros
+### Functions
 
-__get_payload__ - return the payload of a variable, or a blank string if there isn't one `{{ get_payload('custom_var_name') }}`
+Jinja offers a variety of [built in functions](https://jinja.palletsprojects.com/en/3.0.x/templates/#list-of-global-functions) that can be used when rendering templates. Below are some custom ones for this project specifically.
 
-__is_payload__ - similar to `get_payload` but this will evaluate against an expected value and return True/False. `{{ is_payload('var_name', 'on') }}` is the same as `{{ get_payload('var_name') == 'on' }}`
+#### get_payload(var_name)
 
-__now__ - returns a Python datetime object that represents the current time `{{ now() }}`
+Return the payload of another variable, or a blank string if there isn't one. This also works on JSON values.
 
-__timedelta__ - returns a Python timedelta object `{{ now() + timedelta(minutes=30) }}`
+Example:
+```
+# normal variable with a string payload
+{{ get_payload('custom_var_name') }}
 
-__strptime__ - uses the Python strptime function to parse a string into a datetime object `{{ strptime("January 12, 2022", "%B %d, %Y")}}`
+# variable with a JSON payload
+{% set some_json = get_payload('custom_var_name') %}
+{{ some_json.key_name }}
+
+```
+
+#### is_payload(var_name, expected_value)
+
+Similar to `get_payload` but this will evaluate against an expected value and return True/False.
+
+```
+{{ is_payload('var_name', 'on') }}
+# is the same as
+{{ get_payload('var_name') == 'on' }}
+```
+
+#### now()
+
+Returns a Python [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects) object that represents the current time.
+
+#### timedelta
+
+Returns a Python [timedelta](https://docs.python.org/3/library/datetime.html#datetime-objects) object. This can be used to add or subtract a given amount from a current datetime value.
+
+```
+# add 30 min to the current time
+{{ now() + timedelta(minutes=30) }}
+```
+
+#### strptime
+
+Uses the Python strptime function to parse a string into a [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects) object
+
+```
+{{ strptime("January 12, 2022", "%B %d, %Y")}}
+```
 
 ### Filters
 
-__color__ - can be used with a template to change the color of a string within the template. Due to how the Alphasign protocol handles colors, everything after this filter will use this color until a new color code is used. This is useful for when you want the color to be based on a condition. For example `original string color until {{ 'this is red' | color('red') }}`
+Filters are a quick way of modifying data within a template. Jinja offers several [built in filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#list-of-builtin-filters) but below are a few custom ones to help with templating.
 
-__shorten_urls__ - finds all urls in a given string and shortens them, useful when URLs are part of text but you don't want the full string on the display. The shortened form is just the domain of the link `{{ "text with a url https://www.google.com/" | shorten_urls }}`
+#### color
+
+The color filter can be used with a template to change the color of a string within the template. Due to how the Alphasign protocol handles colors, everything after this filter will use this color until a new color code is used. This is useful for when you want the color to be based on a condition.  
+
+```
+{{ 'this is red' | color('red') }}
+```
+
+#### shorten_urls
+
+This filter finds all urls in a given string and shortens them, useful when URLs are part of text but you don't want the full string on the display. The shortened form is just the domain of the link.
+
+```
+# the following would return "text with url www.google.com"
+{{ "text with a url https://www.google.com/search?q=Python" | shorten_urls }}
+```
 
 ## Contributing
 
