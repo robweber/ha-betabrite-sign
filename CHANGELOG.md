@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - added filter `color` to MQTT templates to the color can be changed within a string
 - added `is_payload` macro so comparisons can be done quickly within templates, similar to using `{{ get_payload() == 'val' }}`
+- some README badges to show information, including GitHub Actions pipeline status
 
 ### Changed
 
