@@ -58,18 +58,34 @@ def shorten_urls(value):
     return value
 
 
-def set_color(text, color):
+def set_color(text, color, conditional=True, alt_color=None):
     """returns the string along with the valid Alphasign color code so that strings
-    can have different colors within message templates
+    can have different colors within message templates. Optionally a conditional can be set so that the color is only
+    applied if the condition evaulates to True. If the condition is False the text can be returned unchanged, or set to a different
+    color depending on if alt_color is set.
 
     :params text: the text to color, first argument of a filter
     :params color: a valid color text value, rainbow values cannot be used within Strings (per Alphasign protocol)
+    :params conditional: a True/False conditional statement that controls if the color is applied or not
+    :params alt_color: an alternative color to set if the condition is False, optional
 
-    :returns: the text plus the valid Alphasign color code value
+    :returns: the text plus the valid Alphasign color code value or just the text if conditional evaluates to False and no alt_color exists
     """
+    applied_color = ''
+    invalid_colors = ['rainbow1', 'rainbow2']
 
-    if(color == 'rainbow1' or color == 'rainbow2'):
+    if(color in invalid_colors):
         # convert this to green as this won't work
         color = 'green'
 
-    return f"{constants.ALPHA_COLORS[color]}{text}"
+    if(alt_color in invalid_colors):
+        alt_color = 'green'
+
+    # apply the color if conditional is True
+    if(conditional):
+        applied_color = constants.ALPHA_COLORS[color]
+    else:
+        # if not true, set the alt color if one is given
+        applied_color = constants.ALPHA_COLORS[alt_color] if alt_color is not None else ''
+
+    return f"{applied_color}{text}"
