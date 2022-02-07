@@ -344,7 +344,9 @@ class PayloadManager:
         # setup jinja environment - functions and filters
         self.__jinja_env = jinja2.Environment()
         self.__jinja_env.globals['get_payload'] = self.get_payload
+        self.__jinja_env.globals['get_payload_attr'] = self.get_payload_attribute
         self.__jinja_env.globals['is_payload'] = self.is_payload
+        self.__jinja_env.globals['is_payload_attr'] = self.is_payload_attribute
         self.__jinja_env.globals['now'] = jinja_custom.get_date
         self.__jinja_env.globals['timedelta'] = jinja_custom.get_timedelta
         self.__jinja_env.globals['strptime'] = jinja_custom.create_time
@@ -381,6 +383,24 @@ class PayloadManager:
 
         return result
 
+    def get_payload_attribute(self, var, attr):
+        """return the attribute of a given variable payload
+        useful when you know the payload is a JSON dict
+
+        :param var: the MQTT variable name
+        :param attr: the attribute to lookup on this variable
+
+        :returns: the value of the attribute given, could be None if attribute doesn't exist
+        """
+        result = None
+        # first get the payload and test if the attribute exists
+        payload = self.get_payload(var)
+
+        if(type(payload) is dict and attr in payload):
+            result = payload[attr]
+
+        return result
+
     def is_payload(self, var, expected_value):
         """compares the given variable's payload against the expected value to return
         either True or False, the same as doing get_payload() == "expected_value"
@@ -393,6 +413,25 @@ class PayloadManager:
         payload = self.get_payload(var)
 
         return payload == expected_value
+
+    def is_payload_attribute(self, var, attr, expected_value):
+        """combination of is_payload and get_payload_attr, will find the payload attribute
+        and compare it to the expected value. If the attribute does not exist this will return
+        False
+
+        :param var: the MQTT variable name
+        :param attr: the attribute to look up on this variable
+        :param expected_value: the comparison value
+
+        :returns: True if the variable attribute equals the expected_value, False if attribute doesn't exist or value isn't equal
+        """
+        result = False
+        payload = self.get_payload_attribute(var, attr)
+
+        if(payload is not None):
+            result = payload == expected_value
+
+        return result
 
     def get_dependencies(self, var):
         """get any variables that uses the given variable in a template via get_payload

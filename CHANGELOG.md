@@ -9,7 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - added filter `color` to MQTT templates to the color can be changed within a string
-- added `is_payload` macro so comparisons can be done quickly within templates, similar to using `{{ get_payload() == 'val' }}`
+- added `is_payload` function so comparisons can be done quickly within templates, similar to using `{{ get_payload() == 'val' }}`
+- syntatic helper functions `get_payload_attr` and `is_payload_attr` to quickly get and compare attributes within JSON payloads
 - some README badges to show information, including GitHub Actions pipeline status
 
 ### Changed

@@ -33,13 +33,13 @@ class MQTTVariable(VariableType):
     def __init__(self, name, config):
         super().__init__('mqtt', name, config, {"qos": 0, 'update_template': "True", "template": "{{ value }}"})
 
-        # get variables this var depends on based on 'get_payload' or 'is_payload'
+        # get variables this var depends on based on 'get_payload' or 'is_payload' type functions
         # uses matching per description https://docs.python.org/3/library/re.html#re.findall
         self.__depends = []
-        matches = re.findall("(is_payload\('(\w+)',)|(get_payload\('(\w+)'\))", self.get_text())  # noqa: W605
+        matches = re.findall("(is_payload(_attr)?\('(\w+)',)|(get_payload(_attr)?\('(\w+)'(,)?)", self.get_text())  # noqa: W605
         for m in matches:
-            # will be in group 1 or 3
-            depend = m[1] if m[1] != '' else m[3]
+            # will be in group 2 or 5
+            depend = m[2] if m[2] != '' else m[5]
             if(depend not in self.__depends):
                 self.__depends.append(depend)
 
