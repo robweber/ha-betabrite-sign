@@ -74,6 +74,7 @@ def is_json(str):
 
     return result
 
+
 def strip_control(str):
     """strips Alphasign control characters from a string so it can be logged properly
     :param str: the string to check for Alphasign control characters

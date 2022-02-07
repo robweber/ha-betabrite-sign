@@ -44,7 +44,8 @@ class MQTTVariable(VariableType):
                 self.__depends.append(depend)
 
         if(len(self.__depends) > 0):
-            logging.debug(f"{name} depends: {self.__depends}")
+            logging.debug(f"{name} dependencies: {self.__depends}")
+
     def get_dependencies(self):
         return self.__depends
 
