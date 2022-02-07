@@ -531,13 +531,22 @@ Uses the Python strptime function to parse a string into a [datetime](https://do
 
 Filters are a quick way of modifying data within a template. Jinja offers several [built in filters](https://jinja.palletsprojects.com/en/3.0.x/templates/#list-of-builtin-filters) but below are a few custom ones to help with templating.
 
-#### color
+#### color(color, conditional, alt_color)
 
-The color filter can be used with a template to change the color of a string within the template. Due to how the Alphasign protocol handles colors, everything after this filter will use this color until a new color code is used. This is useful for when you want the color to be based on a condition.  
+The color filter can be used with a template to change the color of a string within the template. Due to how the Alphasign protocol handles colors, everything after this filter will use this color until a new color code is used. Optional parameters allow a conditional and alternative color selection should the condition be False. Examples of this are shown below.
 
 ```
+# simplest version of using the filter, apply a new color to a string
 {{ 'this is red' | color('red') }}
+
+# only apply the color if the condition is True
+{{ 'this might be red' | color('red', is_payload('other_var', 'on')) }}
+
+# apply a different color should the condition fail, this will fail if value is less or equal to 0
+{{ 'this will be red or green' | color('red', value > 0, 'green') }}
 ```
+
+
 
 #### shorten_urls
 
