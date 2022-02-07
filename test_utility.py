@@ -20,7 +20,6 @@ import time
 from termcolor import colored
 from lib import constants
 
-
 class SignTester:
     """A simple sign test utility that will display a single message to the sign"""
     __betabrite = None
