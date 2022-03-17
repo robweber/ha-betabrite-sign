@@ -195,6 +195,7 @@ class MessageManager:
                             if(aVar.get_type() == 'time'):
                                 stringObj = aVar.get_text()
                                 betabrite.write(stringObj.set_format(aVar.get_time_format()))  # write the time format
+                                betabrite.write(stringObj.set())
                                 betabrite.write(stringObj)
                                 cliText.append(colored(aVar.get_startup(), 'green'))
                             else:
