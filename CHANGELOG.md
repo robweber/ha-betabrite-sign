@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 
 - removed some debug `print` statements that were left behind
+- fixed daylight savings time issues with Time by setting it explicitly from the system time
 
 ## Version 2.1
 
