@@ -1,6 +1,6 @@
 # Home Assistant Betabrite Sign
-[![Build Status](https://img.shields.io/github/checks-status/robweber/ha-betabrite-sign/main)](https://github.com/robweber/ha-betabrite-sign/actions)
-[![License](https://img.shields.io/github/license/robweber/cronxbmc)](https://github.com/robweber/cronxbmc/blob/master/LICENSE.txt)
+[![Build Status](https://img.shields.io/github/workflow/status/robweber/ha-betabrite-sign/Python%20Code%20Check)](https://github.com/robweber/ha-betabrite-sign/actions)
+[![License](https://img.shields.io/github/license/robweber/ha-betabrite-sign)](https://github.com/robweber/ha-betabrite-sign/blob/main/LICENSE)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
