@@ -26,7 +26,7 @@ import paho.mqtt.subscribe as mqtt_subscribe
 from datetime import datetime, timedelta
 from termcolor import colored
 from lib.manager import MessageManager, PayloadManager
-from lib.home_assistant import HomeAssistant, TemplateSyntaxError
+from lib.home_assistant import HomeAssistant
 from lib import constants
 
 # create global vars
@@ -171,8 +171,9 @@ def poll(offset=timedelta(minutes=1)):
                     # render the template in home assistant, save the result
                     newString = homeA.render_template(v.get_text()).strip()
                     payload_manager.set_payload(v.get_name(), newString)
-                except TemplateSyntaxError as te:
-                    logging.error(te)
+                except Exception as ex:
+                    logging.error(ex)
+
             else:
                 logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
 
