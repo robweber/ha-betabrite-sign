@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - removed some debug `print` statements that were left behind
 - fixed daylight savings time issues with Time by setting it explicitly from the system time
+- catch any exception thrown from Home Assistant template checking - typically this happens when HA is down
 
 ## Version 2.1
 
