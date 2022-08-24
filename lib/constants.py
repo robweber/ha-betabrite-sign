@@ -32,6 +32,7 @@ MQTT_ATTRIBUTES = "betabrite/sign/attributes"
 MQTT_SWITCH = "betabrite/sign/switch"
 MQTT_AVAILABLE = "betabrite/sign/available"
 MQTT_COMMAND = "betabrite/sign/command"
+MQTT_DISCOVERY_CLASS = "light"
 
 # variable for when the sign is in off mode
 SIGN_OFF = "ALPHA_SIGN_OFF"
