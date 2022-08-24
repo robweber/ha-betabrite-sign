@@ -56,9 +56,9 @@ sudo pip3 install -r install/requirements.txt
 
 ```
 
-### Home Assistant Entity Setup
+### Home Assistant Entity Discovery
 
-This code can run standalone, or be further integrated with Home Assistant to show up as a light entity through the use of a [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/). This allows Home Assistant to get some run-time data and control the sign as though it was a light. For this to work MQTT must be setup via the arguments below. A sample YAML file for creating the Home Assistant device is located in the `install` directory. The availability template triggers when the program exits or crashes causing the entity to show up as unavailable.
+This code can run standalone, or be further integrated with Home Assistant to show up as a light entity through the use of a [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/). This allows Home Assistant to get some run-time data and control the sign as though it was a light. For this to work MQTT#mqtt must be setup as [described below](#mqtt). In Home Assistant [MQTT Discovery](https://www.home-assistant.io/docs/mqtt/discovery/) is used to automatically configure the device when `--ha_discovery` is passed in at startup. Other options, like the device name, can be configured as well.
 
 When MQTT is configured the program will watch for commands and publish to the following topics.
 
@@ -69,7 +69,7 @@ When MQTT is configured the program will watch for commands and publish to the f
 
 Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then remove it to return the display to normal messaging (on).
 
-### Home Assistant MQTT Setup
+### Home Assistant MQTT Statestream
 
 Topics from any MQTT device can be monitored, but a common use case is to get entity information from Home Assistant. Utilizing the [MQTT broker](https://github.com/home-assistant/addons/tree/master/mosquitto) add-on for Home Assistant and the built in [state stream integration](https://www.home-assistant.io/integrations/mqtt_statestream/) it is very easy to get up to date entity information pushed to the LED sign. See the pages for each of these on their setup within Home Assistant. Once configured you can monitor the state topics required to get the information needed to display on the sign.
 
@@ -127,6 +127,14 @@ MQTT:
                         MQTT Server username
   --mqtt_password MQTT_PASSWORD
                         MQTT Server password
+  --ha_discovery        Enable Home Assistant MQTT Discovery, default is False
+  --ha_device_name HA_DEVICE_NAME
+                        The Home Assistant entity name, default is 'Betabrite
+                        Sign'
+  --mqtt_discovery_prefix MQTT_DISCOVERY_PREFIX
+                        The Home Assistant MQTT Discovery Prefix, default is
+                        'homeassistant'
+
 
 ```
 
