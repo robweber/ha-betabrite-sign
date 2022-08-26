@@ -86,7 +86,7 @@ def mqtt_on_message(client, userdata, message):
         mqtt_publish_attributes()
 
     elif(message.topic == constants.MQTT_COMMAND):
-        # format is {command:"", params: {}}
+        # format is {command:"", params: {}}  noqa: E800
         payload = json.loads(message.payload.decode('utf-8'))
 
     else:
