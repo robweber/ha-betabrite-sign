@@ -24,6 +24,7 @@ import alphasign
 import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as mqtt_subscribe
 from datetime import datetime, timedelta
+from slugify import slugify
 from termcolor import colored
 from lib.manager import MessageManager, PayloadManager
 from lib.home_assistant import HomeAssistant
@@ -57,6 +58,22 @@ def mqtt_connect(client, userdata, flags, rc):
     """run on successful mqtt connection"""
     logging.info("Connected to MQTT Server")
 
+    device_name_slug = slugify(args.ha_device_name, separator='_')
+    discovery_topic = f"{args.mqtt_discovery_prefix}/{constants.MQTT_DISCOVERY_CLASS}/{device_name_slug}/config"
+    if(args.ha_discovery):
+        # generate the entity config
+        entity_config = {"name": args.ha_device_name, "device_class": "light", "object_id": device_name_slug,
+                         "unique_id": device_name_slug, "state_topic": constants.MQTT_STATUS, "command_topic": constants.MQTT_SWITCH,
+                         "json_attributes_topic": constants.MQTT_ATTRIBUTES, "availability_topic": constants.MQTT_AVAILABLE,
+                         "qos": 0, "payload_on": "ON", "payload_off": "OFF", "optimistic": False}
+        logging.debug(f"Configuring HA Entity {discovery_topic}: {json.dumps(entity_config)}")
+
+        # publish the entity config to the HA discovery prefix
+        mqtt_client.publish(discovery_topic, json.dumps(entity_config), retain=True)
+    else:
+        # publish blank string to delete the device
+        mqtt_client.publish(discovery_topic, "", retain=True)
+
 
 def mqtt_on_message(client, userdata, message):
     """triggered when message is received via mqtt"""
@@ -70,7 +87,7 @@ def mqtt_on_message(client, userdata, message):
         mqtt_publish_attributes()
 
     elif(message.topic == constants.MQTT_COMMAND):
-        # format is {command:"", params: {}}
+        # format is {command:"", params: {}}  noqa: E800
         payload = json.loads(message.payload.decode('utf-8'))
 
     else:
@@ -279,6 +296,12 @@ mqttGroup.add_argument('--mqtt_username', required=False,
                        help="MQTT Server username")
 mqttGroup.add_argument('--mqtt_password', default=None, required=False,
                        help="MQTT Server password")
+mqttGroup.add_argument('--ha_discovery', action='store_true',
+                       help="Enable Home Assistant MQTT Discovery, default is False")
+mqttGroup.add_argument('--ha_device_name', default="Betabrite Sign",
+                       help="The Home Assistant entity name, default is '%(default)s'")
+mqttGroup.add_argument('--mqtt_discovery_prefix', default="homeassistant",
+                       help="The Home Assistant MQTT Discovery Prefix, default is '%(default)s'")
 
 args = parser.parse_args()
 
