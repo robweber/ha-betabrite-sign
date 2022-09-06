@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## Version 2.3
+
+### Added
+
+- Added [MQTT Discovery](https://www.home-assistant.io/docs/mqtt/discovery/) with Home Assistant - will automatically create a light entity
+
+### Changed
+
+- flake8 tests ignore [E275 errors](https://www.flake8rules.com/rules/E275.html)
+
+### Removed
+
+- removed Home Assistant light template example yaml - this can now be done with MQTT Discovery
+
 ## Version 2.2
 
 ### Added
