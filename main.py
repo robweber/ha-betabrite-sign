@@ -59,20 +59,25 @@ def mqtt_connect(client, userdata, flags, rc):
     logging.info("Connected to MQTT Server")
 
     device_name_slug = slugify(args.ha_device_name, separator='_')
-    discovery_topic = f"{args.mqtt_discovery_prefix}/{constants.MQTT_DISCOVERY_LIGHT_CLASS}/{device_name_slug}/config"
+    discovery_topics = {constants.MQTT_DISCOVERY_LIGHT_CLASS: ""}
     if(args.ha_discovery):
         # generate the light entity config
-        light_entity_config = {"name": args.ha_device_name, "device_class": constants.MQTT_DISCOVERY_LIGHT_CLASS, "object_id": device_name_slug,
-                         "unique_id": device_name_slug, "state_topic": constants.MQTT_STATUS, "command_topic": constants.MQTT_SWITCH,
-                         "json_attributes_topic": constants.MQTT_ATTRIBUTES, "availability_topic": constants.MQTT_AVAILABLE,
-                         "qos": 0, "payload_on": "ON", "payload_off": "OFF", "optimistic": False}
-        logging.debug(f"Configuring HA Light Entity {discovery_topic}: {json.dumps(light_entity_config)}")
+        discovery_topics[constants.MQTT_DISCOVERY_LIGHT_CLASS] = {"name": args.ha_device_name, "device_class": constants.MQTT_DISCOVERY_LIGHT_CLASS,
+                                                                  "object_id": device_name_slug, "unique_id": device_name_slug, "state_topic": constants.MQTT_STATUS,  # noqa
+                                                                  "command_topic": constants.MQTT_SWITCH, "json_attributes_topic": constants.MQTT_ATTRIBUTES,  # noqa
+                                                                  "availability_topic": constants.MQTT_AVAILABLE, "qos": 0, "payload_on": "ON",
+                                                                  "payload_off": "OFF", "optimistic": False}
 
-        # publish the entity config to the HA discovery prefix
-        mqtt_client.publish(discovery_topic, json.dumps(light_entity_config), retain=True)
-    else:
-        # publish blank string to delete the device
-        mqtt_client.publish(discovery_topic, "", retain=True)
+    for entity_type in discovery_topics:
+        topic = f"{args.mqtt_discovery_prefix}/{entity_type}/{device_name_slug}/config"
+
+        if(args.ha_discovery):
+            # publish the entity config to the HA discovery prefix
+            logging.debug(f"Configuring HA Entity {topic}: {json.dumps(discovery_topics[entity_type])}")
+            mqtt_client.publish(topic, json.dumps(discovery_topics[entity_type]), retain=True)
+        else:
+            # publish blank string to delete the device
+            mqtt_client.publish(topic, "", retain=True)
 
 
 def mqtt_on_message(client, userdata, message):
