@@ -68,7 +68,7 @@ def mqtt_connect(client, userdata, flags, rc):
                                                                   "availability_topic": constants.MQTT_AVAILABLE, "qos": 0, "payload_on": "ON",
                                                                   "payload_off": "OFF", "optimistic": False}
 
-        discovery_topics[constants.MQTT_DISCOVERY_TEXT_CLASS] = {"name": f"{args.ha_device_name} Text", "device_class": constants.MQTT_DISCOVERY_TEXT_CLASS,
+        discovery_topics[constants.MQTT_DISCOVERY_TEXT_CLASS] = {"name": f"{args.ha_device_name} Text", "device_class": constants.MQTT_DISCOVERY_TEXT_CLASS,  # noqa
                                                                  "object_id": f"{device_name_slug}_text", "unique_id": f"{device_name_slug}_text",
                                                                  "state_topic": constants.MQTT_CURRENT_TEXT, "command_topic": constants.MQTT_NEW_TEXT,
                                                                  "availability_topic": constants.MQTT_AVAILABLE, "qos": 0}
@@ -99,6 +99,10 @@ def mqtt_on_message(client, userdata, message):
     elif(message.topic == constants.MQTT_COMMAND):
         # format is {command:"", params: {}}  noqa: E800
         payload = json.loads(message.payload.decode('utf-8'))
+
+    elif(message.topic == constants.MQTT_NEW_TEXT):
+        # republish into state topic
+        mqtt_client.publish(constants.MQTT_CURRENT_TEXT, message.payload, retain=True)
 
     else:
         # this is for a variable, load it
@@ -374,7 +378,7 @@ if(args.mqtt and args.mqtt_username):
     mqtt_client.connect(args.mqtt)
 
     # subscribe to the built in topics
-    watchTopics = [(constants.MQTT_SWITCH, 1), (constants.MQTT_COMMAND, 1)]
+    watchTopics = [(constants.MQTT_SWITCH, 1), (constants.MQTT_COMMAND, 1), (constants.MQTT_NEW_TEXT, 1)]
 
     # get a list of all mqtt variables
     mqttVars = manager.get_variables_by_filter(constants.MQTT_CATEGORY)

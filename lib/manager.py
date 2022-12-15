@@ -60,6 +60,9 @@ class MessageManager:
         # load all variable objects right away
         self.__load_variables()
 
+        # add a special variable for the MQTT Text Entity
+        self.varObjs[constants.TEXT_ENTITY_VARIABLE] = MQTTVariable(constants.TEXT_ENTITY_VARIABLE, {"topic": constants.MQTT_CURRENT_TEXT})
+
     def __load_variables(self):
         """create VariableType objects from the variables
         key in the yaml file
