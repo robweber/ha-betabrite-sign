@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## Unreleased
+
+### Added
+
+- added support for an [Home Assistant Text entity](https://www.home-assistant.io/integrations/text/) via MQTT Discovery. This exposes a variable to Home Assistant that can be updated to push text to the display. Requires HA 2022.12 or later.
+
 ## Version 2.3
 
 ### Added
