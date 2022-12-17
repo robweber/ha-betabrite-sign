@@ -1,5 +1,5 @@
 # Home Assistant Betabrite Sign
-[![Build Status](https://img.shields.io/github/workflow/status/robweber/ha-betabrite-sign/Python%20Code%20Check)](https://github.com/robweber/ha-betabrite-sign/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/robweber/ha-betabrite-sign/flake8.yml?branch=main)](https://github.com/robweber/ha-betabrite-sign/actions)
 [![License](https://img.shields.io/github/license/robweber/ha-betabrite-sign)](https://github.com/robweber/ha-betabrite-sign/blob/main/LICENSE)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
@@ -571,7 +571,7 @@ The color filter can be used with a template to change the color of a string wit
 {{ 'this will be red or green' | color('red', value > 0, 'green') }}
 ```
 
-_Note_: due to some technical limitations with the Alphasign protocol the `rainbow1', 'rainbow2`, and `color_mix` colors can't be set inline and will be set to `green` when using this filter. To get around this set the color on a variable and combine variables in a message. 
+_Note_: due to some technical limitations with the Alphasign protocol the `rainbow1', 'rainbow2`, and `color_mix` colors can't be set inline and will be set to `green` when using this filter. To get around this set the color on a variable and combine variables in a message.
 
 #### shorten_urls
 

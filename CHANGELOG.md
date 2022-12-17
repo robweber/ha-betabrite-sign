@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 
 - fixed some documentation regarding the use of the `color` filter
+- fixed [Github build status badge](https://github.com/badges/shields/issues/8671)
 
 ## Version 2.3
 
