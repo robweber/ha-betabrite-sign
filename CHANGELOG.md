@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - added support for an [Home Assistant Text entity](https://www.home-assistant.io/integrations/text/) via MQTT Discovery. This exposes a variable to Home Assistant that can be updated to push text to the display. Requires HA 2022.12 or later.
 
+### Fixed
+
+- fixed some documentation regarding the use of the `color` filter
+
 ## Version 2.3
 
 ### Added
