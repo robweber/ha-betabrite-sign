@@ -1,5 +1,5 @@
 # Home Assistant Betabrite Sign
-[![Build Status](https://img.shields.io/github/workflow/status/robweber/ha-betabrite-sign/Python%20Code%20Check)](https://github.com/robweber/ha-betabrite-sign/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/robweber/ha-betabrite-sign/flake8.yml?branch=main)](https://github.com/robweber/ha-betabrite-sign/actions)
 [![License](https://img.shields.io/github/license/robweber/ha-betabrite-sign)](https://github.com/robweber/ha-betabrite-sign/blob/main/LICENSE)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
@@ -58,16 +58,18 @@ sudo pip3 install -r install/requirements.txt
 
 ### Home Assistant Entity Discovery
 
-This code can run standalone, or be further integrated with Home Assistant to show up as a light entity through the use of a [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/). This allows Home Assistant to get some run-time data and control the sign as though it was a light. For this to work MQTT#mqtt must be setup as [described below](#mqtt). In Home Assistant [MQTT Discovery](https://www.home-assistant.io/docs/mqtt/discovery/) is used to automatically configure the device when `--ha_discovery` is passed in at startup. Other options, like the device name, can be configured as well.
+This code can run standalone, or be further integrated with Home Assistant to expose some entities via [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/) and [MQTT Text]() integrations. This allows Home Assistant to get some run-time data, control the sign as though it was a light, and push text to the sign. For this to work MQTT must be setup as [described below](#mqtt). In Home Assistant [MQTT Discovery](https://www.home-assistant.io/docs/mqtt/discovery/) is used to automatically configure the device when `--ha_discovery` is passed in at startup. Other options, like the device name, can be configured as well.
 
 When MQTT is configured the program will watch for commands and publish to the following topics.
 
-* betabrite/sign/status
-* betabrite/sign/attributes
-* betabrite/sign/switch
-* betabrite/sign/available
+* betabrite/sign/status - sign off/on status
+* betabrite/sign/attributes - attributes for the Light entity
+* betabrite/sign/switch - command topic to toggle the light entity
+* betabrite/sign/available - availability topic (ie, is the program running)
+* betabrite/sign/current_text - current text entity value
+* betabrite/sign/new_text - command topic to update text entity from Home Assistant
 
-Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then remove it to return the display to normal messaging (on).
+Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then remove it to return the display to normal messaging (on). The text entity can be set in Home Assistant and used in any message through a special MQTT variable.
 
 ### Home Assistant MQTT Statestream
 
@@ -326,6 +328,21 @@ display:
       mode: hold
 ```
 
+#### Home Assistant Text Variable
+
+The Home Assistant Text Entity (setup via [Entity Discovery described above](#home-assistant-entity-discovery) is a special variable available to pull the value from the Home Assistant Text Entity. The way this works is that the entity is available to be set in Home Assistant. This can be done through a Lovelace card or through a service call. This text entry will be published via MQTT and available for use in the sign as a standard variable. It is available via the `HA_TEXT_ENTITY` variable name. Below are a few examples.
+
+```
+# add the HA Text Entity to a message
+display:
+  main:
+    - message:
+        - mqtt_location
+        - HA_TEXT_ENTITY
+      color: green
+      mode: hold
+```
+
 ## Display
 
 The display area of the `.yaml` file is where messages are setup to actually display on the sign. Each message queue has a name and a list of messages. Within each message is where important information such as the sign mode, color, and speed of the message are specified. Variables can also be combined here to show within the same message. The order of the messages is the order they will be sent to the sign.
@@ -554,7 +571,7 @@ The color filter can be used with a template to change the color of a string wit
 {{ 'this will be red or green' | color('red', value > 0, 'green') }}
 ```
 
-
+_Note_: due to some technical limitations with the Alphasign protocol the `rainbow1', 'rainbow2`, and `color_mix` colors can't be set inline and will be set to `green` when using this filter. To get around this set the color on a variable and combine variables in a message.
 
 #### shorten_urls
 
