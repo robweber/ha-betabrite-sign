@@ -19,7 +19,7 @@ import re
 from json.decoder import JSONDecodeError
 
 # current version
-PROJECT_VERSION = "2.1"
+PROJECT_VERSION = "2.4"
 
 # variable categories
 ALPHASIGN_CATEGORY = 'alphasign'
