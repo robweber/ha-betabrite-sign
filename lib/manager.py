@@ -325,8 +325,11 @@ class MessageManager:
 
         :returns: a list of all variables that match the given VariableType category
         """
-        # get variables that are part of a particular category
-        return list(filter(lambda v: v.get_category() == category and func(v), self.varObjs.values()))
+        # get variables that are part of a particular category or group of categories
+        if(not isinstance(category, list)):
+            category = [category]
+
+        return list(filter(lambda v: v.get_category() in category and func(v), self.varObjs.values()))
 
 
 class PayloadManager:
