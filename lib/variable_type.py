@@ -79,7 +79,7 @@ class VariableType:
         return result
 
     def get_category(self):
-        """the category of this variable, implemented by subclasses"""
+        """the categories of this variable, implemented by subclasses"""
         raise NotImplementedError
 
 
@@ -127,7 +127,7 @@ class PollingVariable(VariableType):
         return result
 
     def get_category(self):
-        return constants.POLLING_CATEGORY
+        return [constants.POLLING_CATEGORY]
 
 
 class AlphaSignVariable(VariableType):
@@ -140,4 +140,4 @@ class AlphaSignVariable(VariableType):
         super().__init__(type, name, config, defaults)
 
     def get_category(self):
-        return constants.ALPHASIGN_CATEGORY
+        return [constants.ALPHASIGN_CATEGORY]

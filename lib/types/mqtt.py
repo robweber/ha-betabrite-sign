@@ -62,4 +62,4 @@ class MQTTVariable(VariableType):
         return self.config['template']
 
     def get_category(self):
-        return constants.MQTT_CATEGORY
+        return [constants.MQTT_CATEGORY]

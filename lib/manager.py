@@ -319,17 +319,17 @@ class MessageManager:
     def get_variables_by_filter(self, category, func=lambda v: True):
         """find all variables of a given category
 
-        :param category: the category (polling, etc) to filter
+        :param category: the category, or array of categories, (polling, etc) to filter
         :param func: an optional function to further filter the list by,
         this should be a lambda expression that takes a single argument
 
-        :returns: a list of all variables that match the given VariableType category
+        :returns: a list of all variables that match the given VariableType categories
         """
         # get variables that are part of a particular category or group of categories
         if(not isinstance(category, list)):
             category = [category]
 
-        return list(filter(lambda v: v.get_category() in category and func(v), self.varObjs.values()))
+        return list(filter(lambda v: len(set(v.get_category()).intersection(category)) > 0 and func(v), self.varObjs.values()))
 
 
 class PayloadManager:

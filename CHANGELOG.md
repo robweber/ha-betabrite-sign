@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## Unreleased
+
+### Changed
+
+- changed `get_variables_by_filter` to filter on either a single or multiple categories
+- VariableTypes can now be a part of more than one category
+
 ## Version 2.4
 
 ### Added
