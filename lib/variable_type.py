@@ -13,6 +13,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
+import logging
+import re
 from croniter import croniter
 from datetime import datetime
 from . import constants
@@ -141,3 +143,42 @@ class AlphaSignVariable(VariableType):
 
     def get_categories(self):
         return [constants.ALPHASIGN_CATEGORY]
+
+
+class JinjaVariable(VariableType):
+    """a variable type that can render Jinja templates from the payload
+    Special configuration options are:
+      * template: what to render on the sign
+      * update_template: eval True/False if this template should be updated
+    """
+    __defaults = {'update_template': "True", "template": "{{ value }}"}
+    __depends = None
+
+    def __init__(self, type, name, config, defaults={}):
+        self.__defaults.update(defaults)  # merge upstream defaults
+        super().__init__(type, name, config, self.__defaults)
+
+        # get variables this var depends on based on 'get_payload' or 'is_payload' type functions
+        # uses matching per description https://docs.python.org/3/library/re.html#re.findall
+        self.__depends = []
+        matches = re.findall("(is_payload(_attr)?\('(\w+)',)|(get_payload(_attr)?\('(\w+)'(,)?)", self.get_text())  # noqa: W605
+        for m in matches:
+            # will be in group 2 or 5
+            depend = m[2] if m[2] != '' else m[5]
+            if(depend not in self.__depends):
+                self.__depends.append(depend)
+
+        if(len(self.__depends) > 0):
+            logging.debug(f"{name} dependencies: {self.__depends}")
+
+    def get_dependencies(self):
+        return self.__depends
+
+    def update_template(self):
+        return self.config['update_template']
+
+    def get_text(self):
+        return self.config['template']
+
+    def get_categories(self):
+        return [constants.JINJA_CATEGORY]

@@ -25,7 +25,7 @@ PROJECT_VERSION = "2.4"
 ALPHASIGN_CATEGORY = 'alphasign'
 POLLING_CATEGORY = 'polling'
 MQTT_CATEGORY = 'mqtt'
-JINJA_CATEGORY= 'jinja'
+JINJA_CATEGORY = 'jinja'
 
 # MQTT topics for state and commands
 MQTT_STATUS = "betabrite/sign/status"

@@ -6,10 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## Unreleased
 
+### Added
+
+- Added a Jinja variable type as this could more than just MQTT classes
+
 ### Changed
 
 - changed `get_variables_by_filter` to filter on either a single or multiple categories
 - VariableTypes can now be a part of more than one category
+- MQTT now inherits from the Jinja variable type as well
 
 ## Version 2.4
 

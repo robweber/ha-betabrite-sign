@@ -13,13 +13,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import logging
-import re
 from .. import constants
-from .. variable_type import VariableType
+from .. variable_type import JinjaVariable
 
 
-class MQTTVariable(VariableType):
+class MQTTVariable(JinjaVariable):
     """The MQTT variable watches a specific MQTT topic for updates
 
     Special configuration options are:
@@ -28,26 +26,9 @@ class MQTTVariable(VariableType):
       * qos: the MQTT quality of service (0-2) to use
       * update_template: eval True/False if this template should be updated
     """
-    __depends = None
 
     def __init__(self, name, config):
-        super().__init__('mqtt', name, config, {"qos": 0, 'update_template': "True", "template": "{{ value }}"})
-
-        # get variables this var depends on based on 'get_payload' or 'is_payload' type functions
-        # uses matching per description https://docs.python.org/3/library/re.html#re.findall
-        self.__depends = []
-        matches = re.findall("(is_payload(_attr)?\('(\w+)',)|(get_payload(_attr)?\('(\w+)'(,)?)", self.get_text())  # noqa: W605
-        for m in matches:
-            # will be in group 2 or 5
-            depend = m[2] if m[2] != '' else m[5]
-            if(depend not in self.__depends):
-                self.__depends.append(depend)
-
-        if(len(self.__depends) > 0):
-            logging.debug(f"{name} dependencies: {self.__depends}")
-
-    def get_dependencies(self):
-        return self.__depends
+        super().__init__('mqtt', name, config, {"qos": 0})
 
     def get_topic(self):
         return self.config['topic']
@@ -55,11 +36,5 @@ class MQTTVariable(VariableType):
     def get_qos(self):
         return self.config['qos']
 
-    def update_template(self):
-        return self.config['update_template']
-
-    def get_text(self):
-        return self.config['template']
-
     def get_categories(self):
-        return [constants.MQTT_CATEGORY]
+        return [constants.MQTT_CATEGORY, constants.JINJA_CATEGORY]

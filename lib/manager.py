@@ -342,7 +342,7 @@ class PayloadManager:
 
     def __init__(self, vars):
         """
-        :params vars: list of MQTT variable objects
+        :params vars: list of Jinja variable objects
         """
         # initalize each variable
         var_names = [v.get_name() for v in vars]
@@ -371,8 +371,8 @@ class PayloadManager:
                     self.__depends[d] = [v.get_name()]
 
     def set_payload(self, var, payload):
-        """set the given MQTT payload for this variable name
-        :param var: the MQTT variable name as a string
+        """set the given payload for this variable name
+        :param var: the variable name as a string
         :param payload: the topic payload
         """
         self.__payloads[var] = payload
@@ -380,7 +380,7 @@ class PayloadManager:
     def get_payload(self, var):
         """return the payload, if any, for this variable
 
-        :param var: the MQTT variable name
+        :param var: the variable name
 
         :returns: the payload or a blank string if it doesn't exist
         """
@@ -394,7 +394,7 @@ class PayloadManager:
         """return the attribute of a given variable payload
         useful when you know the payload is a JSON dict
 
-        :param var: the MQTT variable name
+        :param var: the variable name
         :param attr: the attribute to lookup on this variable
 
         :returns: the value of the attribute given, could be None if attribute doesn't exist
@@ -412,7 +412,7 @@ class PayloadManager:
         """compares the given variable's payload against the expected value to return
         either True or False, the same as doing get_payload() == "expected_value"
 
-        :param var: the MQTT variable name
+        :param var: the variable name
         :param expected_value: the comparison value
 
         :returns: True if variable payload equals the expected_value, false if otherwise
@@ -426,7 +426,7 @@ class PayloadManager:
         and compare it to the expected value. If the attribute does not exist this will return
         False
 
-        :param var: the MQTT variable name
+        :param var: the variable name
         :param attr: the attribute to look up on this variable
         :param expected_value: the comparison value
 
@@ -443,7 +443,7 @@ class PayloadManager:
     def get_dependencies(self, var):
         """get any variables that uses the given variable in a template via get_payload
 
-        :param var: the MQTT variable name
+        :param var: the variable name
 
         :returns: a list of dependency variable names, or a blank list if none
         """
@@ -455,7 +455,7 @@ class PayloadManager:
 
     def has_value(self, var):
         """does this variable have a valid payload
-        :param var: the MQTT variable name
+        :param var: the variable name
 
         :returns: True/False
         """
@@ -466,7 +466,7 @@ class PayloadManager:
         in the yaml configuration. By default this will always return True unless
         defined otherwise.
 
-        :param var: the MQTT variable object
+        :param var: the variable object
 
         :returns: boolean value, True/False
         """
@@ -480,7 +480,7 @@ class PayloadManager:
         """render the template for this variable
         the payload is passed in as the "value" variable
 
-        :param var: the MQTT variable object
+        :param var: the variable object
 
         :returns: the result of the rendered template
         """

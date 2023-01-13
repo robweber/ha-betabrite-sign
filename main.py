@@ -354,7 +354,7 @@ setup()
 time.sleep(10)
 
 # setup the payload manager
-payload_manager = PayloadManager(manager.get_variables_by_filter(constants.MQTT_CATEGORY))
+payload_manager = PayloadManager(manager.get_variables_by_filter(constants.JINJA_CATEGORY))
 
 if(args.mqtt and args.mqtt_username):
 
