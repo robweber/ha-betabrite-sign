@@ -329,7 +329,7 @@ class MessageManager:
         if(not isinstance(category, list)):
             category = [category]
 
-        return list(filter(lambda v: len(set(v.get_category()).intersection(category)) > 0 and func(v), self.varObjs.values()))
+        return list(filter(lambda v: len(set(v.get_categories()).intersection(category)) > 0 and func(v), self.varObjs.values()))
 
 
 class PayloadManager:
