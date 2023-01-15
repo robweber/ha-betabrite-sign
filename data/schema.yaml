@@ -14,6 +14,7 @@ variables:
           - static
           - home_assistant
           - mqtt
+          - rest
       color:
         required: False
         type: string
@@ -32,6 +33,7 @@ variables:
         dependencies:
           type:
             - home_assistant
+            - rest
       format:
         required: False
         type:
@@ -61,6 +63,7 @@ variables:
           type:
             - home_assistant
             - mqtt
+            - rest
       text:
         type: string
         dependencies:
@@ -76,6 +79,12 @@ variables:
         dependencies:
           type:
             - mqtt
+            - rest
+      url:
+        type: string
+        dependencies:
+          type:
+            - rest
 display:
   required: True
   type: dict

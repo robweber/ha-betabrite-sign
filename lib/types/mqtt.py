@@ -22,9 +22,7 @@ class MQTTVariable(JinjaVariable):
 
     Special configuration options are:
       * topic: the MQTT topic to monitor for updates
-      * template: what to render on the sign
       * qos: the MQTT quality of service (0-2) to use
-      * update_template: eval True/False if this template should be updated
     """
 
     def __init__(self, name, config):

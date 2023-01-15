@@ -196,6 +196,24 @@ def poll(offset=timedelta(minutes=1)):
         newString = None
         if(v.get_type() == 'date'):
             newString = v.get_text()
+        elif(v.get_type() == 'rest'):
+            # attempt to get new data
+            payload = v.poll()
+
+            # decode if payload is json
+            if(constants.is_json(payload)):
+                payload = json.loads(payload)
+
+            # save the new payload
+            payload_manager.set_payload(v.get_name(), payload)
+
+            # render this variable
+            render_mqtt(v)
+
+            # re-render any dependant variables
+            for dep in payload_manager.get_dependencies(v.get_name()):
+                render_mqtt(manager.get_variable_by_name(dep))
+
         elif(v.get_type() == 'home_assistant'):
             if(homeA is not None):
                 try:

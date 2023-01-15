@@ -24,6 +24,7 @@ from . import constants
 from . import jinja_custom
 from .types.home_assistant import HomeAssistantVariable
 from .types.mqtt import MQTTVariable
+from .types.rest import RestVariable
 from .types.static import StaticVariable
 from .types.time import DateVariable, TimeVariable
 
@@ -80,6 +81,8 @@ class MessageManager:
                 self.varObjs[v] = StaticVariable(v, aVar)
             elif(aVar['type'] == 'time'):
                 self.varObjs[v] = TimeVariable(v, aVar)
+            elif(aVar['type'] == 'rest'):
+                self.varObjs[v] = RestVariable(v, aVar)
 
     def __get_char(self, start, offset):
         """helper method to return a single character based on the
