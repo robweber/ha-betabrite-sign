@@ -22,7 +22,9 @@ Messages are configured for the display using a simple `.yaml` configuration fil
      - [Date](#date)
      - [Static](#static)
      - [Home Assistant](#home-assistant)
+     - [Home Assistant Test Variable](#home-assistant-text-variable)
      - [MQTT](#mqtt)
+     - [REST Request](#rest-request)
   - [Display](#display)
     - [Parameters](#parameters)
     - [Examples](#examples)
@@ -259,6 +261,21 @@ variables:
     color: yellow
 ```
 
+#### Home Assistant Text Variable
+
+The Home Assistant Text Entity (setup via [Entity Discovery described above](#home-assistant-entity-discovery) is a special variable available to pull the value from the Home Assistant Text Entity. The way this works is that the entity is available to be set in Home Assistant. This can be done through a Lovelace card or through a service call. This text entry will be published via MQTT and available for use in the sign as a standard variable. It is available via the `HA_TEXT_ENTITY` variable name. Below are a few examples.
+
+```
+# add the HA Text Entity to a message
+display:
+  main:
+    - message:
+        - mqtt_location
+        - HA_TEXT_ENTITY
+      color: green
+      mode: hold
+```
+
 #### MQTT
 
 The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Topics are limited to the same MQTT host specified in the main program arguments (see above). Additionally Jinja templates can be used to evaluate the passed in data. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with ```{{value['key']}}``` or ```{{value.key}}```.
@@ -314,11 +331,11 @@ variables:
     # geolocation published from Home Assistant Companion App
     topic: homeassistant/mobile_app/person_a/geo_location
     template: >-
-    {% if is_payload('mqtt_presence', 'home') %}
-    Person A is Home
-    {% else %}
-    Person A is {{ value }}
-    {% endif %}
+      {% if is_payload('mqtt_presence', 'home') %}
+      Person A is Home
+      {% else %}
+      Person A is {{ value }}
+      {% endif %}
 # only display one message on the sign
 display:
   main:
@@ -328,19 +345,29 @@ display:
       mode: hold
 ```
 
-#### Home Assistant Text Variable
+#### REST Request
 
-The Home Assistant Text Entity (setup via [Entity Discovery described above](#home-assistant-entity-discovery) is a special variable available to pull the value from the Home Assistant Text Entity. The way this works is that the entity is available to be set in Home Assistant. This can be done through a Lovelace card or through a service call. This text entry will be published via MQTT and available for use in the sign as a standard variable. It is available via the `HA_TEXT_ENTITY` variable name. Below are a few examples.
+The REST Request variable will perform an HTTP request and pull in the response to display. This is most useful for REST APIs that return JSON formatted results, but can be used for any type of HTTP request. This is a polling variable that will be updated on a schedule. The default schedule is every 5 minutes but can be adjusted using [cron syntax](https://en.wikipedia.org/wiki/Cron). Additionally Jinja templates can be used to evaluate the passed in data. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with ```{{value['key']}}``` or ```{{value.key}}```.
+
+During configuratijon the `update_template` key is also available. Using this allows you to define a True/False statement to determine if the data in the payload should actually trigger an update to the sign. The current ```value```  is available just like in the text template.
 
 ```
-# add the HA Text Entity to a message
-display:
-  main:
-    - message:
-        - mqtt_location
-        - HA_TEXT_ENTITY
-      color: green
-      mode: hold
+variables:
+  example_rest_request:
+    type: rest
+    url: https://url/to/payload
+    # update every hour, 5 min by default
+    cron: "*/60 * * * *"
+    template: >-
+      The value is: {{ value }}
+  anoter_example_rest_request:
+    type: rest
+    url: https://url/tojson/payload
+    # method can be 'get' or 'post' - 'get' requests used by default
+    method: post
+    template: >-
+      JSON Value: {{ value.key }}
+
 ```
 
 ## Display
