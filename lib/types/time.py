@@ -29,11 +29,19 @@ class DateVariable(PollingVariable):
     """
 
     def __init__(self, name, config):
-        super().__init__('date', name, config, {"format": "%m/%d/%y"})
+        super().__init__('date', name, config)
 
         # set the cron time to be at midnight each day
         # this is not a default so set after defaults merged
         self.config['cron'] = '0 0 * * *'
+
+    def get_default_config(self):
+        result = super().get_default_config()
+
+        # add defaults for this class
+        result['format'] = "%m/%d/%y"
+
+        return result
 
     def get_text(self):
         dateObj = datetime.today()
@@ -54,7 +62,15 @@ class TimeVariable(AlphaSignVariable):
 
     """
     def __init__(self, name, config):
-        super().__init__('time', name, config, {"format": 12})
+        super().__init__('time', name, config)
+
+    def get_default_config(self):
+        result = super().get_default_config()
+
+        # add defaults for this class
+        result['format'] = 12
+
+        return result
 
     def get_time_format(self):
         """get if this should be a 12 hr or 24 hour clock display

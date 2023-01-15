@@ -29,15 +29,17 @@ class VariableType:
     name = None
     config = None
 
-    def __init__(self, type, name, config, defaults={}):
+    def __init__(self, type, name, config):
         """
         :param type: the type of variable, unique to subclasses
         :param name: the name of the variable, as defined by the user in yaml file
         :param config: a dict containing the config as read from the yaml file
-        :param defaults: default config options as defined in subclasses
         """
         self.type = type
         self.name = name
+
+        # get the defaults for this variable
+        defaults = self.get_default_config()
 
         # set defaults and override with user values
         self.config = defaults.copy()
@@ -50,6 +52,17 @@ class VariableType:
     def get_type(self):
         """:returns: the type of this variable """
         return self.type
+
+    def get_default_config(self):
+        """ get default config for this class' categories
+        can be overriden by child classes that need additional defaults
+
+        :returns: dict of default config options for this class
+        """
+        result = {}
+        for c in self.get_categories():
+            result.update(constants.CATEGORY_DEFAULTS[c])
+        return result
 
     def get_display_params(self):
         """formats any display parameters for this variable
@@ -93,11 +106,9 @@ class PollingVariable(VariableType):
     using the "cron" parameter in the YAML config, if missing
     it will default to every 5 minutes
     """
-    __defaults = {"cron": "*/5 * * * *"}
 
-    def __init__(self, type, name, config, defaults={}):
-        self.__defaults.update(defaults)  # merge upstream defaults
-        super().__init__(type, name, config, self.__defaults)
+    def __init__(self, type, name, config):
+        super().__init__(type, name, config)
 
     def should_poll(self, current_time, offset):
         """decides if this variable should be updated based on
@@ -138,8 +149,8 @@ class AlphaSignVariable(VariableType):
     Alphasign protocol objects to display data
     """
 
-    def __init__(self, type, name, config, defaults={}):
-        super().__init__(type, name, config, defaults)
+    def __init__(self, type, name, config):
+        super().__init__(type, name, config)
 
     def get_categories(self):
         return [constants.ALPHASIGN_CATEGORY]
@@ -151,12 +162,10 @@ class JinjaVariable(VariableType):
       * template: what to render on the sign
       * update_template: eval True/False if this template should be updated
     """
-    __defaults = {'update_template': "True", "template": "{{ value }}"}
     __depends = None
 
-    def __init__(self, type, name, config, defaults={}):
-        self.__defaults.update(defaults)  # merge upstream defaults
-        super().__init__(type, name, config, self.__defaults)
+    def __init__(self, type, name, config):
+        super().__init__(type, name, config)
 
         # get variables this var depends on based on 'get_payload' or 'is_payload' type functions
         # uses matching per description https://docs.python.org/3/library/re.html#re.findall

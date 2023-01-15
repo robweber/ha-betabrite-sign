@@ -9,12 +9,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - Added a Jinja variable type as this could more than just MQTT classes
+- Added REST variable type to pull in data directly via an HTTP request
 
 ### Changed
 
 - changed `get_variables_by_filter` to filter on either a single or multiple categories
 - VariableTypes can now be a part of more than one category
 - MQTT now inherits from the Jinja variable type as well
+- don't strip out periods (.), the sign can show these
+- restructured default configuration handling so it works with multiple class inheritance
 
 ## Version 2.4
 

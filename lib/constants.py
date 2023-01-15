@@ -26,6 +26,8 @@ ALPHASIGN_CATEGORY = 'alphasign'
 POLLING_CATEGORY = 'polling'
 MQTT_CATEGORY = 'mqtt'
 JINJA_CATEGORY = 'jinja'
+CATEGORY_DEFAULTS = {ALPHASIGN_CATEGORY: {}, POLLING_CATEGORY: {"cron": "*/5 * * * *"},
+                     MQTT_CATEGORY: {"qos": 0}, JINJA_CATEGORY: {'update_template': "True", "template": "{{ value }}"}}
 
 # MQTT topics for state and commands
 MQTT_STATUS = "betabrite/sign/status"

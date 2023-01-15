@@ -26,7 +26,7 @@ class MQTTVariable(JinjaVariable):
     """
 
     def __init__(self, name, config):
-        super().__init__('mqtt', name, config, {"qos": 0})
+        super().__init__('mqtt', name, config)
 
     def get_topic(self):
         return self.config['topic']

@@ -284,7 +284,6 @@ def update_string(name, msg):
     :param msg: the message to send to the sign
     """
     # replace some chars
-    #msg = msg.replace('.', '')
     msg = msg.replace('_', ' ')
 
     strObj = manager.update_string(name, msg)

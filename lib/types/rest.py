@@ -29,7 +29,15 @@ class RestVariable(JinjaVariable, PollingVariable):
       * method: GET or POST
     """
     def __init__(self, name, config):
-        super().__init__('rest', name, config, {'method': 'get'})
+        super().__init__('rest', name, config)
+
+    def get_default_config(self):
+        result = super().get_default_config()
+
+        # add defaults for this class
+        result['method'] = 'get'
+
+        return result
 
     def poll(self):
         result = ''
