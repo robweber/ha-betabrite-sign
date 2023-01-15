@@ -14,6 +14,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import requests
+import unicodedata
 from .. import constants
 from .. variable_type import JinjaVariable, PollingVariable
 
@@ -41,7 +42,7 @@ class RestVariable(JinjaVariable, PollingVariable):
 
         if(response.status_code == 200):
             # successful request
-            result = response.text
+            result = unicodedata.normalize('NFD', response.text)
 
         return result
 
