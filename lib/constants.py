@@ -20,7 +20,7 @@ import socket
 from json.decoder import JSONDecodeError
 
 # current version
-PROJECT_VERSION = "2.4"
+PROJECT_VERSION = "2.5"
 
 # variable categories
 ALPHASIGN_CATEGORY = 'alphasign'
@@ -96,6 +96,10 @@ def strip_control(str):
     return re.sub("\\x1c([1-8]|[A-C])", "", str)
 
 def get_local_ip():
+    """get the local IP of this device
+
+    :returns: the device IP as a string
+    """
     result = "127.0.0.1"  # if no network return this
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
