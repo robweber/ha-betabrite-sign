@@ -130,7 +130,8 @@ def mqtt_publish_attributes():
     # make sure MQTT is setup
     if(mqtt_client is not None):
         attributes = {"last_updated": str(datetime.now().astimezone().isoformat(timespec='seconds')),
-                      "active_queue": active_queue}
+                      "active_queue": active_queue,
+                      "device_ip": constants.get_local_ip()}
 
         mqtt_client.publish(constants.MQTT_ATTRIBUTES,
                             json.dumps(attributes),

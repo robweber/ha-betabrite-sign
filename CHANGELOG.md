@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Added a Jinja variable type as this could more than just MQTT classes
 - Added REST variable type to pull in data directly via an HTTP request
+- added __device_ip__ as an attribute to easily find DHCP address in Home Assistant
 
 ### Changed
 

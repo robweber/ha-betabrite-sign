@@ -16,6 +16,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import alphasign
 import json
 import re
+import socket
 from json.decoder import JSONDecodeError
 
 # current version
@@ -93,3 +94,17 @@ def strip_control(str):
     """
 
     return re.sub("\\x1c([1-8]|[A-C])", "", str)
+
+def get_local_ip():
+    result = "127.0.0.1"  # if no network return this
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    try:
+        s.connect(('192.168.0.255', 1))  # connect() for UDP doesn't send packets
+        result = s.getsockname()[0]
+    except Exception:
+        logging.warning("No LAN address found")
+    finally:
+        s.close()
+
+    return result
