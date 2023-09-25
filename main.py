@@ -61,17 +61,23 @@ def mqtt_connect(client, userdata, flags, rc):
     device_name_slug = slugify(args.ha_device_name, separator='_')
     discovery_topics = {constants.MQTT_DISCOVERY_LIGHT_CLASS: "", constants.MQTT_DISCOVERY_TEXT_CLASS: ""}
     if(args.ha_discovery):
-        # generate the light entity config
-        discovery_topics[constants.MQTT_DISCOVERY_LIGHT_CLASS] = {"name": args.ha_device_name, "device_class": constants.MQTT_DISCOVERY_LIGHT_CLASS,
-                                                                  "object_id": device_name_slug, "unique_id": device_name_slug, "state_topic": constants.MQTT_STATUS,  # noqa
+
+        # device config
+        ha_device = {"name": args.ha_device_name, "identifiers": device_name_slug,
+                     "sw_version": constants.PROJECT_VERSION, "manufacturer": "Rob Weber"}
+
+        # generate the light entity config https://www.home-assistant.io/integrations/light.mqtt/
+        discovery_topics[constants.MQTT_DISCOVERY_LIGHT_CLASS] = {"name": f"{args.ha_device_name} Light", "device_class": constants.MQTT_DISCOVERY_LIGHT_CLASS,
+                                                                  "object_id": device_name_slug, "unique_id": f"{device_name_slug}_light", "state_topic": constants.MQTT_STATUS,  # noqa
                                                                   "command_topic": constants.MQTT_SWITCH, "json_attributes_topic": constants.MQTT_ATTRIBUTES,  # noqa
                                                                   "availability_topic": constants.MQTT_AVAILABLE, "qos": 0, "payload_on": "ON",
-                                                                  "payload_off": "OFF", "optimistic": False}
+                                                                  "payload_off": "OFF", "optimistic": False, "device": ha_device}
 
+        # generate the text config https://www.home-assistant.io/integrations/text.mqtt/
         discovery_topics[constants.MQTT_DISCOVERY_TEXT_CLASS] = {"name": f"{args.ha_device_name} Text", "device_class": constants.MQTT_DISCOVERY_TEXT_CLASS,  # noqa
                                                                  "object_id": f"{device_name_slug}_text", "unique_id": f"{device_name_slug}_text",
                                                                  "state_topic": constants.MQTT_CURRENT_TEXT, "command_topic": constants.MQTT_NEW_TEXT,
-                                                                 "availability_topic": constants.MQTT_AVAILABLE, "qos": 0}
+                                                                 "availability_topic": constants.MQTT_AVAILABLE, "qos": 0, "device": ha_device}
 
     for entity_type in discovery_topics:
         topic = f"{args.mqtt_discovery_prefix}/{entity_type}/{device_name_slug}/config"
