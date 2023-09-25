@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## Version 2.6
+
+### Changed
+
+- Autodiscovery via MQTT for Home Assistant now includes the `device` attribute. This allows all entities to be categorized within a single HA device
+
 ## Version 2.5
 
 ### Added
