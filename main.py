@@ -67,7 +67,7 @@ def mqtt_connect(client, userdata, flags, rc):
                      "sw_version": constants.PROJECT_VERSION, "manufacturer": "Rob Weber"}
 
         # generate the light entity config https://www.home-assistant.io/integrations/light.mqtt/
-        discovery_topics[constants.MQTT_DISCOVERY_LIGHT_CLASS] = {"name": f"{args.ha_device_name} Light", "device_class": constants.MQTT_DISCOVERY_LIGHT_CLASS,
+        discovery_topics[constants.MQTT_DISCOVERY_LIGHT_CLASS] = {"name": f"{args.ha_device_name} Light", "device_class": constants.MQTT_DISCOVERY_LIGHT_CLASS,  # noqa
                                                                   "object_id": device_name_slug, "unique_id": f"{device_name_slug}_light", "state_topic": constants.MQTT_STATUS,  # noqa
                                                                   "command_topic": constants.MQTT_SWITCH, "json_attributes_topic": constants.MQTT_ATTRIBUTES,  # noqa
                                                                   "availability_topic": constants.MQTT_AVAILABLE, "qos": 0, "payload_on": "ON",

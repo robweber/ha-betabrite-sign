@@ -15,6 +15,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import alphasign
 import json
+import logging
 import re
 import socket
 from json.decoder import JSONDecodeError
@@ -94,6 +95,7 @@ def strip_control(str):
     """
 
     return re.sub("\\x1c([1-8]|[A-C])", "", str)
+
 
 def get_local_ip():
     """get the local IP of this device
