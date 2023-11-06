@@ -1,7 +1,7 @@
 cerberus
 configargparse
 croniter
-git+https://github.com/robweber/alphasign.git#egg=alphasign
+alphasign @ git+https://github.com/robweber/alphasign.git#egg=alphasign
 Jinja2
 paho-mqtt
 python-slugify
