@@ -48,19 +48,30 @@ The install procedure assumes you have a working version of the Raspberry Pi OS 
 
 ```
 # install os deps
-sudo apt-get install git python3-pip
+sudo apt-get install git python3-pip python3-venv
 
 # clone the repo
 git clone https://github.com/robweber/ha-betabrite-sign.git
 
+# create the virtual environment
+cd ha-betabrite-sign
+python3 -m venv .venv
+source .venv/bin/activate
+
 # install python requirements
-sudo pip3 install -r install/requirements.txt
+pip3 install -r install/requirements.txt
+
+# if installing for development/testing
+pip3 install -r install/requirements-dev.txt
+
+# deactivate virtual environment when done
+deactivate
 
 ```
 
 ### Home Assistant Entity Discovery
 
-This code can run standalone, or be further integrated with Home Assistant to expose some entities via [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/) and [MQTT Text]() integrations. This allows Home Assistant to get some run-time data, control the sign as though it was a light, and push text to the sign. For this to work MQTT must be setup as [described below](#mqtt). In Home Assistant [MQTT Discovery](https://www.home-assistant.io/docs/mqtt/discovery/) is used to automatically configure the device when `--ha_discovery` is passed in at startup. Other options, like the device name, can be configured as well.
+This code can run standalone, or be further integrated with Home Assistant to expose some entities via [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/) and [MQTT Text](https://www.home-assistant.io/integrations/text.mqtt/) integrations. This allows Home Assistant to get some run-time data, control the sign as though it was a light, and push text to the sign. For this to work MQTT must be setup as [described below](#mqtt). In Home Assistant [MQTT Discovery](https://www.home-assistant.io/docs/mqtt/discovery/) is used to automatically configure the device when `--ha_discovery` is passed in at startup. Other options, like the device name, can be configured as well.
 
 When MQTT is configured the program will watch for commands and publish to the following topics.
 
@@ -84,13 +95,13 @@ Once installed copy the existing `data/layout.yaml.example` file to `data/layout
 You can run the program with the following command:
 
 ```
-python3 main.py
+python3 src/main.py
 ```
 
 You can also specify a config file location instead of passing in all arguments on the command line. This is done with the `-c` flag:
 
 ```
-python3 main.py -c /path/to/config.conf
+python3 src/main.py -c /path/to/config.conf
 ```
 
 A full list of arguments can be found by using the `-h` flag.
@@ -142,7 +153,7 @@ MQTT:
 
 ```
 
-You can also install the program as a service with the following commands. The service assumes the configuration file is located in `/home/pi/ha-betabrite-sign/config.conf`, change this if you need to.
+You can also install the program as a service with the following commands. The service assumes the working directory is ``/home/pi/ha-betabrite-sign/`` and the configuration file is located at ``/etc/default/ha-sign`, change this if you need to.
 
 ```
 sudo cp install/ha-sign.service /etc/systemd/system/ha-sign.service
