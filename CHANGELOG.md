@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## Version 2.7
+
+### Added
+
+- added instructions for running this under a virtual environment
+
+### Changed
+
+- updated service instructions for virtual environment
+- moved files to `src/` directory
+
+### Fixed
+
+- `requirements-dev.txt` now also pulls in base requirements
+- fixed __alphasign__ requirement url format in `requirements.txt`
+
 ## Version 2.6
 
 ### Changed
