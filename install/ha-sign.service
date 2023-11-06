@@ -4,7 +4,7 @@ Description=Home Assistant Betabrite Sign
 [Service]
 User=pi
 WorkingDirectory=/home/pi/ha-betabrite-sign
-ExecStart=/usr/bin/python3 /home/pi/ha-betabrite-sign/main.py -c /home/pi/ha-betabrite-sign/config.conf
+ExecStart=/home/pi/ha-betabrite-sign/.venv/bin/python3 src/main.py -c /etc/default/ha-sign
 
 [Install]
 WantedBy=multi-user.target
