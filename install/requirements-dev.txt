@@ -1,2 +1,5 @@
+# install requirements
+-r requirements.txt
+
 flake8
 flake8-eradicate
