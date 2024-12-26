@@ -610,7 +610,7 @@ Returns a Python [datetime](https://docs.python.org/3/library/datetime.html#date
 {% endif %}
 ```
 
-#### timedelta
+#### timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0)
 
 Returns a Python [timedelta](https://docs.python.org/3/library/datetime.html#datetime-objects) object. This can be used to add or subtract a given amount from a current datetime value.
 
@@ -619,15 +619,15 @@ Returns a Python [timedelta](https://docs.python.org/3/library/datetime.html#dat
 {{ now() + timedelta(minutes=30) }}
 ```
 
-#### strptime
+#### strptime(date_string, format)
 
-Uses the Python strptime function to parse a string into a [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects) object
+Uses the Python [strptime](https://docs.python.org/3/library/datetime.html#datetime.datetime.strptime) function to parse a string into a [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects) object
 
 ```
-{{ strptime("January 12, 2022", "%B %d, %Y")}}
+{{ strptime("January 12, 2022", "%B %d, %Y") }}
 ```
 
-#### is_time(time_expression, format)
+#### is_time(time_expression, format, datetime_obj=now())
 
 Tests if a given time expression matches the current time, or a given datetime object. Useful as part of a [Dynamic Variable](#dynamic) to check if the current date is a specific day of the week, a holiday, birthday, or other important date. Parameters are the expression to compare and the [strftime format code](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) to format the current date to.
 
