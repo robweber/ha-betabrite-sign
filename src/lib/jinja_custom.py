@@ -36,9 +36,9 @@ def get_timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, 
 
 def create_time(date_string, format):
     """same as calling strptime()
-    https://docs.python.org/3/library/datetime.html
+    https://docs.python.org/3/library/datetime.html#datetime.datetime.strptime
     """
-    return datetime.strptime(date_string, format)
+    return datetime.datetime.strptime(date_string, format)
 
 
 # filters
