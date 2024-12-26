@@ -25,8 +25,7 @@ from . import jinja_custom
 from .types.home_assistant import HomeAssistantVariable
 from .types.mqtt import MQTTVariable
 from .types.rest import RestVariable
-from .types.static import StaticVariable
-from .types.dynamic import DynamicVariable
+from .types.text import DynamicVariable, StaticVariable
 from .types.time import DateVariable, TimeVariable
 
 
