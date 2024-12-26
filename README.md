@@ -539,7 +539,7 @@ display:
         - static_text
         mode: rotate
         color: green
-    update_template: >-
+    active_template: >-
       {{ is_payload('lights', 'on') }}  
 ```
 
