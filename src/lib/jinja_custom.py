@@ -41,7 +41,7 @@ def create_time(date_string, format):
     return datetime.datetime.strptime(date_string, format)
 
 
-def is_time(test_expr, format, current_time = datetime.datetime.now()):
+def is_time(test_expr, format, current_time=datetime.datetime.now()):
     """ tests if a given time expression matches the datetime given (now() by default)
     example to check if current month is Oct: is_time("10", "%m")
     https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
@@ -56,6 +56,7 @@ def is_time(test_expr, format, current_time = datetime.datetime.now()):
     check_date = current_time.strftime(format)
 
     return test_expr == check_date
+
 
 # filters
 def shorten_urls(value):
