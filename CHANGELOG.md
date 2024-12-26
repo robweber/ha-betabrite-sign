@@ -4,16 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
-## Unreleased
+## Version 3.0
 
 ### Added
 
 - new variable type `dynamic`. This is a template based type used to combine other variable types into a dynamic message
+- added Jinja template method `is_time()` to compare time strings in a quick way
 
 ### Changed
 
 - refactored `render_mqtt()` to `render_template()` in `main.py`. This better reflects that this is for rendering any Jinja variable type
-- JinjaVariable types only update on the sign if the rendered template has actually changed due to a data change
+- JinjaVariable types only update on the sign if the rendered template has actually changed, avoids pushing to sign unless needed
 
 ## Version 2.8
 

@@ -21,7 +21,7 @@ import socket
 from json.decoder import JSONDecodeError
 
 # current version
-PROJECT_VERSION = "2.7"
+PROJECT_VERSION = "3.0"
 
 # variable categories
 ALPHASIGN_CATEGORY = 'alphasign'
