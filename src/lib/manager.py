@@ -364,6 +364,7 @@ class PayloadManager:
         self.__jinja_env.globals['now'] = jinja_custom.get_date
         self.__jinja_env.globals['timedelta'] = jinja_custom.get_timedelta
         self.__jinja_env.globals['strptime'] = jinja_custom.create_time
+        self.__jinja_env.globals['is_time'] = jinja_custom.is_time
 
         self.__jinja_env.filters['shorten_urls'] = jinja_custom.shorten_urls
         self.__jinja_env.filters['color'] = jinja_custom.set_color

@@ -21,14 +21,14 @@ from . import constants
 # global functions
 def get_date():
     """same as calling datetime.now()
-    https://docs.python.org/3/library/datetime.html
+    https://docs.python.org/3/library/datetime.html#datetime.datetime.now
     """
     return datetime.datetime.now()
 
 
 def get_timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0):
     """same as calling timedelta()
-    https://docs.python.org/3/library/datetime.html
+    https://docs.python.org/3/library/datetime.html#timedelta-objects
     """
     return datetime.timedelta(days=days, seconds=seconds, microseconds=microseconds,
                               milliseconds=milliseconds, minutes=minutes, hours=hours, weeks=weeks)
@@ -40,6 +40,22 @@ def create_time(date_string, format):
     """
     return datetime.datetime.strptime(date_string, format)
 
+
+def is_time(test_expr, format, current_time = datetime.datetime.now()):
+    """ tests if a given time expression matches the datetime given (now() by default)
+    example to check if current month is Oct: is_time("10", "%m")
+    https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+
+    :param text_expr: the expression to test, should match the format of format parameter (ex 12/24)
+    :param format: the format of the expression to test, using strftime format codes (ex %m/%d)
+    :param current_time: the time to compare against, datetime.now() by default
+
+    :returns: True/False on if test expression matches
+    """
+    # format date according to expression
+    check_date = current_time.strftime(format)
+
+    return test_expr == check_date
 
 # filters
 def shorten_urls(value):

@@ -603,6 +603,13 @@ Value is On
 
 Returns a Python [datetime](https://docs.python.org/3/library/datetime.html#datetime-objects) object that represents the current time.
 
+```
+# check if current time greater than 11 AM
+{% if now().strftime("%H") | int >= 11 %}
+ It's after 11:00 AM
+{% endif %}
+```
+
 #### timedelta
 
 Returns a Python [timedelta](https://docs.python.org/3/library/datetime.html#datetime-objects) object. This can be used to add or subtract a given amount from a current datetime value.
@@ -618,6 +625,23 @@ Uses the Python strptime function to parse a string into a [datetime](https://do
 
 ```
 {{ strptime("January 12, 2022", "%B %d, %Y")}}
+```
+
+#### is_time(time_expression, format)
+
+Tests if a given time expression matches the current time, or a given datetime object. Useful as part of a [Dynamic Variable](#dynamic) to check if the current date is a specific day of the week, a holiday, birthday, or other important date. Parameters are the expression to compare and the [strftime format code](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes) to format the current date to.
+
+```
+# is today Christmas
+{% is_time("12/25", "%m/%d") %}
+Merry Christmas!
+{% endif %}
+
+# is tomorrow Friday
+{% is_time("Friday", "%A", now() + timedelta(days=1)) %}
+Tomorrow is Friday
+{% endif %}
+
 ```
 
 ### Filters
