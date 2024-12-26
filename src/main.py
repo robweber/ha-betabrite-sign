@@ -125,11 +125,11 @@ def mqtt_on_message(client, userdata, message):
             payload_manager.set_payload(aVar.get_name(), payload)
 
             # render this variable
-            render_mqtt(aVar)
+            render_template(aVar)
 
             # re-render any dependant variables
             for dep in payload_manager.get_dependencies(aVar.get_name()):
-                render_mqtt(manager.get_variable_by_name(dep))
+                render_template(manager.get_variable_by_name(dep))
 
 
 def mqtt_publish_attributes():
@@ -144,8 +144,8 @@ def mqtt_publish_attributes():
                             retain=True)
 
 
-def render_mqtt(var):
-    """Render the mqtt variable and update the sign"""
+def render_template(var):
+    """Render the Jinja variable and update the sign"""
     if(payload_manager.should_update(var)):
         # render the template
         newString = payload_manager.render_variable(var)
@@ -215,15 +215,15 @@ def poll(offset=timedelta(minutes=1)):
             payload_manager.set_payload(v.get_name(), payload)
 
             # render this variable
-            render_mqtt(v)
+            render_template(v)
 
             # re-render any dependant variables
             for dep in payload_manager.get_dependencies(v.get_name()):
-                render_mqtt(manager.get_variable_by_name(dep))
+                render_template(manager.get_variable_by_name(dep))
 
         elif(v.get_type() == 'dynamic'):
             # render this variable
-            render_mqtt(v)
+            render_template(v)
         elif(v.get_type() == 'home_assistant'):
             if(homeA is not None):
                 try:

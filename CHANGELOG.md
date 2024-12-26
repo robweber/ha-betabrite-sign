@@ -8,7 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 
-- new variable type `dynamic`. This is a template based type used to combine other variable types into a dynamic message 
+- new variable type `dynamic`. This is a template based type used to combine other variable types into a dynamic message
+
+### Changed
+
+- refactored `render_mqtt()` to `render_template()` in `main.py`. This better reflects that this is for rendering any Jinja variable type
 
 ## Version 2.8
 
