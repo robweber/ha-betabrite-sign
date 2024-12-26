@@ -91,7 +91,7 @@ Topics from any MQTT device can be monitored, but a common use case is to get en
 
 ## Usage
 
-Once installed copy the existing `data/layout.yaml.example` file to `data/layout.yaml`. This file is read on startup to configure the messages sent to the display. There are two main sections to the file __variables__ and __messages__. The variables section defines strings that will be updated dynamically on the sign. The messages area defines the format of how the text will be displayed on the sign, this includes things like the display mode and color. For dynamic updates to work you'll need to poll Home Assistant or utilize MQTT. For a more complete breakdown of the options available in the layout file, see the [Variables](#variables) and [Messages](#messages) sections below.
+Once installed copy the existing `data/layout.yaml.example` file to `data/layout.yaml`. This file is read on startup to configure the messages sent to the display. There are two main sections to the file __variables__ and __display__. The variables section defines strings that will be updated dynamically on the sign. The display area defines which text will be displayed on the sign, and in what order. This includes things like the display mode and color. For dynamic updates to work you'll need to poll Home Assistant or utilize MQTT. For a more complete breakdown of the options available in the layout file, see the [Variables](#variables) and [Display](#display) sections below.
 
 You can run the program with the following command:
 
@@ -154,7 +154,7 @@ MQTT:
 
 ```
 
-You can also install the program as a service with the following commands. The service assumes the working directory is ``/home/pi/ha-betabrite-sign/`` and the configuration file is located at ``/etc/default/ha-sign`, change this if you need to.
+You can also install the program as a service with the following commands. The service assumes the working directory is ``/home/pi/ha-betabrite-sign/`` and the configuration file is located at `/etc/default/ha-sign`, change this if you need to.
 
 ```
 sudo cp install/ha-sign.service /etc/systemd/system/ha-sign.service
@@ -199,7 +199,7 @@ The `layout.yaml` file controls most aspects of displaying messages on the sign.
 
 ### Variables
 
-The variables section of the file defines dynamic variables that can be loaded for display. Depending on the type used they will be updated either via polling Home Assistant or by watching MQTT topics. The data for dynamic variables can be evaluated by using Jijna templates, of which there are a few examples below. For more information on templating, see the [Home Assistant](https://www.home-assistant.io/docs/configuration/templating/) and [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/templates/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
+The variables section of the file defines variables that can store information or format text for display. Depending on the type used they will be updated either via polling or by watching MQTT topics. The data for dynamic variables is evaluated by using Jijna templates, of which there are a few examples below. For more information on templating, see the [Home Assistant](https://www.home-assistant.io/docs/configuration/templating/) and [Jinja documentation](https://jinja.palletsprojects.com/en/3.0.x/templates/). There are a few different variable types, some with more options than others. The different types are listed below, with examples.
 
 
 #### Time
@@ -245,7 +245,7 @@ variables:
 
 Dynamic text can utilize Jinja template syntax to update the message contents dynamically. Dynamic text is re-evaluated once every minute for changes, or whenever a referenced variable is updated. These are found at runtime and displayed when debug logging is enabled.
 
-A common use case for this variable is combining data from other variables through the `get_payload()` or `is_payload()` template methods. Similar to the [states()](https://www.home-assistant.io/docs/configuration/templating/#states) methods in Home Assistant; this allows templates to get payloads from MQTT or REST variable types. The example below subscribes to 2 MQTT topics and combines them using a dynamic variable to display which lights are currently on.
+A common use case for this variable type is combining data from other variables through the `get_payload()` or `is_payload()` template methods. Similar to the [states()](https://www.home-assistant.io/docs/configuration/templating/#states) methods in Home Assistant; this allows templates to get payloads from MQTT or REST variable types. The example below subscribes to 2 MQTT topics and combines them using a dynamic variable to display which lights are currently on.
 
 ```
 variables:
@@ -360,7 +360,7 @@ variables:
       {{ value.state != 'unknown' }}
 ```
 
-A more advanced use caes utilizes `get_payload` and `is_payload` to reference between variables.  The example below subscribes to 2 topics, one for geolocation and one for general home/away presence. The `mqtt_location` variable references the presence information to decide if the person is home or not before displaying the full geo location.  Any time a variable is updated that is used within other templates the downstream template will also be updated. These are found at runtime and displayed when debug logging is enabled.
+A more advanced use caes utilizes `get_payload` and `is_payload` to reference between variables.  The example below subscribes to 2 topics, one for geolocation and one for general home/away presence. The `mqtt_location` variable references the presence information to decide if the person is home or not before displaying the full geo location.  Anytime a variable is updated that is used within other templates the downstream template will also be updated. These are found at runtime and displayed when debug logging is enabled.
 
 ```
 variables:
@@ -416,7 +416,7 @@ variables:
 
 The display area of the `.yaml` file is where messages are setup to actually display on the sign. Each message queue has a name and a list of messages. Within each message is where important information such as the sign mode, color, and speed of the message are specified. Variables can also be combined here to show within the same message. The order of the messages is the order they will be sent to the sign.
 
-The `main` queue must be present, as this is the default and loaded on startup. Additional queues can be defined as well. The currently active queue is determined by evaluating the `active_template`. This template should return True/False to determine if the queue should be set to active. These are evaluated top-down, so the first queue that returns True is set as active. If no statement returns True, then the `main` queue is set to active automatically. Examples of this are below. __Note:__ the active queue is re-evaluated every minute, not on the fly, so there may be some delay between variables updating and the queue changing.
+The `main` queue must be present, as this is the default and loaded on startup. Additional queues can be defined as well. The currently active queue is determined by evaluating the `active_template` function. This template should return True/False to determine if the queue should be set to active. These are evaluated top-down, so the first queue that returns True is set as active. If no statement returns True, then the `main` queue is set to active automatically. Examples of this are below. __Note:__ the active queue is re-evaluated every minute, not on the fly, so there may be some delay between variables updating and the queue changing.
 
 ### Parameters
 
@@ -546,7 +546,7 @@ display:
 
 ## Templating
 
-There are a handful of custom functions and filters available to use in local Jinja templates, outside of the built in ones. These can be used in MQTT templates, update templates or active queue templates.
+There are a handful of custom functions and filters available to use in local Jinja templates, outside of the built in ones. These can be used with variables that support templates, update templates or active queue templates.
 
 ### Functions
 
