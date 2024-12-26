@@ -15,6 +15,7 @@ variables:
           - home_assistant
           - mqtt
           - rest
+          - dynamic
       color:
         required: False
         type: string
@@ -57,6 +58,7 @@ variables:
           type:
             - home_assistant
             - mqtt
+            - dynamic
       template:
         type: string
         dependencies:
@@ -64,6 +66,7 @@ variables:
             - home_assistant
             - mqtt
             - rest
+            - dynamic
       text:
         type: string
         dependencies:
@@ -80,6 +83,7 @@ variables:
           type:
             - mqtt
             - rest
+            - dynamic
       url:
         type: string
         dependencies:

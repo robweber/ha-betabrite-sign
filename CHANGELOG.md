@@ -4,11 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+## Unreleased
+
+### Added
+
+- new variable type `dynamic`. This is a template based type used to combine other variable types into a dynamic message 
+
 ## Version 2.8
 
 ### Added
 
-- added `color_mode` and `supported_color_modes` attributes to MQTT Light registration for Home Assistant. This fulfills the new [light entity requirements](https://developers.home-assistant.io/docs/core/entity/light#color-modes). 
+- added `color_mode` and `supported_color_modes` attributes to MQTT Light registration for Home Assistant. This fulfills the new [light entity requirements](https://developers.home-assistant.io/docs/core/entity/light#color-modes).
 
 ## Version 2.7
 

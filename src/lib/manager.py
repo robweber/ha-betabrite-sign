@@ -26,6 +26,7 @@ from .types.home_assistant import HomeAssistantVariable
 from .types.mqtt import MQTTVariable
 from .types.rest import RestVariable
 from .types.static import StaticVariable
+from .types.dynamic import DynamicVariable
 from .types.time import DateVariable, TimeVariable
 
 
@@ -83,6 +84,8 @@ class MessageManager:
                 self.varObjs[v] = TimeVariable(v, aVar)
             elif(aVar['type'] == 'rest'):
                 self.varObjs[v] = RestVariable(v, aVar)
+            elif(aVar['type'] == 'dynamic'):
+                self.varObjs[v] = DynamicVariable(v, aVar)
 
     def __get_char(self, start, offset):
         """helper method to return a single character based on the

@@ -221,6 +221,9 @@ def poll(offset=timedelta(minutes=1)):
             for dep in payload_manager.get_dependencies(v.get_name()):
                 render_mqtt(manager.get_variable_by_name(dep))
 
+        elif(v.get_type() == 'dynamic'):
+            # render this variable
+            render_mqtt(v)
         elif(v.get_type() == 'home_assistant'):
             if(homeA is not None):
                 try:

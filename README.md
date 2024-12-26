@@ -231,7 +231,7 @@ variables:
 
 #### Static
 
-The static type allows for displaying static text that is loaded once when the sign initalizes and then is never changed.
+The static type allows for displaying static text that is loaded once when the sign initializes and then is never changed.
 
 ```
 variables:
@@ -240,9 +240,39 @@ variables:
     text: "Static Text Example"
 ```
 
+#### Dynamic
+
+Dynamic text can utilize Jinja template syntax to update the message contents dynamically. Dynamic text is re-evaluated once every minute for changes, or whenever a referenced variable is updated. These are found at runtime and displayed when debug logging is enabled.
+
+A common use case for this variable is combining data from other variables through the `get_payload()` or `is_payload()` template methods. Similar to the [states()](https://www.home-assistant.io/docs/configuration/templating/#states) methods in Home Assistant; this allows templates to get payloads from MQTT or REST variable types. The example below subscribes to 2 MQTT topics and combines them using a dynamic variable to display which lights are currently on.
+
+```
+variables:
+  dynamic_text:
+    type: dynamic
+    # the template to render when updated
+    template: >-
+      {% set result = [] %}
+      {% if is_payload('office_lights', 'on') %}
+        {% set result = result + ['Office Lights are on'] %}
+      {% endif %}
+      {% if is_payload('living_room_lights', 'on') %}
+        {% set result = result + ['Living Room Lights are on'] %}
+      {% endif %}
+      {{ result | join(' and ') }}
+    # optional, display before content is rendered
+    startup: "Loading"
+  office_lights:
+    type: mqtt
+    topic: ha_states/light/office_lights/state
+  living_room_lights:
+    type: mqtt
+    topic: ha_states/light/living_room_lights/state
+```
+
 #### Home Assistant
 
-The Home Assistant type is a polling variable that updates on a given interval. Data will be updated each time the polling interval is hit and the resulting string sent to the sign, wherever it is used in a message. Polling intervals are specified using [cron syntax](https://en.wikipedia.org/wiki/Cron), with a default of every 5 minutes. Home Assistant templates are used to format the results directly in Home Assistant. Examples of this are shown below. Additionally you'll need to specify the url to your Home Assistant instance, and a [long lived access token](https://www.home-assistant.io/docs/authentication/).
+The Home Assistant type is a polling variable that updates on a given interval. Data will be updated each time the polling interval is hit and the resulting value stored for use. Polling intervals are specified using [cron syntax](https://en.wikipedia.org/wiki/Cron), with a default of every 5 minutes. Home Assistant templates are used to format the results directly in Home Assistant. Examples of this are shown below. Additionally you'll need to specify the URL to your Home Assistant instance, and a [long lived access token](https://www.home-assistant.io/docs/authentication/).
 
 The Home Assistant [Developer Tools](https://www.home-assistant.io/docs/tools/dev-tools/) area should be used to create the template string you need so it can be cut/pasted into the yaml configuration. This should get you the exact syntax you need to render your variable in Home Assistant and have the results displayed on the sign.
 
@@ -289,7 +319,7 @@ display:
 
 #### MQTT
 
-The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Topics are limited to the same MQTT host specified in the main program arguments (see above). Additionally Jinja templates can be used to evaluate the passed in data. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with ```{{value['key']}}``` or ```{{value.key}}```.
+The MQTT variable type subscribes to an MQTT topic and will update the variable text any time the topic is updated. Topics are limited to the same MQTT host specified in the main program arguments (see above). Additionally Jinja templates can be used to evaluate the passed in data. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with `{{value['key']}}` or `{{value.key}}`.
 
 MQTT can sometimes be very chatty so an additional `update_template` key is available. Using this allows you to define a True/False statement to determine if the data in the payload should actually trigger an update to the sign. The current ```value```  is available just like in the text template.
 
@@ -329,7 +359,7 @@ variables:
       {{ value.state != 'unknown' }}
 ```
 
-A more advanced technique for combining data can be done through the `get_payload()` or `is_payload()` template methods. Similar to the [states()](https://www.home-assistant.io/docs/configuration/templating/#states) methods in Home Assistant; this allows MQTT templates to get payloads from other MQTT topics. These topics can be defined for the sole purpose of holding information for use later. The example below subscribes to 2 topics, one for geolocation and one for general home/away presence. The `mqtt_location` variable references the presence information to decide if the person is home or not before displaying the full geo location.  Any time a variable is updated that is used within other templates the downstream template will also be updated. These are found at runtime and displayed when debug logging is enabled.
+A more advanced use caes utilizes `get_payload` and `is_payload` to reference between variables.  The example below subscribes to 2 topics, one for geolocation and one for general home/away presence. The `mqtt_location` variable references the presence information to decide if the person is home or not before displaying the full geo location.  Any time a variable is updated that is used within other templates the downstream template will also be updated. These are found at runtime and displayed when debug logging is enabled.
 
 ```
 variables:
@@ -358,9 +388,9 @@ display:
 
 #### REST Request
 
-The REST Request variable will perform an HTTP request and pull in the response to display. This is most useful for REST APIs that return JSON formatted results, but can be used for any type of HTTP request. This is a polling variable that will be updated on a schedule. The default schedule is every 5 minutes but can be adjusted using [cron syntax](https://en.wikipedia.org/wiki/Cron). Additionally Jinja templates can be used to evaluate the passed in data. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with ```{{value['key']}}``` or ```{{value.key}}```.
+The REST Request variable will perform an HTTP request and pull in the response to display. This is most useful for REST APIs that return JSON formatted results, but can be used for any type of HTTP request. This is a polling variable that will be updated on a schedule. The default schedule is every 5 minutes but can be adjusted using [cron syntax](https://en.wikipedia.org/wiki/Cron). Additionally Jinja templates can be used to evaluate the passed in data. This is accessed via the `{{ value }}` variable in the template. JSON strings are parsed automatically and can be accessed with `{{value['key']}}` or `{{value.key}}`.
 
-During configuratijon the `update_template` key is also available. Using this allows you to define a True/False statement to determine if the data in the payload should actually trigger an update to the sign. The current ```value```  is available just like in the text template.
+During configuration the `update_template` key is also available. Using this allows you to define a True/False statement to determine if the data in the payload should actually trigger an update to the sign. The current `value`  is available just like in the text template.
 
 ```
 variables:
