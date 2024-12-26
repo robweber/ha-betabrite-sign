@@ -342,6 +342,7 @@ class PayloadManager:
     templates via Jinja
     """
     __jinja_env = None
+    __rendered_templates = None
     __payloads = None
     __depends = None
 
@@ -352,6 +353,7 @@ class PayloadManager:
         # initalize each variable
         var_names = [v.get_name() for v in vars]
         self.__payloads = dict.fromkeys(var_names, "")
+        self.__rendered_templates = dict.fromkeys(var_names, "")
 
         # setup jinja environment - functions and filters
         self.__jinja_env = jinja2.Environment()
@@ -487,11 +489,21 @@ class PayloadManager:
 
         :param var: the variable object
 
-        :returns: the result of the rendered template
+        :returns: the result of the rendered template, None if this result
+        is the same as the previously rendered result (no change)
         """
+        result = None  # assume no change
+
         template = self.__jinja_env.from_string(var.get_text())
 
-        return template.render(value=self.get_payload(var.get_name())).strip()
+        r = template.render(value=self.get_payload(var.get_name())).strip()
+
+        if(r != self.__rendered_templates[var.get_name()]):
+            # return result if different than previous
+            result = r
+            self.__rendered_templates[var.get_name()] = result
+
+        return result
 
     def render_template(self, template_string):
         """generically renders a template string

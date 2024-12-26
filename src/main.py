@@ -150,9 +150,9 @@ def render_template(var):
         # render the template
         newString = payload_manager.render_variable(var)
 
-        # update the data on the sign
-        logging.debug(f"updated {var.get_name()}:'{colored(constants.strip_control(newString), 'green')}'")
-        update_string(var.get_name(), newString)
+        if(newString is not None):
+            # update the data on the sign if text has changed
+            update_string(var.get_name(), newString)
     else:
         logging.debug(f"update conditional not met for {var.get_name()}")
 
@@ -197,7 +197,7 @@ def poll(offset=timedelta(minutes=1)):
         homeA = HomeAssistant(args.ha_url, args.ha_token)
 
     for v in pollingVars:
-        logging.info(f"Updating {v.get_name()}")
+        logging.info(f"Polling {v.get_name()}")
 
         # update based on the type
         newString = None
@@ -237,7 +237,6 @@ def poll(offset=timedelta(minutes=1)):
                 logging.error("Home Assistant interface is not loaded, specify HA url and token to load")
 
         if(newString is not None):
-            logging.debug(f"updated {v.get_name()}:'{colored(newString, 'green')}'")
             update_string(v.get_name(), newString)
 
 
@@ -300,6 +299,7 @@ def update_string(name, msg):
 
     # write to sign if this String exists
     if(strObj is not None):
+        logging.debug(f"updated {name}:'{colored(constants.strip_control(msg), 'green')}'")
         thread_lock.acquire()
         betabrite.connect()
 
