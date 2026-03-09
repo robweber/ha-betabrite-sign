@@ -357,7 +357,7 @@ logHandlers = [logging.FileHandler('sign.log')]
 if(args.debug):
     logHandlers.append(logging.StreamHandler(sys.stdout))
 
-logging.basicConfig(datefmt='%m/%d %H:%M',
+logging.basicConfig(datefmt='%m/%d %H:%M:%S',
                     format="%(levelname)s %(asctime)s: %(message)s",
                     level=getattr(logging, logLevel),
                     handlers=logHandlers)
@@ -428,9 +428,9 @@ else:
 poll(timedelta(days=1))
 
 while 1:
-    # sleep for 1 min
+    # sleep for 30 seconds
     logging.debug('sleeping')
-    time.sleep(60 - datetime.now().second)
+    time.sleep(30 - (datetime.now().second % 30))
 
     poll()
     find_active_queue()
