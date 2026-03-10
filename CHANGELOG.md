@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## Unreleased
 
+### Added
+
+- omitting `message` parameter in test utility will not read general information from the sign and output to screen
+
 ### Changed
 
 - main program loop now checks polling variables and active queue every 30 seconds
