@@ -32,6 +32,7 @@ from lib import constants
 
 # create global vars
 active_queue = "main"  # default active queue at startup
+betabrite_info = None
 betabrite = None
 manager = None
 mqtt_client = None
@@ -61,10 +62,10 @@ def mqtt_connect(client, userdata, flags, rc):
     device_name_slug = slugify(args.ha_device_name, separator='_')
     discovery_topics = {constants.MQTT_DISCOVERY_LIGHT_CLASS: "", constants.MQTT_DISCOVERY_TEXT_CLASS: ""}
     if(args.ha_discovery):
-
         # device config
         ha_device = {"name": args.ha_device_name, "identifiers": device_name_slug,
-                     "sw_version": constants.PROJECT_VERSION, "manufacturer": "Rob Weber"}
+                     "sw_version": constants.PROJECT_VERSION, "hw_version": betabrite_info.get_firmware(),
+                     "model": betabrite_info.get_model(), "manufacturer": "Rob Weber"}
 
         # generate the light entity config https://www.home-assistant.io/integrations/light.mqtt/
         discovery_topics[constants.MQTT_DISCOVERY_LIGHT_CLASS] = {"name": f"{args.ha_device_name} Light", "device_class": constants.MQTT_DISCOVERY_LIGHT_CLASS,  # noqa
@@ -78,7 +79,7 @@ def mqtt_connect(client, userdata, flags, rc):
                                                                  "object_id": f"{device_name_slug}_text", "unique_id": f"{device_name_slug}_text",
                                                                  "state_topic": constants.MQTT_CURRENT_TEXT, "command_topic": constants.MQTT_NEW_TEXT,
                                                                  "availability_topic": constants.MQTT_AVAILABLE, "qos": 0, "device": ha_device}
-
+        #payload = {"device": ha_deivce, "origin": "", "components": discovery_topics, }
     for entity_type in discovery_topics:
         topic = f"{args.mqtt_discovery_prefix}/{entity_type}/{device_name_slug}/config"
 
@@ -159,11 +160,11 @@ def render_template(var):
 
 def setup():
     """Setup the sign by allocating memory for variables and messages"""
-    # connect to the sign and clear any data
+    # connect to the sign and clear memory
     betabrite.connect()
     betabrite.clear_memory()
 
-    # wait for sign to clear memory
+    # wait for operation to complete
     time.sleep(2)
 
     messages = manager.startup(betabrite)
@@ -364,13 +365,20 @@ logging.basicConfig(datefmt='%m/%d %H:%M:%S',
 
 logging.debug('Debug Mode On')
 
-logging.info(f"Starting Home Assistant Betabrite Sign - Version {constants.PROJECT_VERSION}")
+logging.info(colored(f"Starting Home Assistant Betabrite Sign - Version {constants.PROJECT_VERSION}", "red"))
 
 if(args.device == 'cli'):
-    logging.info('Outputting sign info to CLI')
     betabrite = alphasign.interfaces.local.DebugInterface()
+    logging.info(colored('Connected to: CLI', 'red'))
 else:
     betabrite = alphasign.interfaces.local.Serial(device=args.device)
+
+    # get some basic sign info
+    betabrite.connect()
+    betabrite_info = betabrite.read_information()
+    betabrite.disconnect()
+
+    logging.debug(colored(f"Connected to: {betabrite_info.get_firmware()}", "red"))
 
 logging.info("Loading layout: " + args.layout)
 manager = MessageManager(args.layout)
