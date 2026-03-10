@@ -60,36 +60,41 @@ def mqtt_connect(client, userdata, flags, rc):
     logging.info("Connected to MQTT Server")
 
     device_name_slug = slugify(args.ha_device_name, separator='_')
-    discovery_topics = {constants.MQTT_DISCOVERY_LIGHT_CLASS: "", constants.MQTT_DISCOVERY_TEXT_CLASS: ""}
+    discovery_components = {}
     if(args.ha_discovery):
-        # device config
-        ha_device = {"name": args.ha_device_name, "identifiers": device_name_slug,
-                     "sw_version": constants.PROJECT_VERSION, "hw_version": betabrite_info.get_firmware(),
-                     "model": betabrite_info.get_model(), "manufacturer": "Rob Weber"}
+        # device discovery payload - https://www.home-assistant.io/integrations/mqtt/#discovery-payload
+        payload = {"device": {"name": args.ha_device_name, "identifiers": device_name_slug,
+                              "hw_version": betabrite_info.get_firmware(), 'model': betabrite_info.get_model(),
+                              "manufacturer": "Alpha-American"},
+                   "origin": {"name": constants.PROJECT_NAME, "sw_version": constants.PROJECT_VERSION,
+                              "support_url": "https://github.com/robweber/ha-betabrite-sign"},
+                   "availability_topic": constants.MQTT_AVAILABLE,
+                   "components": {}
+                  }
 
         # generate the light entity config https://www.home-assistant.io/integrations/light.mqtt/
-        discovery_topics[constants.MQTT_DISCOVERY_LIGHT_CLASS] = {"name": f"{args.ha_device_name} Light", "device_class": constants.MQTT_DISCOVERY_LIGHT_CLASS,  # noqa
-                                                                  "object_id": device_name_slug, "unique_id": f"{device_name_slug}_light", "state_topic": constants.MQTT_STATUS,  # noqa
-                                                                  "command_topic": constants.MQTT_SWITCH, "json_attributes_topic": constants.MQTT_ATTRIBUTES,  # noqa
-                                                                  "availability_topic": constants.MQTT_AVAILABLE, "qos": 0, "payload_on": "ON", "payload_off": "OFF", # noqa
-                                                                  "color_mode": True, "supported_color_modes": ["onoff"], "optimistic": False, "device": ha_device} # noqa
+        payload['components'][f"{device_name_slug}_light"] = {"name": f"{args.ha_device_name} Light", "platform": constants.MQTT_DISCOVERY_LIGHT_CLASS,  # noqa
+                                                              "default_entity_id": f"{device_name_slug}_light", "unique_id": f"{device_name_slug}_light",
+                                                              "state_topic": constants.MQTT_STATUS, "command_topic": constants.MQTT_SWITCH,
+                                                              "json_attributes_topic": constants.MQTT_ATTRIBUTES, "qos": 0, "payload_on": "ON",
+                                                              "payload_off": "OFF", "color_mode": True, "supported_color_modes": ["onoff"],
+                                                              "optimistic": False}
 
         # generate the text config https://www.home-assistant.io/integrations/text.mqtt/
-        discovery_topics[constants.MQTT_DISCOVERY_TEXT_CLASS] = {"name": f"{args.ha_device_name} Text", "device_class": constants.MQTT_DISCOVERY_TEXT_CLASS,  # noqa
-                                                                 "object_id": f"{device_name_slug}_text", "unique_id": f"{device_name_slug}_text",
-                                                                 "state_topic": constants.MQTT_CURRENT_TEXT, "command_topic": constants.MQTT_NEW_TEXT,
-                                                                 "availability_topic": constants.MQTT_AVAILABLE, "qos": 0, "device": ha_device}
-        #payload = {"device": ha_deivce, "origin": "", "components": discovery_topics, }
-    for entity_type in discovery_topics:
-        topic = f"{args.mqtt_discovery_prefix}/{entity_type}/{device_name_slug}/config"
+        payload['components'][f"{device_name_slug}_text"] = {"name": f"{args.ha_device_name} Text", "platform": constants.MQTT_DISCOVERY_TEXT_CLASS,
+                                                             "default_entity_id": f"{device_name_slug}_text", "unique_id": f"{device_name_slug}_text",
+                                                             "state_topic": constants.MQTT_CURRENT_TEXT, "command_topic": constants.MQTT_NEW_TEXT,
+                                                             "qos": 0}
 
-        if(args.ha_discovery):
-            # publish the entity config to the HA discovery prefix
-            logging.debug(f"Configuring HA Entity {topic}: {json.dumps(discovery_topics[entity_type])}")
-            mqtt_client.publish(topic, json.dumps(discovery_topics[entity_type]), retain=True)
-        else:
-            # publish blank string to delete the device
-            mqtt_client.publish(topic, "", retain=True)
+        # the device discovery topic, per documentation
+        topic = f"{args.mqtt_discovery_prefix}/device/{device_name_slug}/config"
+
+        # publish the entity config to the HA discovery prefix
+        logging.debug(f"Configuring HA Entity {topic}: {json.dumps(payload)}")
+        mqtt_client.publish(topic, json.dumps(payload), retain=True)
+    else:
+        # publish blank string to delete the device
+        mqtt_client.publish(topic, "", retain=True)
 
 
 def mqtt_on_message(client, userdata, message):
@@ -365,7 +370,7 @@ logging.basicConfig(datefmt='%m/%d %H:%M:%S',
 
 logging.debug('Debug Mode On')
 
-logging.info(colored(f"Starting Home Assistant Betabrite Sign - Version {constants.PROJECT_VERSION}", "red"))
+logging.info(colored(f"Starting {constants.PROJECT_NAME} - Version {constants.PROJECT_VERSION}", "red"))
 
 if(args.device == 'cli'):
     betabrite = alphasign.interfaces.local.DebugInterface()

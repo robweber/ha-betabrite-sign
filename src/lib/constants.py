@@ -20,7 +20,8 @@ import re
 import socket
 from json.decoder import JSONDecodeError
 
-# current version
+# project name and current version
+PROJECT_NAME = "Home Assistant Betabrite Sign"
 PROJECT_VERSION = "3.0"
 
 # variable categories
