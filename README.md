@@ -59,6 +59,9 @@ cd ha-betabrite-sign
 python3 -m venv .venv
 source .venv/bin/activate
 
+# update setuptools
+pip3 install -U pip setuptools wheel
+
 # install python requirements
 pip3 install -r install/requirements.txt
 
