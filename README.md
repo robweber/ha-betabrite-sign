@@ -24,6 +24,7 @@ Messages are configured for the display using a simple `.yaml` configuration fil
      - [Dynamic](#dynamic)
      - [Home Assistant](#home-assistant)
      - [Home Assistant Test Variable](#home-assistant-text-variable)
+     - [Home Assistant Timer Variable](#home-assistant-timer-variable)
      - [MQTT](#mqtt)
      - [REST Request](#rest-request)
   - [Display](#display)
