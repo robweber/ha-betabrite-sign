@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 
 - main program loop now checks polling variables and active queue every 30 seconds
+- Home Assistant MQTT Discovery now uses device discovery instead of per component - one payload for all entities
 
 ## Version 3.0
 

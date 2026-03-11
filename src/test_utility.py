@@ -76,7 +76,7 @@ class SignTester:
         self.__betabrite.disconnect()
 
 
-parser = argparse.ArgumentParser(description='Betabrite Sign Test Utility')
+parser = argparse.ArgumentParser(description=f"{constants.PROJECT_NAME} - Test Utility")
 parser.add_argument('-d', '--device', default="/dev/ttyUSB0",
                     help="Path to device where Alphasign is connected, default is %(default)s, can also use 'cli' to output to screen only")
 parser.add_argument('-m', '--message', required=False,
@@ -98,7 +98,7 @@ logging.basicConfig(datefmt='%m/%d %H:%M',
 # create the tester
 tester = SignTester(args.device)
 
-logging.info(colored('Sign Test Utility', 'green'))
+logging.info(colored(f"{constants.PROJECT_NAME} - Test Utility", 'green'))
 if(args.message):
     logging.info("Writing the following message to the sign:")
     logging.info(f"Message: {colored(args.message, 'green')}")
