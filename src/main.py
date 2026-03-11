@@ -62,6 +62,9 @@ def mqtt_connect(client, userdata, flags, rc):
     device_name_slug = slugify(args.ha_device_name, separator='_')
     discovery_components = {}
     if(args.ha_discovery):
+        # initialize timer as off
+        mqtt_client.publish(constants.MQTT_TIMER_STATUS, constants.MQTT_SWITCH_OFF, retain=True)
+
         # device discovery payload - https://www.home-assistant.io/integrations/mqtt/#discovery-payload
         payload = {"device": {"name": args.ha_device_name, "identifiers": device_name_slug,
                               "hw_version": betabrite_info.get_firmware(), 'model': betabrite_info.get_model(),
@@ -76,8 +79,8 @@ def mqtt_connect(client, userdata, flags, rc):
         payload['components'][f"{device_name_slug}_light"] = {"name": f"{args.ha_device_name} Light", "platform": constants.MQTT_DISCOVERY_LIGHT_CLASS,  # noqa
                                                               "default_entity_id": f"{device_name_slug}_light", "unique_id": f"{device_name_slug}_light",
                                                               "state_topic": constants.MQTT_STATUS, "command_topic": constants.MQTT_SWITCH,
-                                                              "json_attributes_topic": constants.MQTT_ATTRIBUTES, "qos": 0, "payload_on": "ON",
-                                                              "payload_off": "OFF", "color_mode": True, "supported_color_modes": ["onoff"],
+                                                              "json_attributes_topic": constants.MQTT_ATTRIBUTES, "qos": 0, "payload_on": constants.MQTT_SWITCH_ON,
+                                                              "payload_off": constants.MQTT_SWITCH_OFF, "color_mode": True, "supported_color_modes": ["onoff"],
                                                               "optimistic": False}
 
         # generate the text config https://www.home-assistant.io/integrations/text.mqtt/
@@ -85,6 +88,17 @@ def mqtt_connect(client, userdata, flags, rc):
                                                              "default_entity_id": f"{device_name_slug}_text", "unique_id": f"{device_name_slug}_text",
                                                              "state_topic": constants.MQTT_CURRENT_TEXT, "command_topic": constants.MQTT_NEW_TEXT,
                                                              "qos": 0}
+
+        payload['components'][f"{device_name_slug}_timer_text"] = {"name": f"{args.ha_device_name} Timer Duration", "platform": constants.MQTT_DISCOVERY_TEXT_CLASS,
+                                                                   "default_entity_id": f"{device_name_slug}_timer_text", "unique_id": f"{device_name_slug}_timer_text",
+                                                                   "state_topic": constants.MQTT_TIMER_TEXT, "command_topic": constants.MQTT_TIMER_NEW_TEXT,
+                                                                   "pattern": "(\d{2}):(\d{2})", "max": 5, "qos": 0}
+
+        # generate switch config https://www.home-assistant.io/integrations/switch.mqtt/
+        payload['components'][f"{device_name_slug}_timer_switch"] = {"name": f"{args.ha_device_name} Timer Switch", "platform": constants.MQTT_DISCOVERY_SWITCH_CLASS,
+                                                                    "default_entity_id": f"{device_name_slug}_timer_switch", "unique_id": f"{device_name_slug}_timer_switch",
+                                                                    "state_topic": constants.MQTT_TIMER_STATUS, "command_topic": constants.MQTT_TIMER_COMMAND, "qos": 0,
+                                                                    "device_class": "switch", 'payload_on': constants.MQTT_SWITCH_ON, 'payload_off': constants.MQTT_SWITCH_OFF}
 
         # the device discovery topic, per documentation
         topic = f"{args.mqtt_discovery_prefix}/device/{device_name_slug}/config"
@@ -101,6 +115,7 @@ def mqtt_on_message(client, userdata, message):
     """triggered when message is received via mqtt"""
     logging.debug(colored(message.topic, 'red') + " " + str(message.payload))
 
+    # sign on/off
     if(message.topic == constants.MQTT_SWITCH):
         change_state(str(message.payload.decode('utf-8')))
 
@@ -112,10 +127,77 @@ def mqtt_on_message(client, userdata, message):
         # format is {command:"", params: {}}  noqa: E800
         payload = json.loads(message.payload.decode('utf-8'))
 
+    # timer switch
+    elif(message.topic == constants.MQTT_TIMER_COMMAND):
+
+        # load the variable the current payload
+        aVar = manager.get_variable_by_name(constants.TIMER_ENTITY_VARIABLE)
+        payload = payload_manager.get_payload(aVar.get_name())
+
+        # make sure there is a payload object
+        if(type(payload) is not dict):
+            payload = {}
+
+        if(message.payload.decode('utf-8') == constants.MQTT_SWITCH_ON):
+            logging.debug("Starting timer")
+
+            # update the is running variable
+            manager.update_variable_state(aVar.get_name(), "running", True)
+            payload['running'] = True
+
+            # get the timer duration
+            timer = aVar.get_state('timer')
+
+            # calculate the end time for the timer
+            payload['end_time'] = datetime.now() + timedelta(hours=timer['hours'],
+                                                             minutes=timer['minutes'])
+        else:
+            logging.debug("Stopping timer")
+
+            # update the is running variable
+            manager.update_variable_state(aVar.get_name(), "running", False)
+            payload['running'] = False
+
+            # set end time to now - 10 sec (ensure past)
+            payload['end_time'] = datetime.now() - timedelta(seconds=10)
+
+        # update the payload and render - must do this right away as timer starts/stops now
+        payload_manager.set_payload(aVar.get_name(), payload)
+
+        render_template(aVar)
+
+        # publish new status
+        mqtt_client.publish(constants.MQTT_TIMER_STATUS, message.payload, retain=True)
+
+    # text object
     elif(message.topic == constants.MQTT_NEW_TEXT):
         # republish into state topic
         mqtt_client.publish(constants.MQTT_CURRENT_TEXT, message.payload, retain=True)
 
+    # update timer duration
+    elif(message.topic == constants.MQTT_TIMER_NEW_TEXT):
+        # load the variable
+        aVar = manager.get_variable_by_name(constants.TIMER_ENTITY_VARIABLE)
+
+        # can only be updated when timer is not running
+        if(not aVar.get_state('running')):
+            # republish into state topic
+            mqtt_client.publish(constants.MQTT_TIMER_TEXT, message.payload, retain=True)
+        else:
+            logging.error("Timer duration cannot be updated when running")
+
+    # timer duration
+    elif(message.topic == constants.MQTT_TIMER_TEXT):
+        # load the variable
+        aVar = manager.get_variable_by_name(constants.TIMER_ENTITY_VARIABLE)
+
+        # convert to hours and minutes
+        timeStr = message.payload.decode('utf-8')
+        hours = int(timeStr[0:2])
+        minutes = int(timeStr[-2:])
+
+        # set the timer state
+        manager.update_variable_state(aVar.get_name(), 'timer', {'hours':hours, "minutes": minutes})
     else:
         # this is for a variable, load it
         aVar = manager.get_variable_by_filter(constants.MQTT_CATEGORY, lambda v: v.get_topic() == message.topic)
@@ -150,9 +232,25 @@ def mqtt_publish_attributes():
                             retain=True)
 
 
+def mqtt_push():
+    """ Determine if any MQTT push variables should update content """
+    # check mqtt is setup
+    if(mqtt_client is not None):
+        # get all MQTT push variables
+        mqttVars = manager.get_variables_by_filter(constants.MQTT_PUSH_CATEGORY)
+
+        for aVar in mqttVars:
+            # check if topic should be updated
+            if(payload_manager.render_conditional(aVar.get_name(), aVar.should_update_topic())):
+                # render the new payload
+                payload = payload_manager.render_template(aVar.update_topic(), aVar.get_name())
+                logging.debug(f"Publishing {colored(aVar.get_name(), 'red')}: '{payload}'")
+                mqtt_client.publish(aVar.get_topic(), payload, retain=True)
+
+
 def render_template(var):
     """Render the Jinja variable and update the sign"""
-    if(payload_manager.should_update(var)):
+    if(payload_manager.render_conditional(var.get_name(), var.update_template())):
         # render the template
         newString = payload_manager.render_variable(var)
 
@@ -230,6 +328,8 @@ def poll(offset=timedelta(minutes=1)):
         elif(v.get_type() == 'dynamic'):
             # render this variable
             render_template(v)
+        elif(v.get_type() == "timer"):
+            render_template(v)
         elif(v.get_type() == 'home_assistant'):
             if(homeA is not None):
                 try:
@@ -256,7 +356,7 @@ def change_state(newState):
     betabrite.connect()
 
     # create the sign object and update the sign
-    if(newState == 'OFF'):
+    if(newState == constants.MQTT_SWITCH_OFF):
         offMessage = manager.update_text(constants.SIGN_OFF, ' ', True)
     else:
         offMessage = manager.update_text(constants.SIGN_OFF, '', True)
@@ -398,7 +498,7 @@ payload_manager = PayloadManager(manager.get_variables_by_filter(constants.JINJA
 
 if(args.mqtt and args.mqtt_username):
 
-    # get the last known status from MQTT
+    # get the last known sign status from MQTT
     statusMsg = mqtt_subscribe.simple(constants.MQTT_STATUS, hostname=args.mqtt,
                                       auth={"username": args.mqtt_username, "password": args.mqtt_password})
     logging.info(f"Startup state is: {colored(str(statusMsg.payload.decode('utf-8')), 'yellow')}")
@@ -418,7 +518,9 @@ if(args.mqtt and args.mqtt_username):
     mqtt_client.connect(args.mqtt)
 
     # subscribe to the built in topics
-    watchTopics = [(constants.MQTT_SWITCH, 1), (constants.MQTT_COMMAND, 1), (constants.MQTT_NEW_TEXT, 1)]
+    watchTopics = [(constants.MQTT_SWITCH, 1), (constants.MQTT_COMMAND, 1), (constants.MQTT_NEW_TEXT, 1),
+                   (constants.MQTT_TIMER_STATUS, 1), (constants.MQTT_TIMER_COMMAND, 1),
+                   (constants.MQTT_TIMER_TEXT, 1), (constants.MQTT_TIMER_NEW_TEXT, 1)]
 
     # get a list of all mqtt variables
     mqttVars = manager.get_variables_by_filter(constants.MQTT_CATEGORY)
@@ -445,5 +547,11 @@ while 1:
     logging.debug('sleeping')
     time.sleep(30 - (datetime.now().second % 30))
 
+    # check polling variables
     poll()
+
+    # check for mqtt push variables
+    mqtt_push()
+
+    # check if active queue has changed
     find_active_queue()

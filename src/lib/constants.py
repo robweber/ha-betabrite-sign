@@ -28,9 +28,13 @@ PROJECT_VERSION = "3.0"
 ALPHASIGN_CATEGORY = 'alphasign'
 POLLING_CATEGORY = 'polling'
 MQTT_CATEGORY = 'mqtt'
+MQTT_PUSH_CATEGORY = "mqtt_push"
 JINJA_CATEGORY = 'jinja'
+STATEFUL_CATEGORY = 'stateful'
 CATEGORY_DEFAULTS = {ALPHASIGN_CATEGORY: {}, POLLING_CATEGORY: {"cron": "*/5 * * * *"},
-                     MQTT_CATEGORY: {"qos": 0}, JINJA_CATEGORY: {'update_template': "True", "template": "{{ value }}"}}
+                     MQTT_CATEGORY: {"qos": 0}, JINJA_CATEGORY: {'update_template': "True", "template": "{{ value }}"},
+                     MQTT_PUSH_CATEGORY: {"should_update_topic_template":"False", "update_topic_template": ""},
+                     STATEFUL_CATEGORY: {"states": {}}}
 
 # MQTT topics for state and commands
 MQTT_STATUS = "betabrite/sign/status"
@@ -40,14 +44,26 @@ MQTT_AVAILABLE = "betabrite/sign/available"
 MQTT_COMMAND = "betabrite/sign/command"
 MQTT_CURRENT_TEXT = "betabrite/sign/current_text"
 MQTT_NEW_TEXT = "betabrite/sign/new_text"
+MQTT_TIMER_STATUS = "betabrite/timer_switch/status"
+MQTT_TIMER_COMMAND = "betabrite/timer_switch/command"
+MQTT_TIMER_TEXT = "betabrite/timer/current_text"
+MQTT_TIMER_NEW_TEXT = "betabrite/timer/new_text"
+
+# MQTT Device types
 MQTT_DISCOVERY_LIGHT_CLASS = "light"
+MQTT_DISCOVERY_SWITCH_CLASS = "switch"
 MQTT_DISCOVERY_TEXT_CLASS = "text"
+
+#MQTT Switch States
+MQTT_SWITCH_ON = "ON"
+MQTT_SWITCH_OFF = "OFF"
 
 # variable for when the sign is in off mode
 SIGN_OFF = "ALPHA_SIGN_OFF"
 
-# text entity MQTT variable name
+# home assistant MQTT variable names
 TEXT_ENTITY_VARIABLE = "HA_TEXT_ENTITY"
+TIMER_ENTITY_VARIABLE = "HA_TIMER_ENTITY"
 
 # dicts to transfrom yaml to alphasign variables
 ALPHA_MODES = {"rotate": alphasign.modes.ROTATE, "hold": alphasign.modes.HOLD, "roll_up": alphasign.modes.ROLL_UP,

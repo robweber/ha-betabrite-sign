@@ -14,8 +14,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import alphasign
-from datetime import datetime
-from .. variable_type import AlphaSignVariable, PollingVariable
+from datetime import datetime, timedelta
+from .. import constants
+from .. variable_type import AlphaSignVariable, PollingVariable, StatefulVariable
 
 
 class DateVariable(PollingVariable):

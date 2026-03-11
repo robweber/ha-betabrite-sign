@@ -23,7 +23,7 @@ from termcolor import colored
 from . import constants
 from . import jinja_custom
 from .types.home_assistant import HomeAssistantVariable
-from .types.mqtt import MQTTVariable
+from .types.mqtt import MQTTVariable, TimerVariable
 from .types.rest import RestVariable
 from .types.text import DynamicVariable, StaticVariable
 from .types.time import DateVariable, TimeVariable
@@ -61,8 +61,9 @@ class MessageManager:
         # load all variable objects right away
         self.__load_variables()
 
-        # add a special variable for the MQTT Text Entity
+        # add a special variable for the Home Assistant MQTT Entities
         self.varObjs[constants.TEXT_ENTITY_VARIABLE] = MQTTVariable(constants.TEXT_ENTITY_VARIABLE, {"topic": constants.MQTT_CURRENT_TEXT})
+        self.varObjs[constants.TIMER_ENTITY_VARIABLE] = TimerVariable(constants.TIMER_ENTITY_VARIABLE, {"topic": constants.MQTT_TIMER_COMMAND})
 
     def __load_variables(self):
         """create VariableType objects from the variables
@@ -336,6 +337,24 @@ class MessageManager:
 
         return list(filter(lambda v: len(set(v.get_categories()).intersection(category)) > 0 and func(v), self.varObjs.values()))
 
+    def update_variable_state(self, name, state_name, value):
+        """ update the internal states dictionary of a Stateful type variable
+        the variable referenced must be of the Stateful type or this function does
+        nothing
+
+        :param name: the name of the variable to update
+        :param state_name: the state to update
+        :param value: the new state value
+        """
+        aVar = self.get_variable_by_name(name)
+
+        # make sure variable exists and is a stateful variable
+        if(aVar is not None and constants.STATEFUL_CATEGORY in aVar.get_categories()):
+            # update the state and the variable in the global list
+            aVar.update_state(state_name, value)
+            self.varObjs[name] = aVar
+
+
 
 class PayloadManager:
     """Manages information about variable state payloads and evaluates
@@ -469,19 +488,20 @@ class PayloadManager:
         """
         return self.__payloads[var] != ""
 
-    def should_update(self, var):
-        """evaluate the update_template conditional of this variable
+    def render_conditional(self, var, template_str):
+        """evaluate the template as a conditional
         in the yaml configuration. By default this will always return True unless
         defined otherwise.
 
-        :param var: the variable object
+        :param var: the variable name
+        :param template_str: the template string to render, must return true/false
 
         :returns: boolean value, True/False
         """
-        template = self.__jinja_env.from_string(var.update_template())
+        template = self.__jinja_env.from_string(template_str)
 
         # evaluate it and return the result as a boolean
-        result = template.render(value=self.get_payload(var.get_name())).strip()
+        result = template.render(value=self.get_payload(var)).strip()
         return result.lower() == "true"
 
     def render_variable(self, var):
@@ -495,9 +515,10 @@ class PayloadManager:
         """
         result = None  # assume no change
 
-        template = self.__jinja_env.from_string(var.get_text())
+        #template = self.__jinja_env.from_string(var.get_text())
 
-        r = template.render(value=self.get_payload(var.get_name())).strip()
+        #r = template.render(value=self.get_payload(var.get_name())).strip()
+        r = self.render_template(var.get_text(), var.get_name())
 
         if(r != self.__rendered_templates[var.get_name()]):
             # return result if different than previous
@@ -506,17 +527,22 @@ class PayloadManager:
 
         return result
 
-    def render_template(self, template_string):
+    def render_template(self, template_string, var = None):
         """generically renders a template string
 
         :param template: the jinja template string
+        :param var: a variable name, if given is set as the payload 'value'
 
         :returns: the result of the rendered template
         """
-
         template = self.__jinja_env.from_string(template_string)
 
-        return template.render().strip()
+        if(var is None):
+            result = template.render()
+        else:
+            result = template.render(value=self.get_payload(var))
+
+        return result.strip()
 
 
 class UndefinedVariableError(Exception):

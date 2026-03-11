@@ -191,3 +191,38 @@ class JinjaVariable(VariableType):
 
     def get_categories(self):
         return [constants.JINJA_CATEGORY]
+
+class StatefulVariable(PollingVariable):
+    """ Evolution of a polling type variable that can hold some internal state information
+    main difference between this and normal polling is that the should_poll method must be
+    implemented and can return True/False based on the internal state of the variable
+
+    This is an internal class and cannot be setup directly via the layout configuration file
+    since it needs internal logic to handle the states and polling
+
+    Special configuration options are:
+      * states: dictionary of default states
+
+    """
+    _states = None
+
+    def __init__(self, type, name, config):
+        super().__init__(type, name, config)
+
+        self._states = self.config['states']
+
+    def should_poll(self, current_time, offset):
+        """ Must be implemented by downstream classes """
+        raise NotImplementedError
+
+    def update_state(self, name, value):
+        """ called via the manager class to update the internal
+        states dictionary """
+        self._states[name] = value
+
+    def get_state(self, name):
+        """ returns the value of a current state key """
+        return self._states[name]
+
+    def get_categories(self):
+        return [constants.POLLING_CATEGORY, constants.STATEFUL_CATEGORY]
