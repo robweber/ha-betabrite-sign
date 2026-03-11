@@ -76,7 +76,7 @@ deactivate
 
 ### Home Assistant Entity Discovery
 
-This code can run standalone, or be further integrated with Home Assistant to expose some entities via [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/) and [MQTT Text](https://www.home-assistant.io/integrations/text.mqtt/) integrations. This allows Home Assistant to get some run-time data, control the sign as though it was a light, and push text to the sign. For this to work MQTT must be setup as [described below](#mqtt). In Home Assistant [MQTT Discovery](https://www.home-assistant.io/docs/mqtt/discovery/) is used to automatically configure the device when `--ha_discovery` is passed in at startup. Other options, like the device name, can be configured as well.
+This code can run standalone, or be further integrated with Home Assistant to expose some entities via [MQTT Light](https://www.home-assistant.io/integrations/light.mqtt/), [MQTT Switch](https://www.home-assistant.io/integrations/switch.mqtt/), and [MQTT Text](https://www.home-assistant.io/integrations/text.mqtt/) integrations. This allows Home Assistant to get some run-time data, control the sign as though it was a light, push text, and even run a timer on the sign. For this to work MQTT must be setup as [described below](#mqtt). In Home Assistant [MQTT Discovery](https://www.home-assistant.io/docs/mqtt/discovery/) is used to automatically configure the device when `--ha_discovery` is passed in at startup. Other options, like the device name, can be configured as well.
 
 When MQTT is configured the program will watch for commands and publish to the following topics.
 
@@ -86,8 +86,12 @@ When MQTT is configured the program will watch for commands and publish to the f
 * betabrite/sign/available - availability topic (ie, is the program running)
 * betabrite/sign/current_text - current text entity value
 * betabrite/sign/new_text - command topic to update text entity from Home Assistant
+* betabrite/timer_switch/status - status of the timer switch (on/off)
+* betabrite/timer_switch/command - command topic to update switch from Home Assistant
+* betabrite/timer/current_text - text entity to set the timer duration
+* betabrite/timer/new_text - command topic to update duration from Home Assistant
 
-Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then remove it to return the display to normal messaging (on). The text entity can be set in Home Assistant and used in any message through a special MQTT variable.
+Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then remove it to return the display to normal messaging (on). The [text](#home-assistant-text-variable) and [timer](#home-assistant-timer-variable) entities can be set in Home Assistant and used in any message through a special MQTT variable.
 
 ### Home Assistant MQTT Statestream
 
