@@ -286,10 +286,10 @@ def setup():
     logging.info(f"loading message queue: {colored('main', 'yellow')}")
 
 
-def poll(offset=timedelta(minutes=1)):
+def poll(offset=timedelta(seconds=10)):
     """Gets all polling type variables and checks if they need updating
 
-    :param offset: the offset to use when calculating the next update time, 1 min is the default otherwise the next time will never happen
+    :param offset: the offset to use when calculating the next update time, 10 seconds is the default otherwise the next time will never happen
     """
     # get all polling type variables that need to be updated
     now = datetime.now()
@@ -543,9 +543,9 @@ else:
 poll(timedelta(days=1))
 
 while 1:
-    # sleep for 30 seconds
+    # sleep for 10 seconds
     logging.debug('sleeping')
-    time.sleep(30 - (datetime.now().second % 30))
+    time.sleep(10 - (datetime.now().second % 10))
 
     # check polling variables
     poll()

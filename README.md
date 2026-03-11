@@ -246,7 +246,7 @@ variables:
 
 #### Dynamic
 
-Dynamic text can utilize Jinja template syntax to update the message contents dynamically. Dynamic text is re-evaluated once every 30 seconds for changes, or whenever a referenced variable is updated. These are found at runtime and displayed when debug logging is enabled.
+Dynamic text can utilize Jinja template syntax to update the message contents dynamically. Dynamic text is re-evaluated once every 1 minute for changes, or whenever a referenced variable is updated. These are found at runtime and displayed when debug logging is enabled.
 
 A common use case for this variable type is combining data from other variables through the `get_payload()` or `is_payload()` template methods. Similar to the [states()](https://www.home-assistant.io/docs/configuration/templating/#states) methods in Home Assistant; this allows templates to get payloads from MQTT or REST variable types. The example below subscribes to 2 MQTT topics and combines them using a dynamic variable to display which lights are currently on.
 
@@ -344,7 +344,7 @@ display:
 
 Quirks Of The Timer:
 
-* The sign only updates every 30 seconds, so the seconds countdown will not move in realtime. In testing the serial communications simply could not keep up with a second by second update.
+* The sign only polls for updates every 10 seconds, so the seconds countdown will not move in realtime. In testing the serial communications simply could not keep up with a second by second update.
 * When complete the timer will display "!!!Timer Complete!!!" for one minute before turning off the timer.
 
 #### MQTT
@@ -445,7 +445,7 @@ variables:
 
 The display area of the `.yaml` file is where messages are setup to actually display on the sign. Each message queue has a name and a list of messages. Within each message is where important information such as the sign mode, color, and speed of the message are specified. Variables can also be combined here to show within the same message. The order of the messages is the order they will be sent to the sign.
 
-The `main` queue must be present, as this is the default and loaded on startup. Additional queues can be defined as well. The currently active queue is determined by evaluating the `active_template` function. This template should return True/False to determine if the queue should be set to active. These are evaluated top-down, so the first queue that returns True is set as active. If no statement returns True, then the `main` queue is set to active automatically. Examples of this are below. __Note:__ the active queue is re-evaluated every 30 seconds, not on the fly, so there may be some delay between variables updating and the queue changing.
+The `main` queue must be present, as this is the default and loaded on startup. Additional queues can be defined as well. The currently active queue is determined by evaluating the `active_template` function. This template should return True/False to determine if the queue should be set to active. These are evaluated top-down, so the first queue that returns True is set as active. If no statement returns True, then the `main` queue is set to active automatically. Examples of this are below. __Note:__ the active queue is re-evaluated every 10 seconds, not on the fly, so there may be some delay between variables updating and the queue changing.
 
 ### Parameters
 

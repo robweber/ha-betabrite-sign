@@ -92,7 +92,7 @@ class TimerVariable(MQTTPushVariable, StatefulVariable):
         {% set hours = (minutes / 60) | int %}
         {{ "{:02d}".format(hours) }}:{{ "{:02d}".format(minutes) }}:{{ "{:02d}".format(((total_seconds % 60) % 60) | int) }}
         {% else %}
-        !!!Timer Complete!!!
+        {{ '!!!Timer Complete!!!' | color('red') }}
         {% endif %}
         {% endif %}
         """
