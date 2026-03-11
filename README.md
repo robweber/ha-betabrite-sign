@@ -173,7 +173,7 @@ sudo systemctl stop ha-sign
 
 ### Testing
 
-There is a basic test utility also included to test if communication to your sign is working or just test different message configurations. It can be accessed via the `test_utility.py` script. As with the main program using a device of __cli__ will output everything to the display and simply simulate the commands. Parameters for the color, font, and mode are shown below in the [messages](#messages) area. Omitting the `message` argument will instead attempt to read some general information from the sign such as the model and firmware. 
+There is a basic test utility also included to test if communication to your sign is working or just test different message configurations. It can be accessed via the `test_utility.py` script. As with the main program using a device of __cli__ will output everything to the display and simply simulate the commands. Parameters for the color, font, and mode are shown below in the [messages](#messages) area. Omitting the `message` argument will instead attempt to read some general information from the sign such as the model and firmware.
 
 ```
 usage: test_utility.py [-h] [-d DEVICE] -m MESSAGE [-C COLOR] [-F FONT]
@@ -308,18 +308,44 @@ variables:
 
 #### Home Assistant Text Variable
 
-The Home Assistant Text Entity (setup via [Entity Discovery described above](#home-assistant-entity-discovery) is a special variable available to pull the value from the Home Assistant Text Entity. The way this works is that the entity is available to be set in Home Assistant. This can be done through a Lovelace card or through a service call. This text entry will be published via MQTT and available for use in the sign as a standard variable. It is available via the `HA_TEXT_ENTITY` variable name. Below are a few examples.
+The Home Assistant Text Entity (setup via [Entity Discovery described above](#home-assistant-entity-discovery)) is a special variable available to pull the value from the Home Assistant Text Entity. The way this works is that the entity is available to be set in Home Assistant. This can be done through a Lovelace card or through a service call. This text entry will be published via MQTT and available for use in the sign as a standard variable. It is available via the `HA_TEXT_ENTITY` variable name. Below is an example of displaying in the main queue.
 
 ```
 # add the HA Text Entity to a message
 display:
   main:
-    - message:
-        - mqtt_location
-        - HA_TEXT_ENTITY
-      color: green
-      mode: hold
+    queue:
+      - message:
+          - mqtt_location
+          - HA_TEXT_ENTITY
+        color: green
+        mode: hold
 ```
+
+#### Home Assistant Timer Variable
+
+When using [Home Assistant Discovery](#home-assistant-entity-discovery) there are also two additional entities that can be used to display a countdown timer on the sign. In Home Assistant you can set a duration in the format `HH:MM` and toggle the timer using the entity switch. Once started the internal timer will countdown for the duration specified. When complete it will trigger an MQTT update that turns off the timer in Home Assistant.
+
+To view the timer on the sign use the special `HA_TIMER_ENTITY` variable name. The below example will setup the variable to display only when the timer is active.
+
+```
+# display timer when active
+display:
+  timer_countdown:
+    queue:
+      - message:
+          - HA_TIMER_ENTITY
+        color: green
+        mode: hold
+    active_template: >-
+      {{ is_payload_attr('HA_TIMER_ENTITY', 'running', True) }}
+```
+
+
+Quirks Of The Timer:
+
+* The sign only updates every 30 seconds, so the seconds countdown will not move in realtime. In testing the serial communications simply could not keep up with a second by second update.
+* When complete the timer will display "!!!Timer Complete!!!" for one minute before turning off the timer.
 
 #### MQTT
 

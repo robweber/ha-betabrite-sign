@@ -22,7 +22,7 @@ from json.decoder import JSONDecodeError
 
 # project name and current version
 PROJECT_NAME = "Home Assistant Betabrite Sign"
-PROJECT_VERSION = "3.0"
+PROJECT_VERSION = "4.0"
 
 # variable categories
 ALPHASIGN_CATEGORY = 'alphasign'
