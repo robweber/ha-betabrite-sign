@@ -33,7 +33,7 @@ JINJA_CATEGORY = 'jinja'
 STATEFUL_CATEGORY = 'stateful'
 CATEGORY_DEFAULTS = {ALPHASIGN_CATEGORY: {}, POLLING_CATEGORY: {"cron": "*/5 * * * *"},
                      MQTT_CATEGORY: {"qos": 0}, JINJA_CATEGORY: {'update_template': "True", "template": "{{ value }}"},
-                     MQTT_PUSH_CATEGORY: {"should_update_topic_template":"False", "update_topic_template": ""},
+                     MQTT_PUSH_CATEGORY: {"should_update_topic_template": "False", "update_topic_template": ""},
                      STATEFUL_CATEGORY: {"states": {}}}
 
 # MQTT topics for state and commands
@@ -54,7 +54,7 @@ MQTT_DISCOVERY_LIGHT_CLASS = "light"
 MQTT_DISCOVERY_SWITCH_CLASS = "switch"
 MQTT_DISCOVERY_TEXT_CLASS = "text"
 
-#MQTT Switch States
+# MQTT Switch States
 MQTT_SWITCH_ON = "ON"
 MQTT_SWITCH_OFF = "OFF"
 

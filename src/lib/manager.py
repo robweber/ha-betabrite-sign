@@ -355,7 +355,6 @@ class MessageManager:
             self.varObjs[name] = aVar
 
 
-
 class PayloadManager:
     """Manages information about variable state payloads and evaluates
     templates via Jinja
@@ -515,9 +514,6 @@ class PayloadManager:
         """
         result = None  # assume no change
 
-        #template = self.__jinja_env.from_string(var.get_text())
-
-        #r = template.render(value=self.get_payload(var.get_name())).strip()
         r = self.render_template(var.get_text(), var.get_name())
 
         if(r != self.__rendered_templates[var.get_name()]):
@@ -527,7 +523,7 @@ class PayloadManager:
 
         return result
 
-    def render_template(self, template_string, var = None):
+    def render_template(self, template_string, var=None):
         """generically renders a template string
 
         :param template: the jinja template string

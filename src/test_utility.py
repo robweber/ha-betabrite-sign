@@ -20,7 +20,6 @@ import time
 from termcolor import colored
 from lib import constants
 
-from datetime import datetime, timedelta
 
 class SignTester:
     """A simple sign test utility that will display a single message to the sign"""
@@ -49,8 +48,8 @@ class SignTester:
         alphaObj = alphasign.Text("%s%s" % (displayParams, stringObj.call()), mode=constants.ALPHA_MODES[mode],
                                   label="A")
 
-        self.__betabrite.allocate((alphaObj,stringObj,))
-        self.__betabrite.set_run_sequence((alphaObj,))
+        self.__betabrite.allocate((alphaObj, stringObj, ))
+        self.__betabrite.set_run_sequence((alphaObj, ))
 
         # write the object to the sign
         self.__betabrite.write(stringObj)

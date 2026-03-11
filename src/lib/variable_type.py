@@ -192,6 +192,7 @@ class JinjaVariable(VariableType):
     def get_categories(self):
         return [constants.JINJA_CATEGORY]
 
+
 class StatefulVariable(PollingVariable):
     """ Evolution of a polling type variable that can hold some internal state information
     main difference between this and normal polling is that the should_poll method must be

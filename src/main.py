@@ -60,7 +60,7 @@ def mqtt_connect(client, userdata, flags, rc):
     logging.info("Connected to MQTT Server")
 
     device_name_slug = slugify(args.ha_device_name, separator='_')
-    discovery_components = {}
+
     if(args.ha_discovery):
         # initialize timer as off
         mqtt_client.publish(constants.MQTT_TIMER_STATUS, constants.MQTT_SWITCH_OFF, retain=True)
@@ -72,15 +72,14 @@ def mqtt_connect(client, userdata, flags, rc):
                    "origin": {"name": constants.PROJECT_NAME, "sw_version": constants.PROJECT_VERSION,
                               "support_url": "https://github.com/robweber/ha-betabrite-sign"},
                    "availability_topic": constants.MQTT_AVAILABLE,
-                   "components": {}
-                  }
+                   "components": {}}
 
         # generate the light entity config https://www.home-assistant.io/integrations/light.mqtt/
         payload['components'][f"{device_name_slug}_light"] = {"name": f"{args.ha_device_name} Light", "platform": constants.MQTT_DISCOVERY_LIGHT_CLASS,  # noqa
-                                                              "default_entity_id": f"{device_name_slug}_light", "unique_id": f"{device_name_slug}_light",
-                                                              "state_topic": constants.MQTT_STATUS, "command_topic": constants.MQTT_SWITCH,
-                                                              "json_attributes_topic": constants.MQTT_ATTRIBUTES, "qos": 0, "payload_on": constants.MQTT_SWITCH_ON,
-                                                              "payload_off": constants.MQTT_SWITCH_OFF, "color_mode": True, "supported_color_modes": ["onoff"],
+                                                              "default_entity_id": f"{device_name_slug}_light", "unique_id": f"{device_name_slug}_light",  # noqa
+                                                              "state_topic": constants.MQTT_STATUS, "command_topic": constants.MQTT_SWITCH,  # noqa
+                                                              "json_attributes_topic": constants.MQTT_ATTRIBUTES, "qos": 0, "payload_on": constants.MQTT_SWITCH_ON,  # noqa
+                                                              "payload_off": constants.MQTT_SWITCH_OFF, "color_mode": True, "supported_color_modes": ["onoff"],  # noqa
                                                               "optimistic": False}
 
         # generate the text config https://www.home-assistant.io/integrations/text.mqtt/
@@ -89,16 +88,16 @@ def mqtt_connect(client, userdata, flags, rc):
                                                              "state_topic": constants.MQTT_CURRENT_TEXT, "command_topic": constants.MQTT_NEW_TEXT,
                                                              "qos": 0}
 
-        payload['components'][f"{device_name_slug}_timer_text"] = {"name": f"{args.ha_device_name} Timer Duration", "platform": constants.MQTT_DISCOVERY_TEXT_CLASS,
-                                                                   "default_entity_id": f"{device_name_slug}_timer_text", "unique_id": f"{device_name_slug}_timer_text",
-                                                                   "state_topic": constants.MQTT_TIMER_TEXT, "command_topic": constants.MQTT_TIMER_NEW_TEXT,
-                                                                   "pattern": "(\d{2}):(\d{2})", "max": 5, "qos": 0}
+        payload['components'][f"{device_name_slug}_timer_text"] = {"name": f"{args.ha_device_name} Timer Duration", "platform": constants.MQTT_DISCOVERY_TEXT_CLASS,  # noqa
+                                                                   "default_entity_id": f"{device_name_slug}_timer_text", "unique_id": f"{device_name_slug}_timer_text",  # noqa
+                                                                   "state_topic": constants.MQTT_TIMER_TEXT, "command_topic": constants.MQTT_TIMER_NEW_TEXT,  # noqa
+                                                                   "pattern": r"(\d{2}):(\d{2})", "max": 5, "qos": 0}
 
         # generate switch config https://www.home-assistant.io/integrations/switch.mqtt/
-        payload['components'][f"{device_name_slug}_timer_switch"] = {"name": f"{args.ha_device_name} Timer Switch", "platform": constants.MQTT_DISCOVERY_SWITCH_CLASS,
-                                                                    "default_entity_id": f"{device_name_slug}_timer_switch", "unique_id": f"{device_name_slug}_timer_switch",
-                                                                    "state_topic": constants.MQTT_TIMER_STATUS, "command_topic": constants.MQTT_TIMER_COMMAND, "qos": 0,
-                                                                    "device_class": "switch", 'payload_on': constants.MQTT_SWITCH_ON, 'payload_off': constants.MQTT_SWITCH_OFF}
+        payload['components'][f"{device_name_slug}_timer_switch"] = {"name": f"{args.ha_device_name} Timer Switch", "platform": constants.MQTT_DISCOVERY_SWITCH_CLASS,  # noqa
+                                                                     "default_entity_id": f"{device_name_slug}_timer_switch", "unique_id": f"{device_name_slug}_timer_switch",  # noqa
+                                                                     "state_topic": constants.MQTT_TIMER_STATUS, "command_topic": constants.MQTT_TIMER_COMMAND, "qos": 0,  # noqa
+                                                                     "device_class": "switch", 'payload_on': constants.MQTT_SWITCH_ON, 'payload_off': constants.MQTT_SWITCH_OFF}  # noqa
 
         # the device discovery topic, per documentation
         topic = f"{args.mqtt_discovery_prefix}/device/{device_name_slug}/config"
@@ -197,7 +196,7 @@ def mqtt_on_message(client, userdata, message):
         minutes = int(timeStr[-2:])
 
         # set the timer state
-        manager.update_variable_state(aVar.get_name(), 'timer', {'hours':hours, "minutes": minutes})
+        manager.update_variable_state(aVar.get_name(), 'timer', {'hours': hours, "minutes": minutes})
     else:
         # this is for a variable, load it
         aVar = manager.get_variable_by_filter(constants.MQTT_CATEGORY, lambda v: v.get_topic() == message.topic)

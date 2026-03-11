@@ -37,6 +37,7 @@ class MQTTVariable(JinjaVariable):
     def get_categories(self):
         return [constants.MQTT_CATEGORY, constants.JINJA_CATEGORY]
 
+
 class MQTTPushVariable(MQTTVariable):
     """extension of the MQTT class allows for listening to
     and publishing to an MQTT topic
@@ -61,6 +62,7 @@ class MQTTPushVariable(MQTTVariable):
     def get_categories(self):
         return [constants.MQTT_CATEGORY, constants.JINJA_CATEGORY, constants.MQTT_PUSH_CATEGORY]
 
+
 class TimerVariable(MQTTPushVariable, StatefulVariable):
     """ Internal class to implement a countdown timer.
     This class implements polling, mqtt, stateful, and jinja behaviors
@@ -76,7 +78,7 @@ class TimerVariable(MQTTPushVariable, StatefulVariable):
 
     def __init__(self, name, config):
         super().__init__(name, config)
-        self.type = 'timer' # override type
+        self.type = 'timer'  # override type
 
     def get_default_config(self):
         result = super().get_default_config()
@@ -120,7 +122,7 @@ class TimerVariable(MQTTPushVariable, StatefulVariable):
         """
 
         # timer off on startup, default timer to 5 minutes
-        result['states'] = {"running": False, "timer": {"hours":0, "minutes": 5}}
+        result['states'] = {"running": False, "timer": {"hours": 0, "minutes": 5}}
 
         return result
 
