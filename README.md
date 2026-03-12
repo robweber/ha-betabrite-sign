@@ -4,7 +4,7 @@
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
-Integrate an LED sign that uses the [Alphasign protocol](https://www.adaptivedisplays.com/resources/documentation-and-manuals/support-documents/bid/264113/Alpha-Sign-Communications-Protocol-pn-97088061) with your [Home Assistant](https://www.home-assistant.io/) installation. This project seeks to provide a headless Python program that will communicate with the sign and allow for updates by either querying a Home Assistant instance or getting status updates via MQTT. It can also integrate with Home Assistant as a light entity to expose information directly to your smart home.
+Integrate an LED sign that uses the [Alphasign protocol](https://www.adaptivedisplays.com/resources/documentation-and-manuals/support-documents/bid/264113/Alpha-Sign-Communications-Protocol-pn-97088061) with your [Home Assistant](https://www.home-assistant.io/) installation. This project seeks to provide a headless Python program that will communicate with the sign and allow for updates by either querying a Home Assistant instance or getting status updates via MQTT. It can also expose several Home Assistant entities, such as a light entity, to allow control directly from your smart home.
 
 Messages are configured for the display using a simple `.yaml` configuration file. Variables can be defined that pull information from Home Assistant via the [templating engine](https://www.home-assistant.io/docs/configuration/templating/). These will dynamically update the sign on either a polling timer or via MQTT topics.
 
@@ -90,6 +90,7 @@ When MQTT is configured the program will watch for commands and publish to the f
 * betabrite/timer_switch/command - command topic to update switch from Home Assistant
 * betabrite/timer/current_text - text entity to set the timer duration
 * betabrite/timer/new_text - command topic to update duration from Home Assistant
+* betabrite/timer/event - event topic that fires when the timer countdown completes
 
 Turning the sign off and on is done via a special Text object allocated when the program starts. This is simply a blank message that pre-empts any running message at runtime to blank the display (off) and then remove it to return the display to normal messaging (on). The [text](#home-assistant-text-variable) and [timer](#home-assistant-timer-variable) entities can be set in Home Assistant and used in any message through a special MQTT variable.
 
@@ -329,7 +330,7 @@ display:
 
 #### Home Assistant Timer Variable
 
-When using [Home Assistant Discovery](#home-assistant-entity-discovery) there are also two additional entities that can be used to display a countdown timer on the sign. In Home Assistant you can set a duration in the format `HH:MM` and toggle the timer using the entity switch. Once started the internal timer will countdown for the duration specified. When complete it will trigger an MQTT update that turns off the timer in Home Assistant.
+When using [Home Assistant Discovery](#home-assistant-entity-discovery) there are also two additional entities that can be used to display a countdown timer on the sign. In Home Assistant you can set a duration in the format `HH:MM` and toggle the timer using the entity switch. Once started the internal timer will countdown for the duration specified. When complete it will trigger an MQTT update that fires an event and turns off the timer in Home Assistant.
 
 To view the timer on the sign use the special `HA_TIMER_ENTITY` variable name. The below example will setup the variable to display only when the timer is active.
 
@@ -345,12 +346,26 @@ display:
     active_template: >-
       {{ is_payload_attr('HA_TIMER_ENTITY', 'running', True) }}
 ```
+The timer event fires in Home Assistant with a payload of `timer.finished`. You can automate additional notifications (sounds, lights, etc) based on this event. Triggering on the event is done by watching the entity state. In Home Assistant an example trigger would be:
 
+```
+# note - this is Home Assistant code, not HA Sign configuration
+trigger: state
+entity_id:
+  - event.betabrite_sign_timer_event
+attribute: event_type
+from:
+  - timer.cleared
+to:
+  - timer.finished
+
+```
 
 Quirks Of The Timer:
 
-* The sign only polls for updates every 10 seconds, so the seconds countdown will not move in realtime. In testing the serial communications simply could not keep up with a second by second update.
-* When complete the timer will display "!!!Timer Complete!!!" for one minute before turning off the timer.
+* The sign only polls for updates every 10 seconds, so the seconds countdown will not move in real time. In testing the serial communications simply could not keep up with a second by second update.
+* When complete the timer variable will be blank so it can be used in message queues easily.
+* The `timer.finished` event will stay true for ten seconds after the timer triggers, this helps allow for lag with Home Assistant automations. 
 
 #### MQTT
 
