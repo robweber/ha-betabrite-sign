@@ -16,6 +16,7 @@ variables:
           - mqtt
           - rest
           - dynamic
+          - timer
       color:
         required: False
         type: string
@@ -51,6 +52,12 @@ variables:
         dependencies:
           type:
             - mqtt
+      should_update_topic_template:
+        required: False
+        type: string
+        dependencies:
+          type:
+            - timer
       startup:
         required: False
         type: string
@@ -59,6 +66,18 @@ variables:
             - home_assistant
             - mqtt
             - dynamic
+      states:
+        required: False
+        type: dict
+        dependencies:
+          type:
+            - timer
+        valueschema:
+          type:
+            - string
+            - boolean
+            - dict
+            - number
       template:
         type: string
         dependencies:
@@ -67,6 +86,7 @@ variables:
             - mqtt
             - rest
             - dynamic
+            - timer
       text:
         type: string
         dependencies:
@@ -77,6 +97,7 @@ variables:
         dependencies:
           type:
             - mqtt
+            - timer
       update_template:
         type: string
         dependencies:
@@ -84,6 +105,13 @@ variables:
             - mqtt
             - rest
             - dynamic
+            - timer
+      update_topic_template:
+        required: False
+        type: string
+        dependencies:
+          type:
+            - timer
       url:
         type: string
         dependencies:

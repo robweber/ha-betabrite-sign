@@ -44,12 +44,19 @@ class MessageManager:
     def __init__(self, configFile):
         """:param configFile: path to the yaml configuration file"""
 
-        # load the schema and config file
-        with open('data/schema.yaml', 'r') as file:
+        # load the schema and system variables
+        with open('src/resources/schema.yaml', 'r') as file:
             schema = yaml.safe_load(file)
 
+        with open('src/resources/system.yaml', 'r') as file:
+            system_config = yaml.safe_load(file)
+
+        # load the user layout file
         with open(configFile, 'r') as file:
             self.config = yaml.safe_load(file)
+
+        # merge user and system variables
+        self.config['variables'] = self.config['variables'] | system_config['variables']
 
         # validate the config, kill the program if invalid
         v = Validator(schema)
@@ -60,10 +67,6 @@ class MessageManager:
 
         # load all variable objects right away
         self.__load_variables()
-
-        # add a special variable for the Home Assistant MQTT Entities
-        self.varObjs[constants.TEXT_ENTITY_VARIABLE] = MQTTVariable(constants.TEXT_ENTITY_VARIABLE, {"topic": constants.MQTT_CURRENT_TEXT})
-        self.varObjs[constants.TIMER_ENTITY_VARIABLE] = TimerVariable(constants.TIMER_ENTITY_VARIABLE, {"topic": constants.MQTT_TIMER_COMMAND})
 
     def __load_variables(self):
         """create VariableType objects from the variables
@@ -86,6 +89,8 @@ class MessageManager:
                 self.varObjs[v] = RestVariable(v, aVar)
             elif(aVar['type'] == 'dynamic'):
                 self.varObjs[v] = DynamicVariable(v, aVar)
+            elif(aVar['type'] == 'timer'):
+                self.varObjs[v] = TimerVariable(v, aVar)
 
     def __get_char(self, start, offset):
         """helper method to return a single character based on the

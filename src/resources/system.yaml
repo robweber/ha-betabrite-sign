@@ -1,0 +1,41 @@
+# this file contains the setup for special system variables
+variables:
+  HA_TEXT_ENTITY:
+    type: mqtt
+    topic: betabrite/sign/current_text
+  HA_TIMER_ENTITY:
+    type: timer
+    topic: betabrite/timer_switch/command
+    template: >-
+      {% if(value.running) %}
+      {% set remaining = value.end_time - now() %}
+      {% set total_seconds = remaining.total_seconds() | int %}
+      {% if total_seconds > 0 %}
+      {% set minutes = (total_seconds / 60) | int %}
+      {% set hours = (minutes / 60) | int %}
+      {{ "{:02d}".format(hours) }}:{{ "{:02d}".format(minutes) }}:{{ "{:02d}".format(((total_seconds % 60) % 60) | int) }}
+      {% else %}
+      {{ '!!!Timer Complete!!!' | color('red') }}
+      {% endif %}
+      {% endif %}
+    should_update_topic_template: >-
+      {% if(value.running) %}
+      {% set remaining = (value.end_time + timedelta(minutes=1)) - now() %}
+      {% set total_seconds = remaining.total_seconds() | int %}
+      {{ total_seconds <= 0 }}
+      {% else %}
+      False
+      {% endif %}
+    should_update_topic_template: >-
+      {% set remaining = value.end_time - now() %}
+      {% set total_seconds = remaining.total_seconds() | int %}
+      {% if(value.running and total_seconds > 0) %}
+      ON
+      {% else %}
+      OFF
+      {% endif %}
+    states:
+      running: False
+      timer:
+        hours: 0
+        minutes: 5

@@ -59,6 +59,9 @@ class MQTTPushVariable(MQTTVariable):
     def update_topic(self):
         return self.config['update_topic_template']
 
+    def should_retain(self):
+        return self.config['retain']
+
     def get_categories(self):
         return [constants.MQTT_CATEGORY, constants.JINJA_CATEGORY, constants.MQTT_PUSH_CATEGORY]
 
@@ -79,52 +82,6 @@ class TimerVariable(MQTTPushVariable, StatefulVariable):
     def __init__(self, name, config):
         super().__init__(name, config)
         self.type = 'timer'  # override type
-
-    def get_default_config(self):
-        result = super().get_default_config()
-
-        # template to render time remaining from payload
-        # if timer running result is HH:MM:SS
-        result['template'] = """
-        {% if(value.running) %}
-        {% set remaining = value.end_time - now() %}
-        {% set total_seconds = remaining.total_seconds() | int %}
-        {% if total_seconds > 0 %}
-        {% set minutes = (total_seconds / 60) | int %}
-        {% set hours = (minutes / 60) | int %}
-        {{ "{:02d}".format(hours) }}:{{ "{:02d}".format(minutes) }}:{{ "{:02d}".format(((total_seconds % 60) % 60) | int) }}
-        {% else %}
-        {{ '!!!Timer Complete!!!' | color('red') }}
-        {% endif %}
-        {% endif %}
-        """
-
-        # update the topic if running and timer is expired
-        # 1 minute added to eval to make sure complete message displays for at least one minute
-        result['should_update_topic_template'] = """
-        {% if(value.running) %}
-        {% set remaining = (value.end_time + timedelta(minutes=1)) - now() %}
-        {% set total_seconds = remaining.total_seconds() | int %}
-        {{ total_seconds <= 0 }}
-        {% else %}
-        False
-        {% endif %}
-        """
-        # return value for MQTT topic - ON/OFF depending on running status
-        result['update_topic_template'] = """
-        {% set remaining = value.end_time - now() %}
-        {% set total_seconds = remaining.total_seconds() | int %}
-        {% if(value.running and total_seconds > 0) %}
-        ON
-        {% else %}
-        OFF
-        {% endif %}
-        """
-
-        # timer off on startup, default timer to 5 minutes
-        result['states'] = {"running": False, "timer": {"hours": 0, "minutes": 5}}
-
-        return result
 
     def should_poll(self, current_time, offset):
         """ override of parent class should_poll method

@@ -244,7 +244,7 @@ def mqtt_push():
                 # render the new payload
                 payload = payload_manager.render_template(aVar.update_topic(), aVar.get_name())
                 logging.debug(f"Publishing {colored(aVar.get_name(), 'red')}: '{payload}'")
-                mqtt_client.publish(aVar.get_topic(), payload, retain=True)
+                mqtt_client.publish(aVar.get_topic(), payload, retain=aVar.should_retain())
 
 
 def render_template(var):
