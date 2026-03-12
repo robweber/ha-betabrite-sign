@@ -91,19 +91,20 @@ def mqtt_connect(client, userdata, flags, rc):
         payload['components'][f"{device_name_slug}_timer_text"] = {"name": f"{args.ha_device_name} Timer Duration", "platform": constants.MQTT_DISCOVERY_TEXT_CLASS,  # noqa
                                                                    "default_entity_id": f"text.{device_name_slug}_timer_text",  "unique_id": f"text.{device_name_slug}_timer_text",  # noqa
                                                                    "state_topic": constants.MQTT_TIMER_TEXT, "command_topic": constants.MQTT_TIMER_NEW_TEXT,  # noqa
-                                                                   "pattern": r"(\d{2}):(\d{2})", "max": 5, "qos": 0}
+                                                                   "pattern": r"(\d{2}):(\d{2})", "max": 5, "qos": 0, 'icon': 'mdi:timer-outline'}
 
         # generate switch config https://www.home-assistant.io/integrations/switch.mqtt/
         payload['components'][f"{device_name_slug}_timer_switch"] = {"name": f"{args.ha_device_name} Timer Switch", "platform": constants.MQTT_DISCOVERY_SWITCH_CLASS,  # noqa
                                                                      "default_entity_id": f"switch.{device_name_slug}_timer_switch", "unique_id": f"switch.{device_name_slug}_timer_switch",  # noqa
                                                                      "state_topic": constants.MQTT_TIMER_STATUS, "command_topic": constants.MQTT_TIMER_COMMAND, "qos": 0,  # noqa
-                                                                     "device_class": "switch", 'payload_on': constants.MQTT_SWITCH_ON, 'payload_off': constants.MQTT_SWITCH_OFF}  # noqa
+                                                                     "device_class": "switch", 'payload_on': constants.MQTT_SWITCH_ON, 'payload_off': constants.MQTT_SWITCH_OFF,  # noqa
+                                                                     "icon": "mdi:play-pause"}
 
         # generate event config https://www.home-assistant.io/integrations/event.mqtt/
         payload['components'][f"{device_name_slug}_timer_event"] = {"name": f"{args.ha_device_name} Timer Complete", "platform": constants.MQTT_DISCOVERY_EVENT_CLASS,  # noqa
-                                                                    "default_entity_id": f"event.{device_name_slug}_timer_event", "unique_id": f"event.{device_name_slug}_timer_event", "state_topic": constants.MQTT_TIMER_EVENT,  # noqa
-                                                                    "event_types": ['timer.finished', 'timer.cleared'], "qos": 0,  # noqa
-                                                                    'platform': 'event'}
+                                                                    "default_entity_id": f"event.{device_name_slug}_timer_event", "unique_id": f"event.{device_name_slug}_timer_event",  # noqa
+                                                                    "state_topic": constants.MQTT_TIMER_EVENT, "event_types": ['timer.finished', 'timer.cleared'], "qos": 0,  # noqa
+                                                                    "icon": "mdi:timer-alert-outline"}
 
         # the device discovery topic, per documentation
         topic = f"{args.mqtt_discovery_prefix}/device/{device_name_slug}/config"

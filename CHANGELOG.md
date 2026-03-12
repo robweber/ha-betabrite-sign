@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Added
 
 - omitting `message` parameter in test utility will not read general information from the sign and output to screen
-- two new Home Assistant entities - Timer Duration and Timer switch
+- thee new Home Assistant entities - Timer Duration, Timer switch, and Timer Event
 - new internal variable for managing a Home Assistant countdown timer - inserted into sign with `HA_TIMER_ENTITY` special variable type
 
 ### Changed
