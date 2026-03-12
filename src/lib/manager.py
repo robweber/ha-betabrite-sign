@@ -23,7 +23,7 @@ from termcolor import colored
 from . import constants
 from . import jinja_custom
 from .types.home_assistant import HomeAssistantVariable
-from .types.mqtt import MQTTVariable, TimerVariable
+from .types.mqtt import MQTTVariable, MQTTPushVariable, TimerVariable
 from .types.rest import RestVariable
 from .types.text import DynamicVariable, StaticVariable
 from .types.time import DateVariable, TimeVariable
@@ -79,6 +79,8 @@ class MessageManager:
                 self.varObjs[v] = DateVariable(v, aVar)
             elif(aVar['type'] == 'mqtt'):
                 self.varObjs[v] = MQTTVariable(v, aVar)
+            elif(aVar['type'] == 'mqtt_push'):
+                self.varObjs[v] = MQTTPushVariable(v, aVar)
             elif(aVar['type'] == 'home_assistant'):
                 self.varObjs[v] = HomeAssistantVariable(v, aVar)
             elif(aVar['type'] == 'static'):

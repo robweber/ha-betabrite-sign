@@ -14,6 +14,7 @@ variables:
           - static
           - home_assistant
           - mqtt
+          - mqtt_push
           - rest
           - dynamic
           - timer
@@ -58,6 +59,7 @@ variables:
         dependencies:
           type:
             - timer
+            - mqtt_push
       startup:
         required: False
         type: string
@@ -87,6 +89,7 @@ variables:
             - rest
             - dynamic
             - timer
+            - mqtt_push
       text:
         type: string
         dependencies:
@@ -98,6 +101,7 @@ variables:
           type:
             - mqtt
             - timer
+            - mqtt_push
       update_template:
         type: string
         dependencies:
@@ -106,12 +110,14 @@ variables:
             - rest
             - dynamic
             - timer
+            - mqtt_push
       update_topic_template:
         required: False
         type: string
         dependencies:
           type:
             - timer
+            - mqtt_push
       url:
         type: string
         dependencies:

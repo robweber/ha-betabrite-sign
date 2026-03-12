@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - main program loop now checks polling variables and active queue every 10 seconds
 - Home Assistant MQTT Discovery now uses device discovery instead of per component - one payload for all entities
+- moved system variables to `system.yaml`, merged with user variables at runtime. Easier maintenance.
+- moved `schema.yaml` to resources directory so it's not mixed with user data
 
 ## Version 3.0
 

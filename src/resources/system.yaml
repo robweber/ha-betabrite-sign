@@ -15,8 +15,6 @@ variables:
       {% set minutes = (total_seconds / 60) | int %}
       {% set hours = (minutes / 60) | int %}
       {{ "{:02d}".format(hours) }}:{{ "{:02d}".format(minutes) }}:{{ "{:02d}".format(((total_seconds % 60) % 60) | int) }}
-      {% else %}
-      {{ 'Timer Complete' | color('red') }}
       {% endif %}
       {% endif %}
     # update mqtt when timer has expired
@@ -41,3 +39,11 @@ variables:
       timer:
         hours: 0
         minutes: 5
+  HA_TIMER_EVENT_ENTITY:
+    type: mqtt_push
+    topic: betabrite/timer/event
+    # update topic if previous value was timer.finished and at least 10 seconds have elapsed
+    should_update_topic_template: >-
+      {{ value == '' or (value.event_type == 'timer.finished' and value.timestamp + 10 < now().timestamp())}}
+    update_topic_template: >-
+      {"event_type": "timer.cleared"}

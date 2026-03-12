@@ -33,7 +33,7 @@ JINJA_CATEGORY = 'jinja'
 STATEFUL_CATEGORY = 'stateful'
 CATEGORY_DEFAULTS = {ALPHASIGN_CATEGORY: {}, POLLING_CATEGORY: {"cron": "*/5 * * * *"},
                      MQTT_CATEGORY: {"qos": 0}, JINJA_CATEGORY: {'update_template': "True", "template": "{{ value }}"},
-                     MQTT_PUSH_CATEGORY: {"should_update_topic_template": "False", "update_topic_template": ""},
+                     MQTT_PUSH_CATEGORY: {"should_update_topic_template": "False", "update_topic_template": "", "retain": True},
                      STATEFUL_CATEGORY: {"states": {}}}
 
 # MQTT topics for state and commands
@@ -48,11 +48,13 @@ MQTT_TIMER_STATUS = "betabrite/timer_switch/status"
 MQTT_TIMER_COMMAND = "betabrite/timer_switch/command"
 MQTT_TIMER_TEXT = "betabrite/timer/current_text"
 MQTT_TIMER_NEW_TEXT = "betabrite/timer/new_text"
+MQTT_TIMER_EVENT = "betabrite/timer/event"
 
 # MQTT Device types
 MQTT_DISCOVERY_LIGHT_CLASS = "light"
 MQTT_DISCOVERY_SWITCH_CLASS = "switch"
 MQTT_DISCOVERY_TEXT_CLASS = "text"
+MQTT_DISCOVERY_EVENT_CLASS = "event"
 
 # MQTT Switch States
 MQTT_SWITCH_ON = "ON"
