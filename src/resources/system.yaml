@@ -6,6 +6,7 @@ variables:
   HA_TIMER_ENTITY:
     type: timer
     topic: betabrite/timer_switch/command
+    # show time remaining or timer complete
     template: >-
       {% if(value.running) %}
       {% set remaining = value.end_time - now() %}
@@ -15,18 +16,19 @@ variables:
       {% set hours = (minutes / 60) | int %}
       {{ "{:02d}".format(hours) }}:{{ "{:02d}".format(minutes) }}:{{ "{:02d}".format(((total_seconds % 60) % 60) | int) }}
       {% else %}
-      {{ '!!!Timer Complete!!!' | color('red') }}
+      {{ 'Timer Complete' | color('red') }}
       {% endif %}
       {% endif %}
+    # update mqtt when timer has expired
     should_update_topic_template: >-
       {% if(value.running) %}
-      {% set remaining = (value.end_time + timedelta(minutes=1)) - now() %}
+      {% set remaining = value.end_time - now() %}
       {% set total_seconds = remaining.total_seconds() | int %}
       {{ total_seconds <= 0 }}
       {% else %}
       False
       {% endif %}
-    should_update_topic_template: >-
+    update_topic_template: >-
       {% set remaining = value.end_time - now() %}
       {% set total_seconds = remaining.total_seconds() | int %}
       {% if(value.running and total_seconds > 0) %}
